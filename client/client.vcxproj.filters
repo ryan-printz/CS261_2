@@ -34,9 +34,6 @@
     <ClCompile Include="..\src\GameState_Menu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\GameState_Platform.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\GameState_Play.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

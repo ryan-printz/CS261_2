@@ -1,100 +1,72 @@
-// ---------------------------------------------------------------------------
-// Project Name		:	Asteroid Game
-// File Name		:	GameState_Menu.cpp
-// Author			:	Sun Tjen Fam
-// Creation Date	:	2008/02/05
-// Purpose			:	implementation of the 'menu' game state
-// History			:
-// - 2008/02/05		:	- initial implementation
-// ---------------------------------------------------------------------------
 
 #include "main.h"
-#include <fstream>
+#include "GameState_NetworkMenu.h"
 
 // ---------------------------------------------------------------------------
-// Defines
+GameState_NetworkMenu::GameState_NetworkMenu()
+{}
 
-// ---------------------------------------------------------------------------
-// Static variables
+GameState_NetworkMenu::~GameState_NetworkMenu()
+{}
 
-static s32 sCursor;
-static std::fstream sConfig;
-
-static char * sError = nullptr;
-
-// ---------------------------------------------------------------------------
-
-void GameStateNetworkMenuLoad(void)
+void GameState_NetworkMenu::load(void)
 {
-	sConfig.open("config.txt");
+	// nothing
 }
 
 // ---------------------------------------------------------------------------
 
-void GameStateNetworkMenuInit(void)
+void GameState_NetworkMenu::init(void)
 {
-	if( !sConfig.is_open() )
-	{
-		sError = "Missing Config.txt!";
-		return;
-	}
-
 	// current selection
-	sCursor = 0;
+	m_cursor = 0;
 }
 
 // ---------------------------------------------------------------------------
 
-void GameStateNetworkMenuUpdate(void)
+void GameState_NetworkMenu::update(void)
 {
 	if(AEInputCheckTriggered(DIK_UP))
-		sCursor--;
+		m_cursor--;
 	if(AEInputCheckTriggered(DIK_DOWN))
-		sCursor++;
+		m_cursor++;
 	
-	sCursor = (sCursor < 0) ? 0 : ((sCursor > 1) ? 1 : sCursor);
+	m_cursor = (m_cursor < 0) ? 0 : ((m_cursor > 1) ? 1 : m_cursor);
 
 	if(AEInputCheckTriggered(DIK_SPACE))
-	{
-		if (sCursor == 0)
-			gGameStateNext = GS_PLAY;
-		else
-			gGameStateNext = GS_QUIT;
-	}
+		switch(m_cursor)
+		{
+		case 0:
+			//m_gsm->nextState(new GameState_NetworkPlay());
+			break;
+
+		default:
+			m_gsm->popState();
+			break;
+		};
 }
 
 // ---------------------------------------------------------------------------
 
-void GameStateNetworkMenuDraw(void)
+void GameState_NetworkMenu::draw(void)
 {
-	if( sError )
-	{
-		AEGfxPrint(100, 100, 0xFF0000FF, sError);
-		return;
-	}
-
 	AEGfxPrint(10, 20, 0xFFFFFFFF, "<> ASTEROID <>");
 	AEGfxPrint(40, 60, 0xFFFFFFFF, "Start Game");
+	AEGfxPrint(40, 60, 0xFFFFFFFF, "Network Menu");
 	AEGfxPrint(40, 90, 0xFFFFFFFF, "Quit");
 
 	if (gAEFrameCounter & 0x0008)
-		AEGfxPrint(10, 60 + 30 * sCursor, 0xFFFFFFFF, ">>");
+		AEGfxPrint(10, 60 + 30 * m_cursor, 0xFFFFFFFF, ">>");
 }
 
 // ---------------------------------------------------------------------------
 
-void GameStateNetworkMenuFree(void)
+void GameState_NetworkMenu::free(void)
 {
 }
 
 // ---------------------------------------------------------------------------
 
-void GameStateNetworkMenuUnload(void)
+void GameState_NetworkMenu::unload(void)
 {
 }
-
-// ---------------------------------------------------------------------------
-// Static function implementations
-
-
-// ---------------------------------------------------------------------------

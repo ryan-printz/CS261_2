@@ -9,170 +9,16 @@
 // ---------------------------------------------------------------------------
 
 #include "main.h"
+#include "GameState_Play.h"
+#include "GameState_Result.h"
 
-// ---------------------------------------------------------------------------
-// Defines
+GameState_Play::GameState_Play()
+{}
 
-#define GAME_OBJ_NUM_MAX			32
-#define GAME_OBJ_INST_NUM_MAX		2048
+GameState_Play::~GameState_Play()
+{}
 
-#define AST_NUM_MIN					2		// minimum number of asteroid alive
-#define AST_NUM_MAX					32		// maximum number of asteroid alive
-#define AST_SIZE_MAX				20.0f	// maximum asterois size
-#define AST_SIZE_MIN				5.0f	// minimum asterois size
-#define AST_VEL_MAX					10.0f	// maximum asterois velocity
-#define AST_VEL_MIN					5.0f	// minimum asterois velocity
-#define AST_CREATE_DELAY			0.1f	// delay of creation between one asteroid to the next
-#define AST_SPECIAL_RATIO			4		// number of asteroid for each 'special'
-#define AST_SHIP_RATIO				100		// number of asteroid for each ship
-#define AST_LIFE_MAX				10		// the life of the biggest asteroid (smaller one is scaled accordingly)
-#define AST_VEL_DAMP				1E-18f	// dampening to use if the asteroid velocity is above the maximum
-#define AST_TO_SHIP_ACC				0.001f	// how much acceleration to apply to steer the asteroid toward the ship
-
-#define SHIP_INITIAL_NUM			3		// initial number of ship
-#define SHIP_SPECIAL_NUM			20
-#define SHIP_SIZE					3.0f	// ship size
-#define SHIP_ACCEL_FORWARD			50.0f	// ship forward acceleration (in m/s^2)
-#define SHIP_ACCEL_BACKWARD			-100.0f	// ship backward acceleration (in m/s^2)
-#define SHIP_DAMP_FORWARD			0.55f 	// ship forward dampening
-#define SHIP_DAMP_BACKWARD			0.05f 	// ship backward dampening
-#define SHIP_ROT_SPEED				(1.0f * PI)	// ship rotation speed (degree/second)
-
-#define BULLET_SPEED				100.0f	// bullet speed (m/s)
-
-#define BOMB_COST					20		// cost to fire a bomb
-#define BOMB_RADIUS					25.0f	// bomb radius
-#define BOMB_LIFE					5.0f	// how many seconds the bomb will be alive
-
-#define MISSILE_COST				1
-#define MISSILE_ACCEL				1000.0f		// missile acceleration
-#define MISSILE_TURN_SPEED			PI			// missile turning speed (radian/sec)
-#define MISSILE_DAMP				1.5E-6f		// missile dampening
-#define MISSILE_LIFE				10.0f		// how many seconds the missile will be alive
-
-#define PTCL_SCALE_DAMP				0.05f	// particle scale dampening
-#define PTCL_VEL_DAMP				0.05f	// particle velocity dampening
-
-#define COLL_COEF_OF_RESTITUTION	1.0f	// collision coefficient of restitution
-
-#define COLL_RESOLVE_SIMPLE			1
-
-// ---------------------------------------------------------------------------
-enum
-{
-	// list of game object types
-	TYPE_SHIP = 0, 
-	TYPE_BULLET, 
-	TYPE_BOMB, 
-	TYPE_MISSILE, 
-	TYPE_ASTEROID, 
-	TYPE_STAR, 
-
-	TYPE_PTCL_WHITE, 
-	TYPE_PTCL_YELLOW, 
-	TYPE_PTCL_RED, 
-
-	TYPE_NUM,
-
-	PTCL_EXHAUST, 
-	PTCL_EXPLOSION_S, 
-	PTCL_EXPLOSION_M, 
-	PTCL_EXPLOSION_L, 
-};
-
-// ---------------------------------------------------------------------------
-// object flag definition
-
-#define FLAG_ACTIVE		0x00000001
-#define FLAG_LIFE_CTR_S	8
-#define FLAG_LIFE_CTR_M	0x000000FF
-
-// ---------------------------------------------------------------------------
-// Struct/Class definitions
-
-struct GameObj
-{
-	u32				type;		// object type
-	AEGfxTriList*	pMesh;		// pbject
-};
-
-// ---------------------------------------------------------------------------
-
-struct GameObjInst
-{
-	GameObj*		pObject;	// pointer to the 'original'
-	u32				flag;		// bit flag or-ed together
-	f32				life;		// object 'life'
-	f32				scale;
-	AEVec2			posCurr;	// object current position
-	AEVec2			velCurr;	// object current velocity
-	f32				dirCurr;	// object current direction
-
-	AEMtx33			transform;	// object drawing matrix
-
-	// pointer to custom data specific for each object type
-	void*			pUserData;
-};
-
-// ---------------------------------------------------------------------------
-// Static variables
-
-// list of original object
-static GameObj			sGameObjList[GAME_OBJ_NUM_MAX];
-static u32				sGameObjNum;
-
-// list of object instances
-static GameObjInst		sGameObjInstList[GAME_OBJ_INST_NUM_MAX];
-static u32				sGameObjInstNum;
-
-// pointer ot the ship object
-static GameObjInst*		spShip;
-
-// keep track when the last asteroid was created
-static f64				sAstCreationTime;
-
-// keep track the total number of asteroid active and the maximum allowed
-static u32				sAstCtr;
-static u32				sAstNum;
-
-// current ship rotation speed
-static f32				sShipRotSpeed;
-
-// number of ship available (lives, 0 = game over)
-static s32				sShipCtr;
-
-// number of special attack
-static s32				sSpecialCtr;
-
-// the score = number of asteroid destroyed
-static u32				sScore;
-
-static f64				sGameStateChangeCtr;
-
-// ---------------------------------------------------------------------------
-
-// function to 'load' object data
-static void			loadGameObjList();
-
-// function to create/destroy a game object object
-static GameObjInst*	gameObjInstCreate (u32 type, f32 scale, AEVec2* pPos, AEVec2* pVel, f32 dir, bool forceCreate);
-static void			gameObjInstDestroy(GameObjInst* pInst);
-
-// function to create asteroid
-static GameObjInst* astCreate(GameObjInst* pSrc);
-
-// function to calculate the object's velocity after collison
-static void			resolveCollision(GameObjInst* pSrc, GameObjInst* pDst, AEVec2* pNrm);
-
-// function to create the particles
-static void			sparkCreate(u32 type, AEVec2* pPos, u32 count, f32 angleMin, f32 angleMax, f32 srcSize = 0.0f, f32 velScale = 1.0f, AEVec2* pVelInit = 0);
-
-// function for the missile to find a new target
-static GameObjInst*	missileAcquireTarget(GameObjInst* pMissile);
-
-// ---------------------------------------------------------------------------
-
-void GameStatePlayLoad(void)
+void GameState_Play::load(void)
 {
 	// zero the game object list
 	memset(sGameObjList, 0, sizeof(GameObj) * GAME_OBJ_NUM_MAX);
@@ -193,7 +39,7 @@ void GameStatePlayLoad(void)
 
 // ---------------------------------------------------------------------------
 
-void GameStatePlayInit(void)
+void GameState_Play::init(void)
 {
 	// reset the number of current asteroid and the total allowed
 	sAstCtr = 0;
@@ -221,7 +67,7 @@ void GameStatePlayInit(void)
 
 // ---------------------------------------------------------------------------
 
-void GameStatePlayUpdate(void)
+void GameState_Play::update(void)
 {
 	// =================
 	// update the input
@@ -232,7 +78,7 @@ void GameStatePlayUpdate(void)
 		sGameStateChangeCtr -= (f32)(gAEFrameTime);
 
 		if (sGameStateChangeCtr < 0.0)
-			gGameStateNext = GS_RESULT;
+			m_gsm->nextState(new GameState_Result());
 	}
 	else
 	{
@@ -772,7 +618,7 @@ void GameStatePlayUpdate(void)
 
 // ---------------------------------------------------------------------------
 
-void GameStatePlayDraw(void)
+void GameState_Play::draw(void)
 {
 	s8 strBuffer[1024];
 
@@ -808,7 +654,7 @@ void GameStatePlayDraw(void)
 
 // ---------------------------------------------------------------------------
 
-void GameStatePlayFree(void)
+void GameState_Play::free(void)
 {
 	// kill all object in the list
 	for (u32 i = 0; i < GAME_OBJ_INST_NUM_MAX; i++)
@@ -820,7 +666,7 @@ void GameStatePlayFree(void)
 
 // ---------------------------------------------------------------------------
 
-void GameStatePlayUnload(void)
+void GameState_Play::unload(void)
 {
 	// free all mesh
 	for (u32 i = 0; i < sGameObjNum; i++)
@@ -830,7 +676,7 @@ void GameStatePlayUnload(void)
 // ---------------------------------------------------------------------------
 // Static function implementations
 
-static void loadGameObjList()
+void GameState_Play::loadGameObjList()
 {
 	GameObj* pObj;
 
@@ -975,7 +821,7 @@ static void loadGameObjList()
 
 // ---------------------------------------------------------------------------
 
-GameObjInst* gameObjInstCreate(u32 type, f32 scale, AEVec2* pPos, AEVec2* pVel, f32 dir, bool forceCreate)
+GameObjInst* GameState_Play::gameObjInstCreate(u32 type, f32 scale, AEVec2* pPos, AEVec2* pVel, f32 dir, bool forceCreate)
 {
 	AEVec2 zero = { 0.0f, 0.0f };
 
@@ -1052,7 +898,7 @@ GameObjInst* gameObjInstCreate(u32 type, f32 scale, AEVec2* pPos, AEVec2* pVel, 
 
 // ---------------------------------------------------------------------------
 
-void gameObjInstDestroy(GameObjInst* pInst)
+void GameState_Play::gameObjInstDestroy(GameObjInst* pInst)
 {
 	// if instance is destroyed before, just return
 	if (pInst->flag == 0)
@@ -1068,7 +914,7 @@ void gameObjInstDestroy(GameObjInst* pInst)
 
 // ---------------------------------------------------------------------------
 
-GameObjInst* astCreate(GameObjInst* pSrc)
+GameObjInst* GameState_Play::astCreate(GameObjInst* pSrc)
 {
 	GameObjInst* pInst;
 	AEVec2		 pos, vel;
@@ -1133,10 +979,8 @@ GameObjInst* astCreate(GameObjInst* pSrc)
 
 // ---------------------------------------------------------------------------
 
-void resolveCollision(GameObjInst* pSrc, GameObjInst* pDst, AEVec2* pNrm)
+void GameState_Play::resolveCollision(GameObjInst* pSrc, GameObjInst* pDst, AEVec2* pNrm)
 {
-#if COLL_RESOLVE_SIMPLE
-
 	f32 ma = pSrc->scale * pSrc->scale, 
 		mb = pDst->scale * pDst->scale, 
 		e  = COLL_COEF_OF_RESTITUTION;
@@ -1165,51 +1009,11 @@ void resolveCollision(GameObjInst* pSrc, GameObjInst* pDst, AEVec2* pNrm)
 		pSrc->velCurr.y = (ma * pSrc->velCurr.y + mb * (pDst->velCurr.y - e * velRel)) / (ma + mb);
 		pDst->velCurr.y = pSrc->velCurr.y + e * velRel;
 	}
-
-#else
-
-	f32		ma = pSrc->scale * pSrc->scale, 
-			mb = pDst->scale * pDst->scale, 
-			e  = COLL_COEF_OF_RESTITUTION;
-	AEVec2	u;
-	AEVec2	velSrc, velDst;
-	f32		velRel;
-
-	// calculate the relative velocity of the 1st object againts the 2nd object
-	AEVec2Sub(&u, &pSrc->velCurr, &pDst->velCurr);
-
-	// if the object is separating, do nothing
-	if(AEVec2DotProduct(&u, pNrm) > 0.0f)
-		return;
-
-	// calculate the side vector (pNrm rotated by 90 degree)
-	AEVec2Set(&u, -pNrm->y, pNrm->x);
-	
-	// tranform the object velocities to the plane space
-	velSrc.x	=	AEVec2DotProduct(&pSrc->velCurr, &u);
-	velSrc.y	=	AEVec2DotProduct(&pSrc->velCurr, pNrm);
-	velDst.x	=	AEVec2DotProduct(&pDst->velCurr, &u);
-	velDst.y	=	AEVec2DotProduct(&pDst->velCurr, pNrm);
-
-	// calculate the relative velocity along the y axis
-	velRel		=	velSrc.y - velDst.y;
-
-	// resolve collision along the Y axis
-	velSrc.y = (ma * velSrc.y + mb * (velDst.y - e * velRel)) / (ma + mb);
-	velDst.y = velSrc.y + e * velRel;
-
-	// tranform back the velocity from the normal space to the world space
-	AEVec2Scale		(&pSrc->velCurr, pNrm, velSrc.y);
-	AEVec2ScaleAdd	(&pSrc->velCurr, &u, &pSrc->velCurr, velSrc.x);
-	AEVec2Scale		(&pDst->velCurr, pNrm, velDst.y);
-	AEVec2ScaleAdd	(&pDst->velCurr, &u, &pDst->velCurr, velDst.x);
-
-#endif // COLL_RESOLVE_SIMPLE
 }
 
 // ---------------------------------------------------------------------------
 
-void sparkCreate(u32 type, AEVec2* pPos, u32 count, f32 angleMin, f32 angleMax, f32 srcSize, f32 velScale, AEVec2* pVelInit)
+void GameState_Play::sparkCreate(u32 type, AEVec2* pPos, u32 count, f32 angleMin, f32 angleMax, f32 srcSize, f32 velScale, AEVec2* pVelInit)
 {
 	f32 velRange, velMin, scaleRange, scaleMin;
 
@@ -1293,7 +1097,7 @@ void sparkCreate(u32 type, AEVec2* pPos, u32 count, f32 angleMin, f32 angleMax, 
 
 // ---------------------------------------------------------------------------
 
-GameObjInst* missileAcquireTarget(GameObjInst* pMissile)
+GameObjInst* GameState_Play::missileAcquireTarget(GameObjInst* pMissile)
 {
 	AEVec2		 dir, u;
 	f32			 uLen, angleMin = AECos(0.25f * PI), minDist = FLT_MAX;

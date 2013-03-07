@@ -24,6 +24,9 @@ public:
 	virtual void draw(void);
 	virtual void free(void);
 	virtual void unload(void);
+
+private:
+	int m_cursor;
 };
 
 // ---------------------------------------------------------------------------

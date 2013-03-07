@@ -8,20 +8,24 @@
 // - 2008/02/05		:	- initial implementation
 // ---------------------------------------------------------------------------
 
-#ifndef GAME_STATE_NETMENU_H
-#define GAME_STATE_NETMENU_H
+#pragma once
 
-// ---------------------------------------------------------------------------
+#include "IGameState.h"
 
-void GameStateNetworkMenuLoad(void);
-void GameStateNetworkMenuInit(void);
-void GameStateNetworkMenuUpdate(void);
-void GameStateNetworkMenuDraw(void);
-void GameStateNetworkMenuFree(void);
-void GameStateNetworkMenuUnload(void);
+class GameState_NetworkMenu : public IGameState
+{
+public:
+	GameState_NetworkMenu();
+	virtual ~GameState_NetworkMenu();
+	virtual void load(void);
+	virtual void init(void);
+	virtual void update(void);
+	virtual void draw(void);
+	virtual void free(void);
+	virtual void unload(void);
 
-// ---------------------------------------------------------------------------
-
-#endif // GAME_STATE_MENU_H
+private:
+	int m_cursor;
+};
 
 

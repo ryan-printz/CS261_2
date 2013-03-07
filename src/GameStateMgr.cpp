@@ -24,11 +24,18 @@ void GameStateManager::init(IGameState * gameStateInit)
 
 	// reset the current, previous and next game
 	m_gameStateNext = gameStateInit;
+	gameStateInit->setGameStateManager(this);
 }
 
 bool GameStateManager::quit()
 {
 	return (s32)m_stateStack.back() == GS_QUIT;
+}
+
+void GameStateManager::popState()
+{
+	delete m_stateStack.back();
+	m_stateStack.pop_back();
 }
 
 void GameStateManager::quit(bool quit)
@@ -54,6 +61,12 @@ bool GameStateManager::changeState()
 void GameStateManager::nextState()
 {
 	m_stateStack.emplace_back(m_gameStateNext);
+}
+
+void GameStateManager::nextState(IGameState * nextState)
+{
+	m_gameStateNext = nextState;
+	nextState->setGameStateManager(this);
 }
 
 void GameStateManager::restartState()

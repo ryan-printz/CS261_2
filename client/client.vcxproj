@@ -91,7 +91,6 @@
   <ItemGroup>
     <ClCompile Include="..\src\GameStateMgr.cpp" />
     <ClCompile Include="..\src\GameState_Menu.cpp" />
-    <ClCompile Include="..\src\GameState_Platform.cpp" />
     <ClCompile Include="..\src\GameState_Play.cpp" />
     <ClCompile Include="..\src\GameState_Result.cpp" />
     <ClCompile Include="..\src\main.cpp" />

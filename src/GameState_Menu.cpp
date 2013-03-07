@@ -9,55 +9,62 @@
 // ---------------------------------------------------------------------------
 
 #include "main.h"
-
-// ---------------------------------------------------------------------------
-// Defines
-
-// ---------------------------------------------------------------------------
-// Static variables
-
-static s32 sCursor;
+#include "GameState_Menu.h"
+#include "GameState_NetworkMenu.h"
+#include "GameState_Play.h"
 
 // ---------------------------------------------------------------------------
 
-void GameStateMenuLoad(void)
+GameState_Menu::GameState_Menu()
+{}
+
+GameState_Menu::~GameState_Menu()
+{}
+
+void GameState_Menu::load(void)
 {
 	// nothing
 }
 
 // ---------------------------------------------------------------------------
 
-void GameStateMenuInit(void)
+void GameState_Menu::init(void)
 {
 	// current selection
-	sCursor = 0;
+	m_cursor = 0;
 }
 
 // ---------------------------------------------------------------------------
 
-void GameStateMenuUpdate(void)
+void GameState_Menu::update(void)
 {
 	if(AEInputCheckTriggered(DIK_UP))
-		sCursor--;
+		m_cursor--;
 	if(AEInputCheckTriggered(DIK_DOWN))
-		sCursor++;
+		m_cursor++;
 	
-	sCursor = (sCursor < 0) ? 0 : ((sCursor > 2) ? 2 : sCursor);
+	m_cursor = (m_cursor < 0) ? 0 : ((m_cursor > 2) ? 2 : m_cursor);
 
 	if(AEInputCheckTriggered(DIK_SPACE))
-	{
-		if (sCursor == 0)
-			gGameStateNext = GS_PLAY;
-		else if( sCursor == 1 )
-			gGameStateNext = GS_NETMENU;
-		else
-			gGameStateNext = GS_QUIT;
-	}
+		switch(m_cursor)
+		{
+		case 0:
+			m_gsm->nextState(new GameState_Play());
+			break;
+
+		case 1:
+			m_gsm->nextState(new GameState_NetworkMenu());
+			break;
+
+		default:
+			m_gsm->quit();
+			break;
+		};
 }
 
 // ---------------------------------------------------------------------------
 
-void GameStateMenuDraw(void)
+void GameState_Menu::draw(void)
 {
 	AEGfxPrint(10, 20, 0xFFFFFFFF, "<> ASTEROID <>");
 	AEGfxPrint(40, 60, 0xFFFFFFFF, "Start Game");
@@ -65,23 +72,17 @@ void GameStateMenuDraw(void)
 	AEGfxPrint(40, 90, 0xFFFFFFFF, "Quit");
 
 	if (gAEFrameCounter & 0x0008)
-		AEGfxPrint(10, 60 + 30 * sCursor, 0xFFFFFFFF, ">>");
+		AEGfxPrint(10, 60 + 30 * m_cursor, 0xFFFFFFFF, ">>");
 }
 
 // ---------------------------------------------------------------------------
 
-void GameStateMenuFree(void)
+void GameState_Menu::free(void)
 {
 }
 
 // ---------------------------------------------------------------------------
 
-void GameStateMenuUnload(void)
+void GameState_Menu::unload(void)
 {
 }
-
-// ---------------------------------------------------------------------------
-// Static function implementations
-
-
-// ---------------------------------------------------------------------------

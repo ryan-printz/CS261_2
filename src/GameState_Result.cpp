@@ -9,6 +9,8 @@
 // ---------------------------------------------------------------------------
 
 #include "main.h"
+#include "GameState_Result.h"
+#include "GameState_Menu.h"
 
 // ---------------------------------------------------------------------------
 // Static variables
@@ -16,29 +18,36 @@
 // ---------------------------------------------------------------------------
 // function implementations
 
-void GameStateResultLoad(void)
+GameState_Result::GameState_Result()
+{}
+
+GameState_Result::~GameState_Result()
+{}
+
+void GameState_Result::load(void)
 {
 	// nothing
 }
 
 // ---------------------------------------------------------------------------
 
-void GameStateResultInit(void)
+void GameState_Result::init(void)
 {
 	// nothing
 }
 
 // ---------------------------------------------------------------------------
 
-void GameStateResultUpdate(void)
+void GameState_Result::update(void)
 {
+	// TODO: use popstate to return to the menu instead.
 	if ((gAEFrameCounter > 60) && (AEInputCheckTriggered(DIK_SPACE)))
-		gGameStateNext = GS_MENU;
+		m_gsm->nextState(new GameState_Menu());
 }
 
 // ---------------------------------------------------------------------------
 
-void GameStateResultDraw(void)
+void GameState_Result::draw(void)
 {
     AEGfxPrint(280, 260, 0xFFFFFFFF, "       GAME OVER       ");
 
@@ -48,23 +57,17 @@ void GameStateResultDraw(void)
 
 // ---------------------------------------------------------------------------
 
-void GameStateResultFree(void)
+void GameState_Result::free(void)
 {
 	// nothing
 }
 
 // ---------------------------------------------------------------------------
 
-void GameStateResultUnload(void)
+void GameState_Result::unload(void)
 {
 	// nothing
 }
-
-// ---------------------------------------------------------------------------
-// Static function implementations
-
-// ---------------------------------------------------------------------------
-
 
 
 

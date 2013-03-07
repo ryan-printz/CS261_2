@@ -86,7 +86,6 @@
     <ClCompile Include="..\src\GameStateMgr.cpp" />
     <ClCompile Include="..\src\GameState_Menu.cpp" />
     <ClCompile Include="..\src\GameState_NetworkMenu.cpp" />
-    <ClCompile Include="..\src\GameState_Platform.cpp" />
     <ClCompile Include="..\src\GameState_Play.cpp" />
     <ClCompile Include="..\src\GameState_Result.cpp" />
     <ClCompile Include="..\src\main.cpp" />
@@ -96,7 +95,6 @@
     <ClInclude Include="..\include\GameStateMgr.h" />
     <ClInclude Include="..\include\GameState_Menu.h" />
     <ClInclude Include="..\include\GameState_NetworkMenu.h" />
-    <ClInclude Include="..\include\GameState_Platform.h" />
     <ClInclude Include="..\include\GameState_Play.h" />
     <ClInclude Include="..\include\GameState_Result.h" />
     <ClInclude Include="..\include\main.h" />

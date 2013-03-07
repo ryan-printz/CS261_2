@@ -39,7 +39,11 @@ public:
 	bool changeState();
 
 	void nextState();
+	void nextState(IGameState * nextState);
+
 	void restartState();
+
+	void popState();
 	
 	// state functions
 	void loadState();

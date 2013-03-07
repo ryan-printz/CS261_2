@@ -14,9 +14,6 @@
     <ClCompile Include="..\src\GameState_Menu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\GameState_Platform.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\GameState_Play.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -38,9 +35,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\GameState_NetworkMenu.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\GameState_Platform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\GameState_Play.h">

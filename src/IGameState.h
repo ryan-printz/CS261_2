@@ -13,6 +13,8 @@ public:
 	virtual void free(void) = 0;
 	virtual void unload(void) = 0;
 
+	void setGameStateManager(GameStateManager * gsm) { m_gsm = gsm; }
+
 protected:
 	GameStateManager * m_gsm;
 };
