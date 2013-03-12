@@ -57,7 +57,7 @@
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>d3d9.lib;dinput8.lib;dxguid.lib;d3dx9d.lib;winmm.lib;user32.lib;comctl32.lib;shell32.lib;gdi32.lib;advapi32.lib;Alpha_Engine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d9.lib;dinput8.lib;dxguid.lib;d3dx9d.lib;winmm.lib;user32.lib;comctl32.lib;shell32.lib;gdi32.lib;advapi32.lib;$(SolutionDir)AlphaEngine.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\;$(DXSDK_DIR)\Lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <GenerateMapFile>false</GenerateMapFile>
@@ -72,7 +72,7 @@
       <AdditionalIncludeDirectories>$(DXSDK_DIR)\Include;..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>d3d9.lib;dinput8.lib;dxguid.lib;d3dx9d.lib;winmm.lib;user32.lib;comctl32.lib;shell32.lib;gdi32.lib;advapi32.lib;Alpha_Engine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d9.lib;dinput8.lib;dxguid.lib;d3dx9d.lib;winmm.lib;user32.lib;comctl32.lib;shell32.lib;gdi32.lib;advapi32.lib;$(SolutionDir)AlphaEngine.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\;$(DXSDK_DIR)\Lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -81,19 +81,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="include\GameState_Menu.h" />
-    <ClInclude Include="include\GameState_Play.h" />
-    <ClInclude Include="include\GameState_Result.h" />
-    <ClInclude Include="include\GameStateList.h" />
-    <ClInclude Include="include\GameStateMgr.h" />
-    <ClInclude Include="include\main.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="..\src\GameStateMgr.cpp" />
     <ClCompile Include="..\src\GameState_Menu.cpp" />
+    <ClCompile Include="..\src\GameState_NetworkMenu.cpp" />
     <ClCompile Include="..\src\GameState_Play.cpp" />
     <ClCompile Include="..\src\GameState_Result.cpp" />
     <ClCompile Include="..\src\main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\GameStateList.h" />
+    <ClInclude Include="..\include\GameStateMgr.h" />
+    <ClInclude Include="..\include\GameState_Menu.h" />
+    <ClInclude Include="..\include\GameState_NetworkMenu.h" />
+    <ClInclude Include="..\include\GameState_Play.h" />
+    <ClInclude Include="..\include\GameState_Result.h" />
+    <ClInclude Include="..\include\main.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
