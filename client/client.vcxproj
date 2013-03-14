@@ -47,7 +47,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(DXSDK_DIR)\Include;..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(DXSDK_DIR)\Include;$(SolutionDir)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -69,7 +69,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(DXSDK_DIR)\Include;..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(DXSDK_DIR)\Include;$(SolutionDir)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>d3d9.lib;dinput8.lib;dxguid.lib;d3dx9d.lib;winmm.lib;user32.lib;comctl32.lib;shell32.lib;gdi32.lib;advapi32.lib;$(SolutionDir)AlphaEngine.lib</AdditionalDependencies>
@@ -87,6 +87,7 @@
     <ClCompile Include="..\src\GameState_Play.cpp" />
     <ClCompile Include="..\src\GameState_Result.cpp" />
     <ClCompile Include="..\src\main.cpp" />
+    <ClCompile Include="..\src\BaseSocket.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\GameStateList.h" />
@@ -95,8 +96,10 @@
     <ClInclude Include="..\include\GameState_NetworkMenu.h" />
     <ClInclude Include="..\include\GameState_Play.h" />
     <ClInclude Include="..\include\GameState_Result.h" />
+    <ClInclude Include="..\include\ISocket.h" />
     <ClInclude Include="..\include\main.h" />
     <ClInclude Include="..\src\IGameState.h" />
+    <ClInclude Include="..\src\BaseSocket.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
