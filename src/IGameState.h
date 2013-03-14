@@ -1,6 +1,6 @@
 #pragma once
 
-class GameStateManager;
+#include "GameStateMgr.h"
 
 class IGameState 
 {
@@ -22,9 +22,16 @@ public:
 		virtual void update() = 0;
 		virtual void draw() = 0;
 
+	protected:
+		void nextGameState(IGameState * gameState) { m_parent->m_gsm->nextState(gameState); }
+		void popGameState() { m_parent->m_gsm->popState(); }
+
 		IGameState * m_parent;
 	};
+	friend struct State;
 
+	void nextState(State * state) { m_state = state; }
 protected:
 	GameStateManager * m_gsm;
+	State * m_state;
 };

@@ -20,9 +20,8 @@
 // include the list of game states
 
 #include "GameStateList.h"
-#include "IGameState.h"
 
-#include <vector>
+class IGameState;
 
 class GameStateManager 
 {
@@ -54,6 +53,8 @@ public:
 	void unloadState();
 
 private:
-	std::vector <IGameState*> m_stateStack;
-	IGameState *			  m_gameStateNext;
+	IGameState * m_gameStatePrev;
+	IGameState * m_gameStateInit;
+	IGameState * m_gameStateCurr;
+	IGameState * m_gameStateNext;
 };

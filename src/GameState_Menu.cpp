@@ -30,6 +30,7 @@ void GameState_Menu::load(void)
 
 void GameState_Menu::init(void)
 {
+	m_cursor = 0;
 }
 
 // ---------------------------------------------------------------------------
@@ -55,7 +56,7 @@ void GameState_Menu::update(void)
 			break;
 
 		default:
-			m_gsm->quit();
+			m_gsm->quit(true);
 			break;
 		};
 }
@@ -65,11 +66,12 @@ void GameState_Menu::update(void)
 void GameState_Menu::draw(void)
 {
 	AEGfxPrint(10, 20, 0xFFFFFFFF, "<> ASTEROID <>");
-	AEGfxPrint(10, 50, 0xFFFFFFFF, "Connection timed out!");
-	AEGfxPrint(40, 70, 0xFFFFFFFF, "Back");
+	AEGfxPrint(40, 60, 0xFFFFFFFF, "Join Game");
+	AEGfxPrint(40, 90, 0xFFFFFFFF, "Network Menu");
+	AEGfxPrint(40, 120, 0xFFFFFFFF, "Quit");
 
 	if (gAEFrameCounter & 0x0008)
-		AEGfxPrint(10, 70, 0xFFFFFFFF, ">>");
+		AEGfxPrint(10, 60 + 30 * m_cursor, 0xFFFFFFFF, ">>");
 }
 
 // ---------------------------------------------------------------------------

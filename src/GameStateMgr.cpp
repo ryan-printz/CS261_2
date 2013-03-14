@@ -11,6 +11,7 @@
 // ---------------------------------------------------------------------------
 
 #include "GameStateMgr.h"
+#include "IGameState.h"
 
 #include "GameState_Play.h"
 #include "GameState_Menu.h"
@@ -20,24 +21,21 @@
 void GameStateManager::init(IGameState * gameStateInit)
 {
 	// push the initial game state
-	m_stateStack.emplace_back(gameStateInit);
+	m_gameStateInit = m_gameStateNext
+					= m_gameStatePrev
+					= m_gameStateCurr = gameStateInit;
 
-	// reset the current, previous and next game
-	m_gameStateNext = gameStateInit;
 	gameStateInit->setGameStateManager(this);
 }
 
 bool GameStateManager::quit()
 {
-	return (s32)m_stateStack.back() == GS_QUIT;
+	return (s32)m_gameStateCurr == GS_QUIT;
 }
 
 void GameStateManager::popState()
 {
-	delete m_stateStack.back();
-	m_stateStack.pop_back();
-
-	m_gameStateNext = m_stateStack.back();
+	m_gameStateNext = m_gameStatePrev;
 }
 
 void GameStateManager::quit(bool quit)
@@ -57,12 +55,13 @@ void GameStateManager::restart(bool restart)
 
 bool GameStateManager::changeState()
 {
-	return m_stateStack.back() != m_gameStateNext;
+	return m_gameStateCurr != m_gameStateNext;
 }
 
 void GameStateManager::nextState()
 {
-	m_stateStack.emplace_back(m_gameStateNext);
+	m_gameStatePrev = m_gameStateCurr;
+	m_gameStateCurr = m_gameStateNext;
 }
 
 void GameStateManager::nextState(IGameState * nextState)
@@ -74,36 +73,36 @@ void GameStateManager::nextState(IGameState * nextState)
 void GameStateManager::restartState()
 {
 	// make the next state the current state (instaed of GS_RESTART)
-	m_gameStateNext = m_stateStack.back();
+	m_gameStateNext = m_gameStateCurr;
 }
 
 void GameStateManager::loadState()
 {
-	m_stateStack.back()->load();
+	m_gameStateCurr->load();
 }
 
 void GameStateManager::initState()
 {
-	m_stateStack.back()->init();
+	m_gameStateCurr->init();
 }
 
 void GameStateManager::updateState()
 {
-	m_stateStack.back()->update();
+	m_gameStateCurr->update();
 }
 
 void GameStateManager::drawState()
 {
-	m_stateStack.back()->draw();
+	m_gameStateCurr->draw();
 }
 
 void GameStateManager::freeState()
 {
-	m_stateStack.back()->free();
+	m_gameStateCurr->free();
 }
 
 void GameStateManager::unloadState()
 {
-	m_stateStack.back()->unload();
+	m_gameStateCurr->unload();
 }
 

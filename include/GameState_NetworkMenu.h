@@ -25,9 +25,6 @@ public:
 	virtual void draw(void);
 	virtual void free(void);
 	virtual void unload(void);
-
-private:
-	State * m_state;
 };
 
 
