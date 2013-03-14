@@ -12,6 +12,8 @@
 
 #include "IGameState.h"
 
+struct State;
+
 class GameState_NetworkMenu : public IGameState
 {
 public:
@@ -25,7 +27,7 @@ public:
 	virtual void unload(void);
 
 private:
-	int m_cursor;
+	State * m_state;
 };
 
 

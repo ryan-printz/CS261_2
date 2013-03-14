@@ -15,6 +15,16 @@ public:
 
 	void setGameStateManager(GameStateManager * gsm) { m_gsm = gsm; }
 
+	struct State
+	{
+		State(IGameState * parent) : m_parent(parent) {};
+
+		virtual void update() = 0;
+		virtual void draw() = 0;
+
+		IGameState * m_parent;
+	};
+
 protected:
 	GameStateManager * m_gsm;
 };

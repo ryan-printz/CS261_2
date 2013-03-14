@@ -36,6 +36,8 @@ void GameStateManager::popState()
 {
 	delete m_stateStack.back();
 	m_stateStack.pop_back();
+
+	m_gameStateNext = m_stateStack.back();
 }
 
 void GameStateManager::quit(bool quit)
