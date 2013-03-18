@@ -9,6 +9,24 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
+    <Filter Include="Header Files\GameState">
+      <UniqueIdentifier>{c9509b3e-f950-4c5f-b466-9e4c4590ab98}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\BaseThreading">
+      <UniqueIdentifier>{0ab4e1ce-f2db-4e1d-bfcf-7828d6789456}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Interfaces">
+      <UniqueIdentifier>{2f1e351a-4eee-407a-88be-6f5dd3260798}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\BaseNetworking">
+      <UniqueIdentifier>{c8601d77-bbce-40a6-908f-fe312e396aae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Networking">
+      <UniqueIdentifier>{875d242b-39fd-43c0-b6d3-eff2034207a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Networking">
+      <UniqueIdentifier>{1b6ec7c9-2c3d-4ff7-88db-1f9497496941}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\GameState_Menu.cpp">
@@ -23,46 +41,88 @@
     <ClCompile Include="..\src\GameStateMgr.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\GameState_NetworkMenu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\BaseSocket.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\BaseProcessThread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\BaseProcess.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\TCPSocket.cpp">
+      <Filter>Source Files\Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\BaseConnection.cpp">
+      <Filter>Source Files\Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\TCPConnection.cpp">
+      <Filter>Source Files\Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\ConnectionManager.h">
+      <Filter>Header Files\Networking</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\include\GameState_Menu.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\GameState_NetworkMenu.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\GameState_Play.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\GameState_Result.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\GameStateList.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\GameStateMgr.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\main.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\IGameState.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\include\GameState_Menu.h">
+      <Filter>Header Files\GameState</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\BaseSocket.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\include\GameState_NetworkMenu.h">
+      <Filter>Header Files\GameState</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\GameState_Play.h">
+      <Filter>Header Files\GameState</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\GameState_Result.h">
+      <Filter>Header Files\GameState</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\BaseProcess.h">
+      <Filter>Header Files\BaseThreading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\BaseProcessThread.h">
+      <Filter>Header Files\BaseThreading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\IProcess.h">
+      <Filter>Header Files\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\IProcessThread.h">
+      <Filter>Header Files\Interfaces</Filter>
     </ClInclude>
     <ClInclude Include="..\include\ISocket.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\BaseSocket.h">
+      <Filter>Header Files\BaseNetworking</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\GameStateMgr.h">
+      <Filter>Header Files\GameState</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\IGameState.h">
+      <Filter>Header Files\GameState</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\TCPConnectionManagerProcess.h">
+      <Filter>Header Files\Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\IConnection.h">
+      <Filter>Header Files\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\BaseConnection.h">
+      <Filter>Header Files\BaseNetworking</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\TCPSocket.h">
+      <Filter>Header Files\Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\TCPConnection.h">
+      <Filter>Header Files\Networking</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

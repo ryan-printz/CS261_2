@@ -57,7 +57,7 @@
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>d3d9.lib;dinput8.lib;dxguid.lib;d3dx9d.lib;winmm.lib;user32.lib;comctl32.lib;shell32.lib;gdi32.lib;advapi32.lib;$(SolutionDir)AlphaEngine.lib</AdditionalDependencies>
+      <AdditionalDependencies>d3d9.lib;dinput8.lib;dxguid.lib;d3dx9d.lib;winmm.lib;user32.lib;comctl32.lib;shell32.lib;gdi32.lib;advapi32.lib;$(SolutionDir)AlphaEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\;$(DXSDK_DIR)\Lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <GenerateMapFile>false</GenerateMapFile>
@@ -65,11 +65,15 @@
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
+      <IgnoreAllDefaultLibraries>
+      </IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>LIBCMT.lib</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <AdditionalIncludeDirectories>$(DXSDK_DIR)\Include;$(SolutionDir)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalDependencies>d3d9.lib;dinput8.lib;dxguid.lib;d3dx9d.lib;winmm.lib;user32.lib;comctl32.lib;shell32.lib;gdi32.lib;advapi32.lib;$(SolutionDir)AlphaEngine.lib</AdditionalDependencies>
@@ -81,24 +85,38 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\include\ConnectionManager.h" />
+    <ClCompile Include="..\src\BaseConnection.cpp" />
+    <ClCompile Include="..\src\BaseProcess.cpp" />
     <ClCompile Include="..\src\GameStateMgr.cpp" />
     <ClCompile Include="..\src\GameState_Menu.cpp" />
     <ClCompile Include="..\src\GameState_NetworkMenu.cpp" />
     <ClCompile Include="..\src\GameState_Play.cpp" />
     <ClCompile Include="..\src\GameState_Result.cpp" />
-    <ClCompile Include="..\src\main.cpp" />
+    <ClCompile Include="..\src\BaseProcessThread.cpp" />
     <ClCompile Include="..\src\BaseSocket.cpp" />
+    <ClCompile Include="..\src\TCPConnection.cpp" />
+    <ClCompile Include="..\src\TCPSocket.cpp" />
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\include\GameStateList.h" />
+    <ClInclude Include="..\include\BaseConnection.h" />
+    <ClInclude Include="..\include\BaseProcess.h" />
+    <ClInclude Include="..\include\BaseProcessThread.h" />
     <ClInclude Include="..\include\GameStateMgr.h" />
     <ClInclude Include="..\include\GameState_Menu.h" />
     <ClInclude Include="..\include\GameState_NetworkMenu.h" />
     <ClInclude Include="..\include\GameState_Play.h" />
     <ClInclude Include="..\include\GameState_Result.h" />
+    <ClInclude Include="..\include\IConnection.h" />
+    <ClInclude Include="..\include\IGameState.h" />
+    <ClInclude Include="..\include\IProcess.h" />
+    <ClInclude Include="..\include\IProcessThread.h" />
     <ClInclude Include="..\include\ISocket.h" />
     <ClInclude Include="..\include\main.h" />
-    <ClInclude Include="..\src\IGameState.h" />
+    <ClInclude Include="..\include\TCPConnection.h" />
+    <ClInclude Include="..\include\TCPConnectionManagerProcess.h" />
+    <ClInclude Include="..\include\TCPSocket.h" />
     <ClInclude Include="..\src\BaseSocket.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

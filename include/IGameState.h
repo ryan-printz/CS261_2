@@ -5,6 +5,10 @@
 class IGameState 
 {
 public:
+	IGameState()
+		: m_gsm(nullptr), m_state(nullptr), m_lastState(nullptr)
+	{}
+
 	virtual ~IGameState() {};
 	virtual void load(void) = 0;
 	virtual void init(void) = 0;
@@ -30,8 +34,8 @@ public:
 	};
 	friend struct State;
 
-	void nextState(State * state) { m_state = state; }
+	void nextState(State * state) { delete m_lastState; m_lastState = m_state; m_state = state; }
 protected:
 	GameStateManager * m_gsm;
-	State * m_state;
+	State * m_state, * m_lastState;
 };

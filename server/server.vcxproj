@@ -10,9 +10,43 @@
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\BaseConnection.cpp" />
+    <ClCompile Include="..\src\BaseProcess.cpp" />
+    <ClCompile Include="..\src\BaseProcessThread.cpp" />
+    <ClCompile Include="..\src\BaseSocket.cpp" />
+    <ClCompile Include="..\src\GameStateMgr.cpp" />
+    <ClCompile Include="..\src\GameState_Server.cpp" />
+    <ClCompile Include="..\src\GameState_StartServer.cpp" />
+    <ClCompile Include="..\src\TCPConnection.cpp" />
+    <ClCompile Include="..\src\TCPSocket.cpp" />
+    <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\BaseConnection.h" />
+    <ClInclude Include="..\include\BaseProcess.h" />
+    <ClInclude Include="..\include\BaseProcessThread.h" />
+    <ClInclude Include="..\include\BaseSocket.h" />
+    <ClInclude Include="..\include\ConnectionManager.h" />
+    <ClInclude Include="..\include\GameObject.h" />
+    <ClInclude Include="..\include\GameStateMgr.h" />
+    <ClInclude Include="..\include\GameState_Server.h" />
+    <ClInclude Include="..\include\GameState_StartServer.h" />
+    <ClInclude Include="..\include\IConnection.h" />
+    <ClInclude Include="..\include\IGameState.h" />
+    <ClInclude Include="..\include\IProcess.h" />
+    <ClInclude Include="..\include\IProcessThread.h" />
+    <ClInclude Include="..\include\ISocket.h" />
+    <ClInclude Include="..\include\main.h" />
+    <ClInclude Include="..\include\TCPConnection.h" />
+    <ClInclude Include="..\include\TCPConnectionManagerProcess.h" />
+    <ClInclude Include="..\include\TCPSocket.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\src\ConnectionManager.inl" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{915F23C0-9B88-4627-8A0B-464B503DC1CD}</ProjectGuid>
-    <ProjectName>Dedicated Server</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -43,8 +77,6 @@
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
-    <SourcePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\network src;..\src;$(SourcePath)</SourcePath>
-    <SourcePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\network src;..\src;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -59,8 +91,8 @@
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>d3d9.lib;dinput8.lib;dxguid.lib;d3dx9d.lib;winmm.lib;user32.lib;comctl32.lib;shell32.lib;gdi32.lib;advapi32.lib;$(SolutionDir)AlphaEngine.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\;$(DXSDK_DIR)\Lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>d3d9.lib;dinput8.lib;dxguid.lib;d3dx9d.lib;winmm.lib;user32.lib;comctl32.lib;shell32.lib;gdi32.lib;advapi32.lib;$(SolutionDir)AlphaEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(DXSDK_DIR)\Lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <GenerateMapFile>false</GenerateMapFile>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -74,7 +106,7 @@
       <AdditionalIncludeDirectories>$(DXSDK_DIR)\Include;..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>d3d9.lib;dinput8.lib;dxguid.lib;d3dx9d.lib;winmm.lib;user32.lib;comctl32.lib;shell32.lib;gdi32.lib;advapi32.lib;$(SolutionDir)AlphaEngine.lib</AdditionalDependencies>
+      <AdditionalDependencies>d3d9.lib;dinput8.lib;dxguid.lib;d3dx9d.lib;winmm.lib;user32.lib;comctl32.lib;shell32.lib;gdi32.lib;advapi32.lib;$(SolutionDir)AlphaEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(DXSDK_DIR)\Lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -82,24 +114,6 @@
       </DataExecutionPrevention>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="..\src\GameStateMgr.cpp" />
-    <ClCompile Include="..\src\GameState_Menu.cpp" />
-    <ClCompile Include="..\src\GameState_NetworkMenu.cpp" />
-    <ClCompile Include="..\src\GameState_Play.cpp" />
-    <ClCompile Include="..\src\GameState_Result.cpp" />
-    <ClCompile Include="..\src\main.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\include\GameStateList.h" />
-    <ClInclude Include="..\include\GameStateMgr.h" />
-    <ClInclude Include="..\include\GameState_Menu.h" />
-    <ClInclude Include="..\include\GameState_NetworkMenu.h" />
-    <ClInclude Include="..\include\GameState_Play.h" />
-    <ClInclude Include="..\include\GameState_Result.h" />
-    <ClInclude Include="..\include\main.h" />
-    <ClInclude Include="..\src\IGameState.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

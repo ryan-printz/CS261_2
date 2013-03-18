@@ -18,9 +18,6 @@
 
 // ---------------------------------------------------------------------------
 // include the list of game states
-
-#include "GameStateList.h"
-
 class IGameState;
 
 class GameStateManager 
@@ -57,4 +54,10 @@ private:
 	IGameState * m_gameStateInit;
 	IGameState * m_gameStateCurr;
 	IGameState * m_gameStateNext;
+
+	enum SpecialGameStates
+	{
+		GS_QUIT,
+		GS_RESTART
+	};
 };

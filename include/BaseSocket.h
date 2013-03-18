@@ -13,16 +13,17 @@ public:
 
 	virtual bool initialize(NetAddress address) = 0;
 
-	virtual bool connect() = 0;
 	virtual bool connect(const NetAddress & to) = 0;
 
-	virtual bool listen(char backlog = 10) = 0;
+	virtual bool listen(const NetAddress local, char backlog = 10) = 0;
+
+	virtual ISocket * accept(NetAddress & remote) = 0;
 
 	virtual int send(const char * buffer, unsigned size) = 0;
-	virtual int send(const char * buffer, unsigned size, const NetAddress to) = 0;
+	virtual int send(const char * buffer, unsigned size, const NetAddress & to) = 0;
 
-	virtual int receive(const char * buffer, unsigned size) = 0;
-	virtual int receive(const char * buffer, unsigned size, NetAddress & from) = 0;
+	virtual int receive(char * buffer, unsigned size) = 0;
+	virtual int receive(char * buffer, unsigned size, NetAddress & from) = 0;
 
 	// virtual functions implemented from ISocket;
 	virtual bool invalid() const;
