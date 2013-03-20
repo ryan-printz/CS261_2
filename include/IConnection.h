@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 class ISocket;
 class NetAddress;
 
@@ -29,7 +31,7 @@ public:
 	virtual bool pop_receivePacket(Packet & out) = 0;
 
 	virtual const NetAddress & remote() const = 0;
-	virtual const char * info() const = 0;
+	virtual std::string info() const = 0;
 
 	virtual bool connected() const = 0;
 };

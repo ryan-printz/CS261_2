@@ -12,3 +12,8 @@ void * BaseProcess::getEvent() const
 {
 	return m_event;
 }
+
+void BaseProcess::setCritical(CRITICAL_SECTION * critical)
+{
+	m_critical = critical;
+}

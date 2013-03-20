@@ -9,7 +9,11 @@ public:
 		: m_gsm(nullptr), m_state(nullptr), m_lastState(nullptr)
 	{}
 
-	virtual ~IGameState() {};
+	virtual ~IGameState()
+	{
+		delete m_state;
+	};
+
 	virtual void load(void) = 0;
 	virtual void init(void) = 0;
 	virtual void update(void) = 0;

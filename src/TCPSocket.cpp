@@ -59,7 +59,7 @@ bool TCPSocket::listen(const NetAddress local, char backlog)
 
 ISocket * TCPSocket::accept(NetAddress & remote) 
 {
-	SOCKET accepted;
+	SOCKET accepted = INVALID_SOCKET;
 	ISocket * newSocket = nullptr;
 	int addrlen = sizeof(remote);
 

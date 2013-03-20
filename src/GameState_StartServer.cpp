@@ -1,6 +1,9 @@
 #include "GameState_StartServer.h"
+#include "TCPConnectionManagerProcess.h"
 #include "ISocket.h"
 #include "TCPSocket.h"
+#include "TCPConnection.h"
+#include "ConnectionManager.h"
 #include <fstream>
 
 struct LookForMasterServerState : public IGameState::State
@@ -25,8 +28,11 @@ struct StartMasterServer : public IGameState::State
 public:
 	StartMasterServer(NetAddress * serverAddress, int port, IGameState * parent);
 
-	virtual void update() {};
-	virtual void draw() {};
+	virtual void update();
+	virtual void draw();
+
+private:
+	TCPConnectionManagerProcessThread * m_cmthread;
 };
 
 struct TimeoutState : public IGameState::State
@@ -114,6 +120,28 @@ StartMasterServer::StartMasterServer(NetAddress * serverAddress, int port, IGame
 	: IGameState::State(parent)
 {
 	printf("start master");
+
+	ISocket * listen = new TCPSocket();
+
+	listen->initialize(*serverAddress);
+	listen->listen(*serverAddress);
+	listen->setBlocking(false);
+
+	auto manager = new ConnectionManager<TCPConnection>();
+	manager->setListener(listen);
+
+	m_cmthread = new TCPConnectionManagerProcessThread(manager);
+}
+
+void StartMasterServer::update()
+{
+}
+
+void StartMasterServer::draw()
+{
+	AEGfxPrint(10, 20, 0xFFFFFFFF, "<> ASTEROID SERVER <>");
+	
+	m_cmthread->update();
 }
 
 TimeoutState::TimeoutState(IGameState * parent)

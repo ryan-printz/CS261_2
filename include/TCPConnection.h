@@ -13,5 +13,5 @@ public:
 	virtual int send(Packet & p);
 	virtual int receive(Packet & p);
 
-	virtual const char * info() const;	
+	virtual std::string info() const;	
 };

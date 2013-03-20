@@ -1,12 +1,12 @@
 #pragma once
 
 #include "IProcessThread.h"
-#include "windows.h"
+#include "IProcess.h"
 
 class BaseProcessThread : public IProcessThread
 {
 public:
-	BaseProcessThread() {};
+	BaseProcessThread();
 	virtual ~BaseProcessThread() {};
 
 protected:

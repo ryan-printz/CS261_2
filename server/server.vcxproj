@@ -19,6 +19,7 @@
     <ClCompile Include="..\src\GameState_Server.cpp" />
     <ClCompile Include="..\src\GameState_StartServer.cpp" />
     <ClCompile Include="..\src\TCPConnection.cpp" />
+    <ClCompile Include="..\src\TCPConnectionManagerProcess.cpp" />
     <ClCompile Include="..\src\TCPSocket.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>

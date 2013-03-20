@@ -60,6 +60,9 @@
     <ClCompile Include="..\src\TCPSocket.cpp">
       <Filter>Source Files\Networking</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\TCPConnectionManagerProcess.cpp">
+      <Filter>Header Files\Networking</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\GameObject.h">

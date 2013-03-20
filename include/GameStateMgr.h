@@ -55,6 +55,8 @@ private:
 	IGameState * m_gameStateCurr;
 	IGameState * m_gameStateNext;
 
+	void destroyState(IGameState * state);
+
 	enum SpecialGameStates
 	{
 		GS_QUIT,

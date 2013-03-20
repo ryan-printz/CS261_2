@@ -6,11 +6,18 @@ ConnectionManager<ConnectionType>::ConnectionManager()
 	m_timerReceive(0.0f),
 	m_updateFrequencySend(0.032f),
 	m_timerSend(0.0f)
-{}
+{
+	push_back(new ConnectionType());
+}
 
 template <typename ConnectionType>
 ConnectionManager<ConnectionType>::~ConnectionManager()
-{}
+{
+	for(auto connection = begin(); connection != end(); ++connection)
+		delete *connection;
+
+	delete m_listener;
+}
 
 template <typename ConnectionType>
 void ConnectionManager<ConnectionType>::setListener(ISocket * listener)
@@ -58,8 +65,8 @@ void ConnectionManager<ConnectionType>::send()
 	Packet out;
 
 	for(auto connection = begin(); connection != end(); ++connection)
-		if( connection->connected() && connection->pop_sendPacket(out) )
-			connection->send(out);
+		if( (*connection)->connected() && (*connection)->pop_sendPacket(out) )
+			(*connection)->send(out);
 }
 
 template <typename ConnectionType>
@@ -67,7 +74,7 @@ void ConnectionManager<ConnectionType>::receive()
 {
 	Packet in;
 
-	for(auto connection = begin(); conecction != end(); ++connection)
-		if( connection->connected() && 0 < connection->receive(in) )
-			connection->push_receivePacket(in);
+	for(auto connection = begin(); connection != end(); ++connection)
+		if( (*connection)->connected() && 0 < (*connection)->receive(in) )
+			(*connection)->push_receivePacket(in);
 }

@@ -1,5 +1,8 @@
 #pragma once
 
+#define WIN32_LEAN_AND_MEAN
+#include "windows.h"
+
 class IProcess
 {
 public:
@@ -11,4 +14,6 @@ public:
 
 	virtual void * getEvent() const = 0;
 	virtual void setEvent(void * event) = 0;
+
+	virtual void setCritical(CRITICAL_SECTION * critical) = 0;
 };

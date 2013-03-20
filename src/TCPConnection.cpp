@@ -6,7 +6,9 @@ TCPConnection::TCPConnection()
 {}
 
 TCPConnection::~TCPConnection()
-{}
+{
+	delete m_socket;
+}
 
 bool TCPConnection::accept(ISocket * listener)
 {
@@ -25,14 +27,14 @@ int TCPConnection::receive(Packet & p)
 	return p.m_length = m_socket->receive(p.m_buffer, Packet::MAX);
 }
 
-const char * TCPConnection::info() const
+std::string TCPConnection::info() const
 {
 	std::stringstream info;
 
-	info << "TCP connection to";
+	info << "TCP connection to ";
 	info << m_remote.ip();
 	info << " on ";
 	info << m_remote.port();
 
-	return info.str().c_str();
+	return info.str();
 }

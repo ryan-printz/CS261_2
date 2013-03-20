@@ -4,6 +4,10 @@
 #include <Windows.h>
 #define WIN32_LEAN_AND_MEAN
 
+BaseProcessThread::BaseProcessThread()
+	: m_event(nullptr), m_thread(nullptr), m_isStarted(false)
+{}
+
 void BaseProcessThread::start(IProcess * process) {
     if (m_isStarted)
         return;
@@ -37,12 +41,13 @@ unsigned long __stdcall ProcessThread::Process( void * param )
 
     while (true)
 	{
+		process->update();
+
         DWORD result = WaitForSingleObject( process->getEvent(), 0 );
 
         switch ( result ) 
 		{
         case WAIT_TIMEOUT: 
-			process->update();
             break;
 
 		case WAIT_OBJECT_0:

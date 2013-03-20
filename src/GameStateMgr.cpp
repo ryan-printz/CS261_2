@@ -28,6 +28,12 @@ void GameStateManager::init(IGameState * gameStateInit)
 	gameStateInit->setGameStateManager(this);
 }
 
+void GameStateManager::destroyState(IGameState * state)
+{
+	if( state != (IGameState*)GS_QUIT && state != (IGameState*)GS_RESTART )
+		delete state;
+}
+
 bool GameStateManager::quit()
 {
 	return (s32)m_gameStateCurr == GS_QUIT;
@@ -60,6 +66,10 @@ bool GameStateManager::changeState()
 
 void GameStateManager::nextState()
 {
+	// delete the old game states.
+	if( m_gameStatePrev != m_gameStateCurr && m_gameStatePrev != m_gameStateNext )
+		destroyState(m_gameStatePrev);
+
 	m_gameStatePrev = m_gameStateCurr;
 	m_gameStateCurr = m_gameStateNext;
 }

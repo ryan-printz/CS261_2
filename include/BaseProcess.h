@@ -15,6 +15,9 @@ public:
 	virtual void * getEvent() const;
 	virtual void setEvent(void * e);
 
+	virtual void setCritical(CRITICAL_SECTION * critical);
+
 protected:
 	void * m_event;
+	CRITICAL_SECTION * m_critical;
 };

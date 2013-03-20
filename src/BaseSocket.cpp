@@ -68,7 +68,7 @@ char * NetAddress::localIP()
 /////////////////////
 
 BaseSocket::BaseSocket() 
-	: m_isBlocking(false), 
+	: m_isBlocking(true), 
 	m_isInitialized(false), 
 	m_isConnected(false), 
 	m_socket(INVALID_SOCKET)

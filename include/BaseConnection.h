@@ -15,7 +15,7 @@ public:
 	virtual int send(Packet & p) = 0;
 	virtual int receive(Packet & p) = 0;
 
-	virtual const char * info() const = 0;
+	virtual std::string info() const = 0;
 
 	// members implemented from IConnection
 	virtual bool connected() const;
