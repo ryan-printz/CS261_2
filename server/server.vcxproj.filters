@@ -46,80 +46,80 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\GameState_Server.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\GameState</Filter>
     </ClCompile>
     <ClCompile Include="..\src\GameState_StartServer.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\GameState</Filter>
     </ClCompile>
     <ClCompile Include="..\src\GameStateMgr.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\GameState</Filter>
     </ClCompile>
     <ClCompile Include="..\src\TCPConnection.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Networking</Filter>
     </ClCompile>
     <ClCompile Include="..\src\TCPSocket.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Networking</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\include\BaseConnection.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\BaseProcess.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\BaseProcessThread.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\BaseSocket.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\ConnectionManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\GameObject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\GameState_Server.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\GameState_StartServer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\GameStateMgr.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\IConnection.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\IGameState.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\IProcess.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\IProcessThread.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\ISocket.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\main.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\BaseProcessThread.h">
+      <Filter>Header Files\BaseThreading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\BaseProcess.h">
+      <Filter>Header Files\BaseThreading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\BaseConnection.h">
+      <Filter>Header Files\BaseNetworking</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\BaseSocket.h">
+      <Filter>Header Files\BaseNetworking</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\IConnection.h">
+      <Filter>Header Files\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\ISocket.h">
+      <Filter>Header Files\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\IProcessThread.h">
+      <Filter>Header Files\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\IProcess.h">
+      <Filter>Header Files\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\IGameState.h">
+      <Filter>Header Files\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\ConnectionManager.h">
+      <Filter>Header Files\Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\GameState_StartServer.h">
+      <Filter>Header Files\GameState</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\GameStateMgr.h">
+      <Filter>Header Files\GameState</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\GameState_Server.h">
+      <Filter>Header Files\GameState</Filter>
+    </ClInclude>
     <ClInclude Include="..\include\TCPConnection.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Networking</Filter>
     </ClInclude>
     <ClInclude Include="..\include\TCPConnectionManagerProcess.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Networking</Filter>
     </ClInclude>
     <ClInclude Include="..\include\TCPSocket.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Networking</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\src\ConnectionManager.inl">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Networking</Filter>
     </None>
   </ItemGroup>
 </Project>

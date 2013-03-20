@@ -8,14 +8,16 @@ struct LookForMasterServerState : public IGameState::State
 public:
 	LookForMasterServerState(const char * filename, IGameState * parent);
 
-	virtual void update() {};
-	virtual void draw()	{};
+	virtual void update();
+	virtual void draw();
 
 private:
 	NetAddress * m_serverAddress;
 	int m_gameServerPort;
 
 	TCPSocket * m_socket;
+
+	bool m_firstrun;
 };
 
 struct StartMasterServer : public IGameState::State
@@ -48,7 +50,7 @@ public:
 /////
 
 LookForMasterServerState::LookForMasterServerState(const char * filename, IGameState * parent)
-	: IGameState::State(parent)
+	: IGameState::State(parent), m_firstrun(true)
 {
 	std::ifstream config(filename);
 
@@ -56,17 +58,25 @@ LookForMasterServerState::LookForMasterServerState(const char * filename, IGameS
 		printf("Error opening config file. Config file not found.\n");
 
 	int port;
-	std::string ip;
-	ip.reserve(256);
+	char buffer[256];
 
-	config.getline(&ip[0], 256);
+	config.getline(buffer, 256);
 	config >> port;
 	config >> m_gameServerPort;
 	config.close();
 
-	printf("%s:%i:%i\n", ip.c_str(), port, m_gameServerPort);
+	printf("%s:%i:%i\n", buffer, port, m_gameServerPort);
 
-	m_serverAddress = new NetAddress(ip.c_str(), port);
+	m_serverAddress = new NetAddress(buffer, port);
+};
+
+void LookForMasterServerState::update()
+{
+	if( m_firstrun )
+	{
+		m_firstrun = false;
+		return;
+	}
 
 	printf("looking for master server...\n");
 	m_socket = new TCPSocket;
@@ -82,7 +92,7 @@ LookForMasterServerState::LookForMasterServerState(const char * filename, IGameS
 		m_socket->cleanup();
 		delete m_socket;
 
-		if(0 == ip.compare("127.0.0.1"))	
+		if(0 == std::string("127.0.0.1").compare(m_serverAddress->ip()))	
 			nextState = new StartMasterServer(m_serverAddress, m_gameServerPort, m_parent);
 		else
 			nextState = new TimeoutState(m_parent);
@@ -93,7 +103,12 @@ LookForMasterServerState::LookForMasterServerState(const char * filename, IGameS
 	}
 
 	m_parent->nextState( nextState );
-};
+}
+
+void LookForMasterServerState::draw()
+{
+	AEGfxPrint(10, 20, 0xFFFFFFFF, "looking for master server...");
+}
 
 StartMasterServer::StartMasterServer(NetAddress * serverAddress, int port, IGameState * parent)
 	: IGameState::State(parent)
@@ -109,20 +124,17 @@ TimeoutState::TimeoutState(IGameState * parent)
 
 void TimeoutState::update()
 {
-	printf("timeout update");
 	if(AEInputCheckTriggered(DIK_SPACE))
 		m_parent->nextState(new LookForMasterServerState("config.txt", m_parent));
 }
 
 void TimeoutState::draw()
 {
-	printf("timeout draw");
-
 	AEGfxPrint(10, 20, 0xFFFFFFFF, "Connection timed out!");
 	AEGfxPrint(40, 50, 0xFFFFFFFF, "Reattempt");
 
 	if (gAEFrameCounter & 0x0008)
-		AEGfxPrint(10, 70, 0xFFFFFFFF, ">>");
+		AEGfxPrint(10, 50, 0xFFFFFFFF, ">>");
 }
 
 StartGameServer::StartGameServer(TCPSocket * socket, int port, IGameState * parent)

@@ -55,6 +55,7 @@
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <AdditionalOptions>/MTd %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <AdditionalDependencies>d3d9.lib;dinput8.lib;dxguid.lib;d3dx9d.lib;winmm.lib;user32.lib;comctl32.lib;shell32.lib;gdi32.lib;advapi32.lib;$(SolutionDir)AlphaEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
