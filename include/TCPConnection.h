@@ -6,6 +6,7 @@ class TCPConnection : public BaseConnection
 {
 public:
 	TCPConnection();
+	TCPConnection(ISocket * connection, NetAddress & address);
 	virtual ~TCPConnection();
 
 	virtual bool accept(ISocket * listener);

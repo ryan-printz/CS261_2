@@ -34,6 +34,16 @@ void BaseProcessThread::stop()
 	m_isStarted = false;
 }
 
+void BaseProcessThread::lock()
+{
+	EnterCriticalSection(&m_critical);
+}
+
+void BaseProcessThread::unlock()
+{
+	LeaveCriticalSection(&m_critical);
+}
+
 unsigned long __stdcall ProcessThread::Process( void * param ) 
 {
 	IProcess * process = reinterpret_cast<IProcess*>(param);

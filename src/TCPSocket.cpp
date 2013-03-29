@@ -30,17 +30,12 @@ bool TCPSocket::initialize(NetAddress address)
 {
 	m_socket = socket(address.sin_family, SOCK_STREAM, IPPROTO_TCP);
 
-	if( m_socket == INVALID_SOCKET )
-		m_isInitialized = false;
-	else
-		m_isInitialized = true;
-
-	return m_isInitialized;
+	return m_isInitialized = (m_socket != INVALID_SOCKET);
 }
 
 bool TCPSocket::connect(const NetAddress & to)
 {
-	if( m_isInitialized && ::connect(m_socket, (SOCKADDR*)&to, sizeof(to)) )
+	if( !m_isInitialized || ::connect(m_socket, (SOCKADDR*)&to, sizeof(to)) )
 		return false;
 
 	return m_isConnected = true;

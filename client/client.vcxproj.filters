@@ -68,6 +68,9 @@
     <ClCompile Include="..\include\ConnectionManager.h">
       <Filter>Header Files\Networking</Filter>
     </ClCompile>
+    <ClCompile Include="..\server\ServerInfo.cpp">
+      <Filter>Source Files\Networking</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\main.h">

@@ -18,13 +18,16 @@
     <ClCompile Include="..\src\GameStateMgr.cpp" />
     <ClCompile Include="..\src\GameState_Server.cpp" />
     <ClCompile Include="..\src\GameState_StartServer.cpp" />
+    <ClCompile Include="..\src\MasterServer.cpp" />
     <ClCompile Include="..\src\TCPConnection.cpp" />
     <ClCompile Include="..\src\TCPConnectionManagerProcess.cpp" />
     <ClCompile Include="..\src\TCPSocket.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="ServerInfo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\BaseConnection.h" />
+    <ClInclude Include="..\include\BaseNetMessage.h" />
     <ClInclude Include="..\include\BaseProcess.h" />
     <ClInclude Include="..\include\BaseProcessThread.h" />
     <ClInclude Include="..\include\BaseSocket.h" />
@@ -39,6 +42,10 @@
     <ClInclude Include="..\include\IProcessThread.h" />
     <ClInclude Include="..\include\ISocket.h" />
     <ClInclude Include="..\include\main.h" />
+    <ClInclude Include="..\include\MasterServer.h" />
+    <ClInclude Include="..\include\ServerInfo.h" />
+    <ClInclude Include="..\include\ServerInfoNetMessage.h" />
+    <ClInclude Include="..\include\ServerListNetMessage.h" />
     <ClInclude Include="..\include\TCPConnection.h" />
     <ClInclude Include="..\include\TCPConnectionManagerProcess.h" />
     <ClInclude Include="..\include\TCPSocket.h" />

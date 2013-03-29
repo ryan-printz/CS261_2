@@ -9,6 +9,9 @@ public:
 	BaseProcessThread();
 	virtual ~BaseProcessThread() {};
 
+	virtual void lock();
+	virtual void unlock();
+
 protected:
 	virtual void start(IProcess * process);
 	virtual void stop();

@@ -4,6 +4,7 @@
 #include "IConnection.h"
 
 #include <list>
+#include <functional>
 
 template <typename ConnectionType>
 class ConnectionManager : public std::list<IConnection*>
@@ -14,6 +15,7 @@ public:
 
 	// given a currently listening, nonblocking socket.
 	void setListener(ISocket * listener);
+	void setAcceptCallback(std::function<void(ConnectionType*)> callback);
 
 	void update(float dt);
 
@@ -30,6 +32,8 @@ private:
 	float m_timerReceive;
 	float m_updateFrequencySend;
 	float m_timerSend;
+
+	std::function<void(ConnectionType*)> m_acceptCallback;
 };
 
 #include "../src/ConnectionManager.inl"

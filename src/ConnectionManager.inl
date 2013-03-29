@@ -1,5 +1,8 @@
 #pragma once
 
+#include <iostream>
+#include <BaseNetMessage.h>
+
 template <typename ConnectionType>
 ConnectionManager<ConnectionType>::ConnectionManager()
 	: m_updateFrequencyReceive(0.016f),
@@ -8,6 +11,12 @@ ConnectionManager<ConnectionType>::ConnectionManager()
 	m_timerSend(0.0f)
 {
 	push_back(new ConnectionType());
+}
+
+template <typename ConnectionType>
+void ConnectionManager<ConnectionType>::setAcceptCallback(std::function<void(ConnectionType*)> callback)
+{
+	m_acceptCallback = callback;
 }
 
 template <typename ConnectionType>
@@ -56,7 +65,10 @@ template <typename ConnectionType>
 void ConnectionManager<ConnectionType>::accept()
 {
 	while( back()->accept(m_listener) )
-		push_back( new ConnectionType() );
+	{
+		m_acceptCallback( static_cast<ConnectionType*>(back()) );
+		push_back(new ConnectionType());
+	}
 }
 
 template <typename ConnectionType>
@@ -66,7 +78,9 @@ void ConnectionManager<ConnectionType>::send()
 
 	for(auto connection = begin(); connection != end(); ++connection)
 		if( (*connection)->connected() && (*connection)->pop_sendPacket(out) )
-			(*connection)->send(out);
+			if(out.m_length != (*connection)->send(out))
+				std::cerr << "Packet failed to send properly. Packet length: " 
+						  << out.m_length << "Packet: " << out.m_buffer << std::endl;
 }
 
 template <typename ConnectionType>
@@ -75,6 +89,11 @@ void ConnectionManager<ConnectionType>::receive()
 	Packet in;
 
 	for(auto connection = begin(); connection != end(); ++connection)
-		if( (*connection)->connected() && 0 < (*connection)->receive(in) )
+		if ( (*connection)->connected() && 0 <= (*connection)->receive(in) )
+		{
+			if( in.m_length == 0)
+				new (in.m_buffer) BaseNetMessage(DISCONNECT);
+
 			(*connection)->push_receivePacket(in);
+		}
 }

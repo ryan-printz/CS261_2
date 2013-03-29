@@ -4,6 +4,8 @@
 #include "TCPSocket.h"
 #include "TCPConnection.h"
 #include "ConnectionManager.h"
+#include "ServerInfoNetMessage.h"
+#include "MasterServer.h"
 #include <fstream>
 
 struct LookForMasterServerState : public IGameState::State
@@ -16,7 +18,9 @@ public:
 
 private:
 	NetAddress * m_serverAddress;
-	int m_gameServerPort;
+	ServerInfo m_info;
+	char m_masterIp[16];
+	unsigned m_masterServerPort;
 
 	TCPSocket * m_socket;
 
@@ -26,13 +30,14 @@ private:
 struct StartMasterServer : public IGameState::State
 {
 public:
-	StartMasterServer(NetAddress * serverAddress, int port, IGameState * parent);
+	StartMasterServer(NetAddress * serverAddress, ServerInfo & info, IGameState * parent);
 
 	virtual void update();
 	virtual void draw();
 
 private:
-	TCPConnectionManagerProcessThread * m_cmthread;
+	MasterServer * m_master;
+	ServerInfo m_info;
 };
 
 struct TimeoutState : public IGameState::State
@@ -47,10 +52,14 @@ public:
 struct StartGameServer : public IGameState::State
 {
 public:
-	StartGameServer(TCPSocket * socket, int port, IGameState * parent);
+	StartGameServer(TCPSocket * socket, ServerInfo & info, NetAddress * MasterServerAddress, IGameState * parent);
 
 	virtual void update() {};
 	virtual void draw() {};
+
+private:
+	IConnection * m_masterServer;
+	ServerInfo m_info;
 };
 
 /////
@@ -63,17 +72,15 @@ LookForMasterServerState::LookForMasterServerState(const char * filename, IGameS
 	if( !config.is_open() )
 		printf("Error opening config file. Config file not found.\n");
 
-	int port;
-	char buffer[256];
+	config.getline( m_masterIp, sizeof(m_masterIp) );
+	config >> m_masterServerPort;
+	config.ignore();
 
-	config.getline(buffer, 256);
-	config >> port;
-	config >> m_gameServerPort;
-	config.close();
+	config >> m_info;
 
-	printf("%s:%i:%i\n", buffer, port, m_gameServerPort);
-
-	m_serverAddress = new NetAddress(buffer, port);
+	printf("master - %s:%i\ngame - %s:%i\n", m_masterIp, m_masterServerPort, m_info.ip, m_info.port);
+	
+	m_serverAddress = new NetAddress(m_masterIp, m_masterServerPort);
 };
 
 void LookForMasterServerState::update()
@@ -98,14 +105,14 @@ void LookForMasterServerState::update()
 		m_socket->cleanup();
 		delete m_socket;
 
-		if(0 == std::string("127.0.0.1").compare(m_serverAddress->ip()))	
-			nextState = new StartMasterServer(m_serverAddress, m_gameServerPort, m_parent);
+		if(0 == std::string(m_info.ip).compare(m_masterIp))	
+			nextState = new StartMasterServer(m_serverAddress, m_info, m_parent);
 		else
 			nextState = new TimeoutState(m_parent);
 	}
 	else
 	{
-		nextState = new StartGameServer(m_socket, m_gameServerPort, m_parent);
+		nextState = new StartGameServer(m_socket, m_info, m_serverAddress, m_parent);
 	}
 
 	m_parent->nextState( nextState );
@@ -116,10 +123,10 @@ void LookForMasterServerState::draw()
 	AEGfxPrint(10, 20, 0xFFFFFFFF, "looking for master server...");
 }
 
-StartMasterServer::StartMasterServer(NetAddress * serverAddress, int port, IGameState * parent)
-	: IGameState::State(parent)
+StartMasterServer::StartMasterServer(NetAddress * serverAddress, ServerInfo & info, IGameState * parent)
+	: IGameState::State(parent), m_info(info)
 {
-	printf("start master");
+	std::cout << "start master" << std::endl;
 
 	ISocket * listen = new TCPSocket();
 
@@ -130,18 +137,22 @@ StartMasterServer::StartMasterServer(NetAddress * serverAddress, int port, IGame
 	auto manager = new ConnectionManager<TCPConnection>();
 	manager->setListener(listen);
 
-	m_cmthread = new TCPConnectionManagerProcessThread(manager);
+	auto cmthread = new TCPConnectionManagerProcessThread(manager);
+
+	m_master = new MasterServer(cmthread);
 }
 
 void StartMasterServer::update()
 {
+	m_master->update();
 }
 
 void StartMasterServer::draw()
 {
-	AEGfxPrint(10, 20, 0xFFFFFFFF, "<> ASTEROID SERVER <>");
-	
-	m_cmthread->update();
+	AEGfxPrint(10, 20, 0xFFFFFFFF, "<> ASTEROID SERVERS <>");
+	int y = 50;
+	for(int i = 0; i < m_master->serverCount(); ++i)
+		AEGfxPrint(40, y+=20, 0xFFFFFFFF, (s8*)m_master->server(i).info().c_str());
 }
 
 TimeoutState::TimeoutState(IGameState * parent)
@@ -165,10 +176,17 @@ void TimeoutState::draw()
 		AEGfxPrint(10, 50, 0xFFFFFFFF, ">>");
 }
 
-StartGameServer::StartGameServer(TCPSocket * socket, int port, IGameState * parent)
-	: IGameState::State(parent)
+StartGameServer::StartGameServer(TCPSocket * socket, ServerInfo & info, NetAddress * masterServerAddress, IGameState * parent)
+	: IGameState::State(parent), m_info(info)
 {
-	printf("start game server");
+	Packet serverInfo;
+
+	m_masterServer = new TCPConnection(socket, *masterServerAddress);
+
+	new (serverInfo.m_buffer) ServerInfoNetMessage(m_info);
+	serverInfo.m_length = sizeof(ServerInfoNetMessage);
+
+	m_masterServer->send(serverInfo);
 }
 
 ////////////////////////////

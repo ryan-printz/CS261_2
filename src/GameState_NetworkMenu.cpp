@@ -2,25 +2,21 @@
 #include "main.h"
 #include "GameState_NetworkMenu.h"
 #include "GameState_Play.h"
+#include "ServerInfo.h"
+#include "TCPSocket.h"
+#include "TCPConnection.h"
+#include "BaseNetMessage.h"
+#include "ServerInfoNetMessage.h"
+#include "ServerListNetMessage.h"
+
 #include <vector>
-
-struct ServerInfo 
-{
-	// displayed info
-	char * m_name;
-
-	int m_players;
-	int m_maxPlayers;
-
-	// undisplayed info
-	char * m_ip;
-	short m_port;
-};
+#include <fstream>
+#include <iostream>
 
 // ---------------------------------------------------------------------------
 struct ListGamesState : IGameState::State
 {
-	ListGamesState(IGameState * parent) : State(parent), m_cursor(0) {};
+	ListGamesState(std::vector<ServerInfo> & games, IGameState * parent);
 	void update();
 	void draw();
 
@@ -37,9 +33,15 @@ struct TimedOutState : IGameState::State
 
 struct SearchingState : IGameState::State
 {
-	SearchingState(IGameState * parent) : State(parent) {};
+	SearchingState(IGameState * parent);
+	~SearchingState();
+
 	void update();
 	void draw();
+
+	std::vector<ServerInfo> m_servers;
+	int m_serverCount;
+	TCPConnection * m_master;
 };
 
 struct ConnectingState : IGameState::State
@@ -50,6 +52,12 @@ struct ConnectingState : IGameState::State
 };
 
 /////////////
+
+ListGamesState::ListGamesState(std::vector<ServerInfo> & games, IGameState * parent) 
+	: State(parent), m_cursor(0) 
+{
+	m_games.swap(games);
+}
 
 void ListGamesState::update()
 {
@@ -72,17 +80,12 @@ void ListGamesState::update()
 
 void ListGamesState::draw()
 {
-	AEGfxPrint(10, 20, 0xFFFFFFFF, "<> ASTEROID <>");
-	
-	int ypos = 60;
-	for(auto game = m_games.begin(); game != m_games.end(); ++game)
-	{
-		AEGfxPrint(40, ypos, 0xFFFFFFFF, game->m_name);
-		AEGfxPrint(100, ypos, 0xFFFFFFFF, game->m_ip);
-		ypos += 30;
-	}
+	AEGfxPrint(10, 20, 0xFFFFFFFF, "<> ASTEROID SERVERS <>");
+	int y = 50;
+	for(int i = 0; i < m_games.size(); ++i)
+		AEGfxPrint(40, y+=20, 0xFFFFFFFF, (s8*)m_games[i].info().c_str());
 
-	AEGfxPrint(40, ypos, 0xFFFFFFFF, "Back");
+	AEGfxPrint(40, y, 0xFFFFFFFF, "Back");
 
 	if (gAEFrameCounter & 0x0008)
 		AEGfxPrint(10, 60 + 30 * m_cursor, 0xFFFFFFFF, ">>");
@@ -108,17 +111,71 @@ void TimedOutState::draw()
 
 ///////////////////////////////
 
+SearchingState::SearchingState(IGameState * parent) 
+	: State(parent) 
+{
+	std::ifstream config("config.txt");
+
+	if( !config.is_open() )
+		std::cout << "failed to open config file" << std::endl;
+
+	char ip[16];
+	short port;
+
+	config.getline(ip, sizeof(ip));
+	config >> port;
+	config.close();
+
+	NetAddress master(ip, port);
+
+	auto socket = new TCPSocket();
+
+	socket->initialize(master);
+
+	std::cout << WSAGetLastError() << std::endl;
+
+	socket->connect(master);
+	socket->setBlocking(false);
+
+	m_master = new TCPConnection(socket, master);
+}
+
+SearchingState::~SearchingState()
+{
+	delete m_master;
+}
+
 void SearchingState::update()
 {
 	// connect to the server and request active games
+	Packet received;
+	
+	// TODO: needs to update the connection.
+
+	if( m_master->pop_receivePacket(received) )
+	{
+		BaseNetMessage * msg = reinterpret_cast<BaseNetMessage*>(received.m_buffer);
+
+		switch( msg->type() )
+		{
+		case SERVER_LIST:
+			m_serverCount = msg->as<ServerListNetMessage>()->count();
+			m_servers.reserve(m_serverCount);
+			break;
+
+		case SERVER_INFO:
+			m_servers.push_back(msg->as<ServerInfoNetMessage>()->info());
+			break;
+		};
+	}
 
 	// if the request times out, go to the failed state
-	if( false )
+	if( !m_master->connected() )
 		m_parent->nextState(new TimedOutState(m_parent));
 
 	// if the request was successful, go to the listgamesstate;
-	else if( true )
-		m_parent->nextState(new ListGamesState(m_parent));
+	else if( m_servers.size() == m_serverCount )
+		m_parent->nextState(new ListGamesState(m_servers, m_parent));
 }
 
 void SearchingState::draw()

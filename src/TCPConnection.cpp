@@ -5,6 +5,12 @@
 TCPConnection::TCPConnection()
 {}
 
+TCPConnection::TCPConnection(ISocket * connection, NetAddress & remote)
+{
+	m_socket = connection;
+	m_remote = remote;
+}
+
 TCPConnection::~TCPConnection()
 {
 	delete m_socket;

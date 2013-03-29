@@ -61,7 +61,13 @@
       <Filter>Source Files\Networking</Filter>
     </ClCompile>
     <ClCompile Include="..\src\TCPConnectionManagerProcess.cpp">
-      <Filter>Header Files\Networking</Filter>
+      <Filter>Source Files\Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\MasterServer.cpp">
+      <Filter>Source Files\Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerInfo.cpp">
+      <Filter>Source Files\Networking</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -117,6 +123,21 @@
       <Filter>Header Files\Networking</Filter>
     </ClInclude>
     <ClInclude Include="..\include\TCPSocket.h">
+      <Filter>Header Files\Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MasterServer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\BaseNetMessage.h">
+      <Filter>Header Files\BaseNetworking</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\ServerInfoNetMessage.h">
+      <Filter>Header Files\Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\ServerInfo.h">
+      <Filter>Header Files\Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\ServerListNetMessage.h">
       <Filter>Header Files\Networking</Filter>
     </ClInclude>
   </ItemGroup>

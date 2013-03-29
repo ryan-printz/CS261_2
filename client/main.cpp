@@ -10,6 +10,7 @@
 
 // ---------------------------------------------------------------------------
 #include "main.h"
+#include "ISocket.h"
 #include "GameState_Menu.h"
 
 extern int gWIN_WIDTH;
@@ -21,9 +22,10 @@ int WINAPI WinMain(HINSTANCE instanceH, HINSTANCE prevInstanceH, LPSTR command_l
 	gWIN_HEIGHT = 600;
 	// Initialize the system
 	AESysInit (instanceH, show);
+	initSockets(true);
 
 	GameStateManager gsm;
-	
+
 	gsm.init(new GameState_Menu());
 
 	while(!gsm.quit())
@@ -64,5 +66,6 @@ int WINAPI WinMain(HINSTANCE instanceH, HINSTANCE prevInstanceH, LPSTR command_l
 	}
 
 	// free the system
+	cleanSockets();
 	AESysExit();
 }

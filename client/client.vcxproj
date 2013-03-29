@@ -87,6 +87,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\include\ConnectionManager.h" />
+    <ClCompile Include="..\server\ServerInfo.cpp" />
     <ClCompile Include="..\src\BaseConnection.cpp" />
     <ClCompile Include="..\src\BaseProcess.cpp" />
     <ClCompile Include="..\src\GameStateMgr.cpp" />

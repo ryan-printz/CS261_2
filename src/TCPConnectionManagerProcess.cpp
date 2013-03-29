@@ -42,19 +42,5 @@ TCPConnectionManagerProcessThread::~TCPConnectionManagerProcessThread()
 void TCPConnectionManagerProcessThread::update()
 {
 	EnterCriticalSection(&m_critical);
-
-	// pull the info from the connection manager.
-	int ypos = 60;
-	for(auto server = m_manager->begin(); server != m_manager->end(); ++server)
-	{
-		if(!(*server)->connected())
-			continue;
-
-		AEGfxPrint(40, ypos, 0xFFFFFFFF, (s8*)(*server)->info().c_str());
-		//AEGfxPrint(100, ypos, 0xFFFFFFFF, game->m_ip);
-
-		ypos += 30;
-	}
-
 	LeaveCriticalSection(&m_critical);
 }
