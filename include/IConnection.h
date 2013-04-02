@@ -21,6 +21,12 @@ public:
 
 	virtual bool accept(ISocket * listener) = 0;
 
+	virtual void update(float dt) = 0;
+	virtual void setSendRate(float dt) = 0;
+	virtual float getSendRate() const = 0;
+	virtual void setReceiveRate(float dt) = 0;
+	virtual float getReceiveRate() const = 0;
+
 	virtual int send(Packet & p) = 0;
 	virtual int receive(Packet & p) = 0;
 

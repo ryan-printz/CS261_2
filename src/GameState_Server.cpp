@@ -1,6 +1,14 @@
 ﻿#include "main.h"
 #include "GameState_Server.h"
 
+// TODO: refactor this, GameState_NetPlay, and GameState_Play to use a common base class.
+// TODO: refactor game objects
+// TODO: Server-side debugging/controls. It would be nice to add gui to this, but we may not have access to the window.
+// TODO: Network engine
+// TODO: Relevance/zoning.
+// TODO: Server State.
+// TODO: Game Replication Info
+
 GameState_Server::GameState_Server()
 {}
 

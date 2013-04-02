@@ -105,6 +105,7 @@
     <ClInclude Include="..\include\BaseConnection.h" />
     <ClInclude Include="..\include\BaseProcess.h" />
     <ClInclude Include="..\include\BaseProcessThread.h" />
+    <ClInclude Include="..\include\GameReplicationInfo.h" />
     <ClInclude Include="..\include\GameStateMgr.h" />
     <ClInclude Include="..\include\GameState_Menu.h" />
     <ClInclude Include="..\include\GameState_NetworkMenu.h" />
@@ -116,9 +117,11 @@
     <ClInclude Include="..\include\IProcessThread.h" />
     <ClInclude Include="..\include\ISocket.h" />
     <ClInclude Include="..\include\main.h" />
+    <ClInclude Include="..\include\PlayerReplicationInfo.h" />
     <ClInclude Include="..\include\TCPConnection.h" />
     <ClInclude Include="..\include\TCPConnectionManagerProcess.h" />
     <ClInclude Include="..\include\TCPSocket.h" />
+    <ClInclude Include="..\include\UDPSocket.h" />
     <ClInclude Include="..\src\BaseSocket.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

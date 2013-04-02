@@ -1,12 +1,16 @@
 #pragma once
 
 #include "ServerInfo.h"
+#include "IServer.h"
+
 #include <list>
 
 class TCPConnection;
 class TCPConnectionManagerProcessThread;
 
-class MasterServer
+// TODO: this needst to inherit from and implement IServer.
+
+class MasterServer : public IServer
 {
 public:
 	MasterServer(TCPConnectionManagerProcessThread * cmthread);

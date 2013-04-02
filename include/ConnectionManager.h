@@ -21,17 +21,12 @@ public:
 
 private:
 	void accept();
-	void receive();
-	void send();
-
-	void updateTimers(float dt);
 
 	ISocket * m_listener;
 
 	float m_updateFrequencyReceive;
-	float m_timerReceive;
 	float m_updateFrequencySend;
-	float m_timerSend;
+	float m_timerAccept;
 
 	std::function<void(ConnectionType*)> m_acceptCallback;
 };

@@ -19,11 +19,11 @@
     <ClCompile Include="..\src\GameState_Server.cpp" />
     <ClCompile Include="..\src\GameState_StartServer.cpp" />
     <ClCompile Include="..\src\MasterServer.cpp" />
+    <ClCompile Include="..\src\ServerInfo.cpp" />
     <ClCompile Include="..\src\TCPConnection.cpp" />
     <ClCompile Include="..\src\TCPConnectionManagerProcess.cpp" />
     <ClCompile Include="..\src\TCPSocket.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="ServerInfo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\BaseConnection.h" />
@@ -33,6 +33,7 @@
     <ClInclude Include="..\include\BaseSocket.h" />
     <ClInclude Include="..\include\ConnectionManager.h" />
     <ClInclude Include="..\include\GameObject.h" />
+    <ClInclude Include="..\include\GameServer.h" />
     <ClInclude Include="..\include\GameStateMgr.h" />
     <ClInclude Include="..\include\GameState_Server.h" />
     <ClInclude Include="..\include\GameState_StartServer.h" />
@@ -40,6 +41,7 @@
     <ClInclude Include="..\include\IGameState.h" />
     <ClInclude Include="..\include\IProcess.h" />
     <ClInclude Include="..\include\IProcessThread.h" />
+    <ClInclude Include="..\include\IServer.h" />
     <ClInclude Include="..\include\ISocket.h" />
     <ClInclude Include="..\include\main.h" />
     <ClInclude Include="..\include\MasterServer.h" />

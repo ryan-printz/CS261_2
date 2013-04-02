@@ -66,7 +66,7 @@
     <ClCompile Include="..\src\MasterServer.cpp">
       <Filter>Source Files\Networking</Filter>
     </ClCompile>
-    <ClCompile Include="ServerInfo.cpp">
+    <ClCompile Include="..\src\ServerInfo.cpp">
       <Filter>Source Files\Networking</Filter>
     </ClCompile>
   </ItemGroup>
@@ -93,9 +93,6 @@
       <Filter>Header Files\Interfaces</Filter>
     </ClInclude>
     <ClInclude Include="..\include\ISocket.h">
-      <Filter>Header Files\Interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\IProcessThread.h">
       <Filter>Header Files\Interfaces</Filter>
     </ClInclude>
     <ClInclude Include="..\include\IProcess.h">
@@ -125,9 +122,6 @@
     <ClInclude Include="..\include\TCPSocket.h">
       <Filter>Header Files\Networking</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\MasterServer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\BaseNetMessage.h">
       <Filter>Header Files\BaseNetworking</Filter>
     </ClInclude>
@@ -138,6 +132,18 @@
       <Filter>Header Files\Networking</Filter>
     </ClInclude>
     <ClInclude Include="..\include\ServerListNetMessage.h">
+      <Filter>Header Files\Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\IProcessThread.h">
+      <Filter>Header Files\Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MasterServer.h">
+      <Filter>Header Files\Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\IServer.h">
+      <Filter>Header Files\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\GameServer.h">
       <Filter>Header Files\Networking</Filter>
     </ClInclude>
   </ItemGroup>

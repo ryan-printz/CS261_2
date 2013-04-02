@@ -127,5 +127,14 @@
     <ClInclude Include="..\include\TCPConnection.h">
       <Filter>Header Files\Networking</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\GameReplicationInfo.h">
+      <Filter>Header Files\Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\PlayerReplicationInfo.h">
+      <Filter>Header Files\Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\UDPSocket.h">
+      <Filter>Header Files\Networking</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
