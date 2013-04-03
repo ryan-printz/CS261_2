@@ -87,26 +87,32 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\include\ConnectionManager.h" />
-    <ClCompile Include="..\server\ServerInfo.cpp" />
+    <ClCompile Include="..\src\Asteroids.cpp" />
     <ClCompile Include="..\src\BaseConnection.cpp" />
     <ClCompile Include="..\src\BaseProcess.cpp" />
     <ClCompile Include="..\src\GameStateMgr.cpp" />
+    <ClCompile Include="..\src\GameState_BasePlay.cpp" />
     <ClCompile Include="..\src\GameState_Menu.cpp" />
     <ClCompile Include="..\src\GameState_NetworkMenu.cpp" />
     <ClCompile Include="..\src\GameState_Play.cpp" />
     <ClCompile Include="..\src\GameState_Result.cpp" />
     <ClCompile Include="..\src\BaseProcessThread.cpp" />
     <ClCompile Include="..\src\BaseSocket.cpp" />
+    <ClCompile Include="..\src\ServerInfo.cpp" />
     <ClCompile Include="..\src\TCPConnection.cpp" />
     <ClCompile Include="..\src\TCPSocket.cpp" />
+    <ClCompile Include="..\src\UDPSocket.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\include\Asteroids.h" />
     <ClInclude Include="..\include\BaseConnection.h" />
     <ClInclude Include="..\include\BaseProcess.h" />
     <ClInclude Include="..\include\BaseProcessThread.h" />
+    <ClInclude Include="..\include\BaseSocket.h" />
     <ClInclude Include="..\include\GameReplicationInfo.h" />
     <ClInclude Include="..\include\GameStateMgr.h" />
+    <ClInclude Include="..\include\GameState_BasePlay.h" />
     <ClInclude Include="..\include\GameState_Menu.h" />
     <ClInclude Include="..\include\GameState_NetworkMenu.h" />
     <ClInclude Include="..\include\GameState_Play.h" />
@@ -122,7 +128,6 @@
     <ClInclude Include="..\include\TCPConnectionManagerProcess.h" />
     <ClInclude Include="..\include\TCPSocket.h" />
     <ClInclude Include="..\include\UDPSocket.h" />
-    <ClInclude Include="..\src\BaseSocket.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -68,7 +68,16 @@
     <ClCompile Include="..\include\ConnectionManager.h">
       <Filter>Header Files\Networking</Filter>
     </ClCompile>
-    <ClCompile Include="..\server\ServerInfo.cpp">
+    <ClCompile Include="..\src\UDPSocket.cpp">
+      <Filter>Source Files\Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\GameState_BasePlay.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Asteroids.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ServerInfo.cpp">
       <Filter>Source Files\Networking</Filter>
     </ClCompile>
   </ItemGroup>
@@ -103,9 +112,6 @@
     <ClInclude Include="..\include\ISocket.h">
       <Filter>Header Files\Interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\BaseSocket.h">
-      <Filter>Header Files\BaseNetworking</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\GameStateMgr.h">
       <Filter>Header Files\GameState</Filter>
     </ClInclude>
@@ -135,6 +141,15 @@
     </ClInclude>
     <ClInclude Include="..\include\UDPSocket.h">
       <Filter>Header Files\Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\BaseSocket.h">
+      <Filter>Header Files\BaseNetworking</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Asteroids.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\GameState_BasePlay.h">
+      <Filter>Header Files\GameState</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

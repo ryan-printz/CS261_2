@@ -11,11 +11,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\Asteroids.cpp" />
     <ClCompile Include="..\src\BaseConnection.cpp" />
     <ClCompile Include="..\src\BaseProcess.cpp" />
     <ClCompile Include="..\src\BaseProcessThread.cpp" />
     <ClCompile Include="..\src\BaseSocket.cpp" />
     <ClCompile Include="..\src\GameStateMgr.cpp" />
+    <ClCompile Include="..\src\GameState_BasePlay.cpp" />
     <ClCompile Include="..\src\GameState_Server.cpp" />
     <ClCompile Include="..\src\GameState_StartServer.cpp" />
     <ClCompile Include="..\src\MasterServer.cpp" />
