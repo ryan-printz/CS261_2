@@ -98,9 +98,11 @@
     <ClCompile Include="..\src\GameState_Result.cpp" />
     <ClCompile Include="..\src\BaseProcessThread.cpp" />
     <ClCompile Include="..\src\BaseSocket.cpp" />
+    <ClCompile Include="..\src\SequenceNumber.cpp" />
     <ClCompile Include="..\src\ServerInfo.cpp" />
     <ClCompile Include="..\src\TCPConnection.cpp" />
     <ClCompile Include="..\src\TCPSocket.cpp" />
+    <ClCompile Include="..\src\UDPConnection.cpp" />
     <ClCompile Include="..\src\UDPSocket.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
@@ -124,9 +126,13 @@
     <ClInclude Include="..\include\ISocket.h" />
     <ClInclude Include="..\include\main.h" />
     <ClInclude Include="..\include\PlayerReplicationInfo.h" />
+    <ClInclude Include="..\include\SequenceNumber.h" />
     <ClInclude Include="..\include\TCPConnection.h" />
     <ClInclude Include="..\include\TCPConnectionManagerProcess.h" />
     <ClInclude Include="..\include\TCPSocket.h" />
+    <ClInclude Include="..\include\Types.h" />
+    <ClInclude Include="..\include\UDPConnection.h" />
+    <ClInclude Include="..\include\UDPHeader.h" />
     <ClInclude Include="..\include\UDPSocket.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

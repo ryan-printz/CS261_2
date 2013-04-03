@@ -80,6 +80,12 @@
     <ClCompile Include="..\src\ServerInfo.cpp">
       <Filter>Source Files\Networking</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\UDPConnection.cpp">
+      <Filter>Source Files\Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\SequenceNumber.cpp">
+      <Filter>Source Files\Networking</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\main.h">
@@ -150,6 +156,18 @@
     </ClInclude>
     <ClInclude Include="..\include\GameState_BasePlay.h">
       <Filter>Header Files\GameState</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\UDPHeader.h">
+      <Filter>Header Files\Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Types.h">
+      <Filter>Header Files\Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\UDPConnection.h">
+      <Filter>Header Files\Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\SequenceNumber.h">
+      <Filter>Header Files\Networking</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

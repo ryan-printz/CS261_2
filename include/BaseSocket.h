@@ -39,6 +39,7 @@ protected:
 	bool m_isInitialized;
 	bool m_isBlocking;
 	bool m_isConnected;
+	unsigned int m_error;
 
 	SOCKET m_socket;
 };
