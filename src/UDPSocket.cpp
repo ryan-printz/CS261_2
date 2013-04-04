@@ -32,6 +32,7 @@ bool UDPSocket::cleanup()
 
 bool UDPSocket::initialize(NetAddress address)
 {
+	//Probably not what should happen?
 	m_socket = socket(address.sin_family, SOCK_STREAM, IPPROTO_UDP);
 
 	return m_isInitialized = (m_socket != INVALID_SOCKET);
@@ -39,19 +40,31 @@ bool UDPSocket::initialize(NetAddress address)
 
 bool UDPSocket::connect(const NetAddress & to)
 {
-	if( !m_isInitialized || ::connect(m_socket, (SOCKADDR*)&to, sizeof(to)) )
+
+	ubyte buffer[sizeof(UDPHeader) + sizeof(uint)];
+
+	UDPHeader temp;
+	
+	memcpy(buffer, &temp, sizeof(UDPHeader));
+	memcpy(buffer + sizeof(UDPHeader), (ubyte*)&UDPHeader::CONNECTION_MESSAGE, sizeof(uint));
+
+	bool test = ((sizeof(uint) + sizeof(UDPHeader)) == ::sendto(m_socket, (const char*)buffer, sizeof(uint) + sizeof(UDPHeader), 0, (SOCKADDR*)&to, sizeof(NetAddress)));
+	return test;
+
+	/*if( !m_isInitialized || ::connect(m_socket, (SOCKADDR*)&to, sizeof(to)) )
 		return false;
 
-	return m_isConnected = true;
+	return m_isConnected = true;*/
 }
 
 bool UDPSocket::listen(const NetAddress local, char backlog) 
 {
-	if ( ::bind(m_socket, (SOCKADDR*)&local, sizeof(local)) )
-		return false;
+	do 
+	{ receiveSort(); }
+	while(m_isBlocking && m_connectionAttempts.empty());
 
-	if ( ::listen(m_socket, backlog) )
-		return false;
+	while( m_connectionAttempts.size() > backlog )
+		m_connectionAttempts.pop_front();
 
 	return true;
 }
@@ -90,12 +103,17 @@ UDPSocket UDPSocket::acceptUDP()
 
 int UDPSocket::send(const char * buffer, unsigned size)
 {
-	return ::send(m_socket, buffer, size, 0);
+	return send(buffer, size, m_address);
 }
 
-int UDPSocket::send(const char * buffer, unsigned size, const NetAddress &)
+int UDPSocket::send(const char * buffer, unsigned size, const NetAddress &to)
 {
-	return send(buffer, size);
+	ubyte packet[MAX_PACKET_SIZE];
+
+	memcpy(packet, m_header, sizeof(UDPHeader));
+	memcpy(packet + sizeof(UDPHeader), buffer, std::min(size, MAX_PACKET_SIZE - sizeof(UDPHeader)));
+
+	return ::sendto(m_socket, buffer, std::min(size+sizeof(UDPHeader), MAX_PACKET_SIZE), 0, (SOCKADDR*)&to, sizeof(NetAddress)) - sizeof(UDPHeader);
 }
 
 int UDPSocket::receive(char * buffer, unsigned size)
@@ -125,16 +143,19 @@ int UDPSocket::receive(char * buffer, unsigned size)
 	return size;
 }
 
-int UDPSocket::receive(char * buffer, unsigned size, NetAddress &)
+int UDPSocket::receive(char * buffer, unsigned size, NetAddress &from)
 {
-	return receive(buffer, size);
+	int rcvd = receive(buffer, size);
+	if(rcvd > 0)
+		from = m_address;
+	return rcvd;
 }
 
 void UDPSocket::receiveSort()
 {
 	Packet p;
-
-	p.packetSize = receive(p.packet, m_packetSize, p.from);
+	int addrSize;
+	p.packetSize = ::recvfrom(m_socket, p.packet, m_packetSize, 0, (SOCKADDR*)&p.from, &addrSize);
 
 	// nothing to receive
 	if( p.packetSize == SOCKET_ERROR && m_error == WSAEWOULDBLOCK )
