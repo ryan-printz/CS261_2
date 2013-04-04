@@ -16,6 +16,7 @@
     <ClCompile Include="..\src\BaseProcess.cpp" />
     <ClCompile Include="..\src\BaseProcessThread.cpp" />
     <ClCompile Include="..\src\BaseSocket.cpp" />
+    <ClCompile Include="..\src\GameServer.cpp" />
     <ClCompile Include="..\src\GameStateMgr.cpp" />
     <ClCompile Include="..\src\GameState_BasePlay.cpp" />
     <ClCompile Include="..\src\GameState_Server.cpp" />

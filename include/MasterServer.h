@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ServerInfo.h"
-#include "IServer.h"
+#include "GameServer.h"
 
 #include <list>
 
@@ -10,7 +10,7 @@ class TCPConnectionManagerProcessThread;
 
 // TODO: this needst to inherit from and implement IServer.
 
-class MasterServer : public IServer
+class MasterServer : public GameServer
 {
 public:
 	MasterServer(TCPConnectionManagerProcessThread * cmthread);
