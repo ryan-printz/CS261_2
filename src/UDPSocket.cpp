@@ -37,7 +37,10 @@ bool UDPSocket::initialize(NetAddress address)
 
 	return m_isInitialized = (m_socket != INVALID_SOCKET);
 }
-
+bool UDPSocket::connect()
+{
+	return connect(m_address);
+}
 bool UDPSocket::connect(const NetAddress & to)
 {
 
@@ -190,4 +193,14 @@ void UDPSocket::receiveSort()
 		
 	// else it's just a packet.
 	m_received.emplace_back(p);
+}
+
+void UDPSocket::setUDPHeader(UDPHeader * header)
+{
+	m_header = header;
+}
+
+UDPHeader UDPSocket::getUDPHeader()
+{
+	return m_lastUDPHeader;
 }

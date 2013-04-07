@@ -23,6 +23,7 @@ public:
 	virtual bool cleanup();
 	virtual bool initialize(NetAddress address);
 
+	bool connect();
 	virtual bool connect(const NetAddress & to);
 
 	virtual ISocket * accept(NetAddress & remote);
@@ -35,6 +36,9 @@ public:
 
 	virtual int receive(char * buffer, unsigned size);
 	virtual int receive(char * buffer, unsigned size, NetAddress & from);
+
+	void setUDPHeader(UDPHeader * header);
+	UDPHeader getUDPHeader();
 
 	UDPSocket acceptUDP(void);
 

@@ -158,10 +158,71 @@ public:
 	virtual ~UDPConnection();
 
 	virtual bool accept(ISocket * listener);
+	bool connect(const char * ip, uint port);
+	bool cleanup();
+	bool disconnect();
 
 	virtual int send(Packet & p);
 	virtual int receive(Packet & p);
+	int receive(ubyte * buffer, uint len, int drop = 0);
+	int send(ubyte * buffer, uint len, ubyte flags = UDPHeader::UDP_HIGH);
 
-	virtual std::string info() const;	
+	virtual void update(float dt);
+
+	virtual std::string info() const;
+	const ConnectionStats& getConnectionStats() const; 
+
+protected:
+	void updateStats();
+	void updateRTT(float time);
+
+	uint makeAck();
+	void useAck(SequenceNumber ack, uint ackPack, bool resent);
+	ubyte getBitIndex(const SequenceNumber & lhs, const SequenceNumber & rhs);
+	int noFlowSend(ubyte * buffer, uint len, ubyte flags);
+
+	void updateFlowControl(float dt);
+
+private:
+	// the other receiving endpoint.
+	UDPSocket m_connection;
+
+	// connection properties
+	bool m_connected;
+	bool m_server;
+	uint m_timeout;
+	uint m_goodRoundTripTime;
+	uint m_keepAliveInterval;
+
+	float m_idleTimer;
+
+	bool m_useFlowControl;
+	float m_flowTimer;
+	float m_sendRate;
+	float m_modeTimer;
+	float m_penaltyTimer;
+	float m_unpenaltyTimer;
+
+	// connection stats
+	ConnectionStats m_stats;
+
+	// sequence numbers;
+	SequenceNumber m_local;
+	SequenceNumber m_remoteHost;
+
+	// messages that were acked last update.
+	std::list<uint> m_acks;
+
+	// sent and received messages.
+	LinkedOrderedQueue m_unackedPackets;
+	LinkedOrderedQueue m_ackedPackets;
+
+	// used for calculating sent bandwith per second
+	LinkedOrderedQueue m_sentPackets;
+	// used for determining which packets to ack.
+	LinkedOrderedQueue m_receivedPackets;
+
+	ResendOrderedQueue m_resend;
+	LinkedPriorityQueue m_flowControl;
 };
 

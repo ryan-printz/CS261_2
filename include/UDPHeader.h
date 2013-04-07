@@ -7,11 +7,11 @@ struct UDPHeader
 {
 	enum Flags
 	{
-		PROTO_RESENT = 0x01,
+		UDP_RESENT = 0x01,
 
-		PROTO_HIGH	 = 0x80,
-		PROTO_NORMAL = 0x40,
-		PROTO_LOW	 = 0x20
+		UDP_HIGH	 = 0x80,
+		UDP_NORMAL = 0x40,
+		UDP_LOW	 = 0x20
 	};
 
 	// a constant identifier for the protocol.
