@@ -47,8 +47,8 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(DXSDK_DIR)\Include;$(SolutionDir)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(DXSDK_DIR)\Include;$(SolutionDir)\include;$(SolutionDir)\jsoncpp\include;$(SolutionDir)\curl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;CURL_STATICLIB;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <StructMemberAlignment>4Bytes</StructMemberAlignment>
@@ -58,8 +58,8 @@
       <AdditionalOptions>/MTd %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>d3d9.lib;dinput8.lib;dxguid.lib;d3dx9d.lib;winmm.lib;user32.lib;comctl32.lib;shell32.lib;gdi32.lib;advapi32.lib;$(SolutionDir)AlphaEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\;$(DXSDK_DIR)\Lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>d3d9.lib;dinput8.lib;dxguid.lib;d3dx9d.lib;winmm.lib;user32.lib;comctl32.lib;shell32.lib;gdi32.lib;advapi32.lib;libcurl_a.lib;json_vc71_libmtd.lib;$(SolutionDir)AlphaEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\;$(DXSDK_DIR)\Lib\x86;$(SolutionDir)jsoncpp\lib\$(Configuration);$(SolutionDir)curl\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <GenerateMapFile>false</GenerateMapFile>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -69,16 +69,18 @@
       <IgnoreAllDefaultLibraries>
       </IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>LIBCMT.lib</IgnoreSpecificDefaultLibraries>
+      <LinkStatus>true</LinkStatus>
+      <ShowProgress>NotSet</ShowProgress>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(DXSDK_DIR)\Include;$(SolutionDir)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(DXSDK_DIR)\Include;$(SolutionDir)\include;$(SolutionDir)\jsoncpp\include;$(SolutionDir)\curl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;CURL_STATICLIB;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>d3d9.lib;dinput8.lib;dxguid.lib;d3dx9d.lib;winmm.lib;user32.lib;comctl32.lib;shell32.lib;gdi32.lib;advapi32.lib;$(SolutionDir)AlphaEngine.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\;$(DXSDK_DIR)\Lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>d3d9.lib;dinput8.lib;dxguid.lib;d3dx9d.lib;winmm.lib;user32.lib;comctl32.lib;shell32.lib;gdi32.lib;advapi32.lib;libcurl_a.lib;json_vc71_libmt.lib;$(SolutionDir)AlphaEngine.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\;$(DXSDK_DIR)\Lib\x86;$(SolutionDir)jsoncpp\lib\$(Configuration);$(SolutionDir)curl\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>

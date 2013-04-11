@@ -10,6 +10,8 @@
 #pragma once
 
 #include "IGameState.h"
+#include <string>
+#include <list>
 
 // ---------------------------------------------------------------------------
 
@@ -27,6 +29,17 @@ public:
 
 private:
 	int m_cursor;
+	void * m_curl;
+
+	struct tweet
+	{
+		tweet(const std::string & _user, const std::string &_text);
+
+		std::string user;
+		std::string text;
+	};
+
+	std::list<tweet> m_tweets;
 };
 
 // ---------------------------------------------------------------------------
