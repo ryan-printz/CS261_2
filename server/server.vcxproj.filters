@@ -69,14 +69,14 @@
     <ClCompile Include="..\src\ServerInfo.cpp">
       <Filter>Source Files\Networking</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\GameState_BasePlay.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\Asteroids.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\GameServer.cpp">
       <Filter>Source Files\Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\GameState_BasePlay.cpp">
+      <Filter>Source Files\GameState</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

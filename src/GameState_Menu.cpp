@@ -130,6 +130,7 @@ void GameState_Menu::draw(void)
 	for( auto rtweet = m_tweets.rbegin(); rtweet != m_tweets.rend(); ++rtweet )
 	{
 		wrapPrint(30, y, 0xCCCCCCFF, rtweet->text);
+		AEGfxPrint(10, y + 15, 0xF09090FF, "@");
 		AEGfxPrint(20, y+10, 0xAAAAAAFF, (s8*)rtweet->user.c_str());
 		y-=30;
 	}

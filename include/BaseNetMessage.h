@@ -6,7 +6,9 @@ enum MessageType
 	DISCONNECT,
 	SERVER_INFO,
 	SERVER_LIST,
-	SERVER_LIST_REQ
+	SERVER_LIST_REQ,
+	AUTO_JOIN,
+	AUTO_JOIN_RES,
 };
 
 struct BaseNetMessage

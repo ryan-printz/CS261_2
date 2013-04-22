@@ -68,10 +68,15 @@ void ListGamesState::update()
 	if(AEInputCheckTriggered(DIK_DOWN))
 		m_cursor++;
 	
-	m_cursor = (m_cursor < 0) ? 0 : ((m_cursor > m_games.size()) ? m_games.size() : m_cursor);
+	m_cursor = (m_cursor < 0) ? 0 : ((m_cursor >= m_games.size()) ? m_games.size() + 1 : m_cursor);
 
 	if(AEInputCheckTriggered(DIK_SPACE))
 		if( m_cursor == m_games.size() )
+		{
+			// do the auto join.
+			// send a message to the master server
+		}
+		else if(m_cursor > m_games.size() )
 			popGameState();
 		else if( m_cursor < m_games.size() )
 			// move to the connecting state until the server accepts your connection attempt.
@@ -85,7 +90,8 @@ void ListGamesState::draw()
 	for(int i = 0; i < m_games.size(); ++i)
 		AEGfxPrint(40, y+=20, 0xFFFFFFFF, (s8*)m_games[i].info().c_str());
 
-	AEGfxPrint(40, y, 0xFFFFFFFF, "Back");
+	AEGfxPrint(40, y, 0xFFFFFF, "Auto Join");
+	AEGfxPrint(40, y+=20, 0xFFFFFFFF, "Back");
 
 	if (gAEFrameCounter & 0x0008)
 		AEGfxPrint(10, 60 + 30 * m_cursor, 0xFFFFFFFF, ">>");
@@ -165,6 +171,10 @@ void SearchingState::update()
 
 		case SERVER_INFO:
 			m_servers.push_back(msg->as<ServerInfoNetMessage>()->info());
+			break;
+
+		case AUTO_JOIN_RES:
+			// connect to that server.
 			break;
 		};
 	}
