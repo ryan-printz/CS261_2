@@ -47,11 +47,15 @@ void MasterServer::update()
 				Packet servers;
 
 				new (servers.m_buffer) ServerListNetMessage(m_servers.size());
+				servers.m_length = sizeof(ServerListNetMessage);
+
 				(*connected)->push_sendPacket(servers);
 
 				for(auto server = m_servers.begin(); server != m_servers.end(); ++server)
 				{
 					new (servers.m_buffer) ServerInfoNetMessage(server->first);
+					servers.m_length = sizeof(ServerInfoNetMessage);
+
 					(*connected)->push_sendPacket(servers);
 				}
 

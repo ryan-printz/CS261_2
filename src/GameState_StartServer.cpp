@@ -150,6 +150,7 @@ void StartMasterServer::update()
 void StartMasterServer::draw()
 {
 	AEGfxPrint(10, 20, 0xFFFFFFFF, "<> ASTEROID SERVERS <>");
+
 	int y = 50;
 	for(int i = 0; i < m_master->serverCount(); ++i)
 		AEGfxPrint(40, y+=20, 0xFFFFFFFF, (s8*)m_master->server(i).info().c_str());

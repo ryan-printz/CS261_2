@@ -137,13 +137,16 @@ SearchingState::SearchingState(IGameState * parent)
 	auto socket = new TCPSocket();
 
 	socket->initialize(master);
-
-	std::cout << WSAGetLastError() << std::endl;
-
 	socket->connect(master);
 	socket->setBlocking(false);
 
 	m_master = new TCPConnection(socket, master);
+
+	Packet request;
+	new (request.m_buffer) ServerListReqNetMessage();
+	request.m_length = sizeof(BaseNetMessage);
+
+	m_master->send(request);
 }
 
 SearchingState::~SearchingState()
@@ -156,7 +159,7 @@ void SearchingState::update()
 	// connect to the server and request active games
 	Packet received;
 	
-	// TODO: needs to update the connection.
+	m_master->update(0.016);
 
 	if( m_master->pop_receivePacket(received) )
 	{
