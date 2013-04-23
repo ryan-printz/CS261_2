@@ -50,13 +50,13 @@ bool BaseConnection::pop_receivePacket(Packet & out)
 
 void BaseConnection::update(float dt)
 {
-	if( (m_receiveTimer += dt) > m_receiveRate )
+	if( (m_receiveTimer += dt) >= m_receiveRate )
 	{
 		get();
 		m_receiveTimer -= m_receiveRate;
 	}
 
-	if( (m_sendTimer += dt) > m_sendRate )
+	if( (m_sendTimer += dt) >= m_sendRate )
 	{
 		set();
 		m_sendTimer -= m_sendRate;

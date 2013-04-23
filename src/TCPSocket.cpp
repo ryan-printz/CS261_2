@@ -1,4 +1,7 @@
 #include "TCPSocket.h"
+#include <iostream>
+#include <fstream>
+#include <stdio.h>
 
 TCPSocket::TCPSocket()
 {}
@@ -67,6 +70,12 @@ ISocket * TCPSocket::accept(NetAddress & remote)
 
 int TCPSocket::send(const char * buffer, unsigned size)
 {
+	FILE* myFile;
+	myFile = fopen ("log.txt", "a");
+	fwrite("Sending: ", 1, 9, myFile);
+	fwrite(buffer, 1, size, myFile);
+	fwrite("\n", 1, 1, myFile);
+	fclose(myFile);
 	return ::send(m_socket, buffer, size, 0);
 }
 
@@ -77,7 +86,18 @@ int TCPSocket::send(const char * buffer, unsigned size, const NetAddress &)
 
 int TCPSocket::receive(char * buffer, unsigned size)
 {
-	return ::recv(m_socket, buffer, size, 0);
+	int rcvd = ::recv(m_socket, buffer, size, 0);
+	if(rcvd > 0)
+	{
+		int j = 5;
+		FILE* myFile;
+		myFile = fopen ("log.txt", "a");
+		fwrite("Received: ", 1, 10, myFile);
+		fwrite(buffer, 1, size, myFile);
+		fwrite("\n", 1, 1, myFile);
+		fclose(myFile);
+	}
+	return rcvd;
 }
 
 int TCPSocket::receive(char * buffer, unsigned size, NetAddress &)

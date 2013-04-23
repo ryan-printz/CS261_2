@@ -90,7 +90,7 @@ void ListGamesState::draw()
 	for(int i = 0; i < m_games.size(); ++i)
 		AEGfxPrint(40, y+=20, 0xFFFFFFFF, (s8*)m_games[i].info().c_str());
 
-	AEGfxPrint(40, y, 0xFFFFFF, "Auto Join");
+	AEGfxPrint(40, y+=20, 0xFFFFFFFF, "Auto Join");
 	AEGfxPrint(40, y+=20, 0xFFFFFFFF, "Back");
 
 	if (gAEFrameCounter & 0x0008)
@@ -159,7 +159,7 @@ void SearchingState::update()
 	// connect to the server and request active games
 	Packet received;
 	
-	m_master->update(0.016);
+	m_master->update(0.016f);
 
 	if( m_master->pop_receivePacket(received) )
 	{
