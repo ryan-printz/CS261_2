@@ -14,7 +14,6 @@
 
 # Visual Studio User Options and other build files
 *.user
-*.suo
 *.sdf
 *.ipch
 *.exe
