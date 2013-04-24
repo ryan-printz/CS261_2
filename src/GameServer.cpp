@@ -30,6 +30,7 @@ void GameServer::update()
 		Packet received;
 		if( (*connected)->pop_receivePacket(received) )
 		{
+			printf("Hello\n");
 			//if player replication info
 
 			//if we have it, update it.

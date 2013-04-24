@@ -36,6 +36,7 @@ bool UDPSocket::initialize(NetAddress address)
 	//Probably not what should happen?
 	m_socket = socket(address.sin_family, SOCK_DGRAM, IPPROTO_UDP);
 
+	::bind(m_socket, (SOCKADDR*)&m_address, sizeof(m_address));
 	return m_isInitialized = (m_socket != INVALID_SOCKET);
 }
 bool UDPSocket::connect()
@@ -107,9 +108,17 @@ UDPSocket UDPSocket::acceptUDP()
 
 int UDPSocket::send(const char * buffer, unsigned size, bool write)
 {
-	int i = WSAGetLastError();
-	printf("%i\n",i);
-	return send(buffer, size, m_address);
+	int i = send(buffer, size, m_address);
+	if(write)
+	{
+		FILE* myFile;
+		myFile = fopen ("log.txt", "a");
+		fwrite("Sending UDP: ", 1, 13, myFile);
+		fwrite(buffer, 1, size, myFile);
+		fwrite("\n", 1, 1, myFile);
+		fclose(myFile);
+	}	
+	return i;
 }
 
 int UDPSocket::send(const char * buffer, unsigned size, const NetAddress &to)
@@ -146,7 +155,15 @@ int UDPSocket::receive(char * buffer, unsigned size, bool write)
 	memcpy(buffer, packet->packet + sizeof(UDPHeader), len);
 
 	m_received.erase(packet);
-
+	if(write)
+	{
+		FILE* myFile;
+		myFile = fopen ("log.txt", "a");
+		fwrite("Received UDP: ", 1, 14, myFile);
+		fwrite(buffer, 1, len, myFile);
+		fwrite("\n", 1, 1, myFile);
+		fclose(myFile);
+	}	
 	return size;
 }
 

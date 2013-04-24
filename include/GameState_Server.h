@@ -10,7 +10,7 @@
 class GameState_Server : public GameState_BasePlay
 {
 public:
-	GameState_Server(TCPConnection * master, ServerInfo & info);
+	GameState_Server(TCPConnection * master, ServerInfo & info, GameServer* gameServer);
 	virtual ~GameState_Server();
 
 	virtual void update();

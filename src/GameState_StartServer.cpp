@@ -4,6 +4,9 @@
 #include "ISocket.h"
 #include "TCPSocket.h"
 #include "TCPConnection.h"
+#include "UDPConnectionManagerProcess.h"
+#include "UDPSocket.h"
+#include "UDPConnection.h"
 #include "ConnectionManager.h"
 #include "ServerInfoNetMessage.h"
 #include "MasterServer.h"
@@ -60,6 +63,7 @@ public:
 
 private:
 	IConnection * m_masterServer;
+	GameServer * m_gameServer;
 	ServerInfo m_info;
 };
 
@@ -189,10 +193,24 @@ StartGameServer::StartGameServer(TCPSocket * socket, ServerInfo & info, NetAddre
 	serverInfo.m_length = sizeof(ServerInfoNetMessage);
 
 	m_masterServer->send(serverInfo);
-
+	
 	std::cout << "sending info to master server..." << std::endl;
 
-	this->nextGameState(new GameState_Server((TCPConnection*)m_masterServer, m_info));
+	ISocket * listen = new UDPSocket();
+
+	listen->initialize(NetAddress(info.ip, info.port));
+	listen->setBlocking(false);
+	listen->listen(NetAddress(info.ip, info.port));
+	
+
+	auto manager = new ConnectionManager<UDPConnection>();
+	manager->setListener(listen);
+
+	auto gsthread = new UDPConnectionManagerProcessThread(manager);
+
+	m_gameServer = new GameServer(gsthread);
+
+	this->nextGameState(new GameState_Server((TCPConnection*)m_masterServer, m_info, m_gameServer));
 	//parent->nextState(new GameState_Server((TCPConnection*)m_masterServer, m_info));
 }
 
