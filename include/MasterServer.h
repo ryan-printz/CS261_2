@@ -1,7 +1,8 @@
 #pragma once
 
 #include "ServerInfo.h"
-#include "GameServer.h"
+#include "ClientInfo.h"
+//#include "GameServer.h"
 
 #include <list>
 
@@ -10,7 +11,7 @@ class TCPConnectionManagerProcessThread;
 
 // TODO: this needst to inherit from and implement IServer.
 
-class MasterServer : public GameServer
+class MasterServer /*: public GameServer */
 {
 public:
 	MasterServer(TCPConnectionManagerProcessThread * cmthread);
@@ -22,8 +23,13 @@ public:
 	int serverCount() const;
 
 private:
+	bool getLeastLoadServer(ServerInfo & server);
+
 	std::list<TCPConnection*> m_newConnections;
 	std::list<std::pair<ServerInfo, TCPConnection*> > m_servers;
+	std::list<std::pair<ClientInfo, TCPConnection*> > m_clients;
+
+	char m_nextNetID;
 
 	TCPConnectionManagerProcessThread * m_cmthread;
 };

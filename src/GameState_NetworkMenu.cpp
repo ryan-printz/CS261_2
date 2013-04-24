@@ -98,6 +98,7 @@ void AutoJoinState::update()
 		switch( msg->type() )
 		{
 		case AUTO_JOIN_RES:
+		case SERVER_INFO:
 			ServerInfo serverInfo = msg->as<ServerInfoNetMessage>()->info();
 			m_parent->nextState(new ConnectingState(serverInfo, m_parent));
 			break;

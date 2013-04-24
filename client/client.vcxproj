@@ -117,6 +117,7 @@
     <ClInclude Include="..\include\BaseProcess.h" />
     <ClInclude Include="..\include\BaseProcessThread.h" />
     <ClInclude Include="..\include\BaseSocket.h" />
+    <ClInclude Include="..\include\ClientInfo.h" />
     <ClInclude Include="..\include\GameReplicationInfo.h" />
     <ClInclude Include="..\include\GameReplicationInfoNetMessage.h" />
     <ClInclude Include="..\include\GameStateMgr.h" />

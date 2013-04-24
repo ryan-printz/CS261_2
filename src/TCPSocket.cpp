@@ -75,7 +75,7 @@ int TCPSocket::send(const char * buffer, unsigned size, bool write)
 	{
 		FILE* myFile;
 		myFile = fopen ("log.txt", "a");
-		fwrite("Sending: ", 1, 9, myFile);
+		fwrite("Sending TCP: ", 1, 13, myFile);
 		fwrite(buffer, 1, size, myFile);
 		fwrite("\n", 1, 1, myFile);
 		fclose(myFile);
@@ -96,7 +96,7 @@ int TCPSocket::receive(char * buffer, unsigned size, bool write)
 		int j = 5;
 		FILE* myFile;
 		myFile = fopen ("log.txt", "a");
-		fwrite("Received: ", 1, 10, myFile);
+		fwrite("Received TCP: ", 1, 14, myFile);
 		fwrite(buffer, 1, size, myFile);
 		fwrite("\n", 1, 1, myFile);
 		fclose(myFile);

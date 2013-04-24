@@ -5,8 +5,10 @@
 #include "TCPConnection.h"
 #include "TCPConnectionManagerProcess.h"
 
+#undef max(a, b)
+
 MasterServer::MasterServer(TCPConnectionManagerProcessThread * cmthread)
-	: m_cmthread(cmthread)
+	: m_cmthread(cmthread), m_nextNetID(1337)
 {
 	m_cmthread->m_manager->setAcceptCallback([this](TCPConnection * accepted)
 	{
@@ -17,6 +19,31 @@ MasterServer::MasterServer(TCPConnectionManagerProcessThread * cmthread)
 MasterServer::~MasterServer()
 {
 	delete m_cmthread;
+}
+
+bool MasterServer::getLeastLoadServer(ServerInfo & server)
+{
+	short lowPlayers = std::numeric_limits<short>::max();
+	auto leastLoadServer = m_servers.end();
+
+	for( auto server = m_servers.begin(); server != m_servers.end(); ++server )
+	{
+		if( server->first.currentPlayers >= server->first.maxPlayers )
+			continue;
+
+		if( server->first.currentPlayers < lowPlayers )
+		{
+			lowPlayers = server->first.currentPlayers;
+			leastLoadServer = server;
+		}
+	}
+
+	if( leastLoadServer == m_servers.end() )
+		return false;
+
+	server = leastLoadServer->first;
+
+	return true;
 }
 
 void MasterServer::update()
@@ -59,12 +86,50 @@ void MasterServer::update()
 					(*connected)->push_sendPacket(servers);
 				}
 
+				ClientInfo info;
+				info.netID = m_nextNetID++;
+
+				m_clients.emplace_back(std::make_pair(info, *connected));
 				connected = m_newConnections.erase(connected);
 			}
 
 			// if conencted is the end of the list after erase, incrementing it
 			// causes an assert.
 			if( connected == m_newConnections.end() )
+				break;
+		}
+	}
+
+	// update clients connected to the master server
+	for( auto client = m_clients.begin(); client != m_clients.end(); ++client )
+	{
+		Packet received;
+
+		while( client->second->pop_receivePacket(received) )
+		{
+			BaseNetMessage * msg = reinterpret_cast<BaseNetMessage*>(received.m_buffer);
+
+			if ( msg->type() == AUTO_JOIN )
+			{
+				Packet server;
+				ServerInfo serverInfo;
+
+				if( getLeastLoadServer(serverInfo) )
+				{
+					new (server.m_buffer) ServerInfoNetMessage(serverInfo);
+					server.m_length = sizeof(ServerInfoNetMessage);
+
+					client->second->send(server);
+				}
+			}
+
+			else if ( msg->type() == DISCONNECT )
+			{
+				client = m_clients.erase(client);
+			}
+
+			// erase can really screw up loops.
+			if( client == m_clients.end() )
 				break;
 		}
 	}

@@ -196,5 +196,8 @@
     <ClInclude Include="..\include\UDPConnectionManagerProcess.h">
       <Filter>Header Files\Networking</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\ClientInfo.h">
+      <Filter>Header Files\Networking</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
