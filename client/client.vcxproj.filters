@@ -89,6 +89,9 @@
     <ClCompile Include="..\src\GameState_NetworkPlay.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\UDPConnectionManagerProcess.cpp">
+      <Filter>Source Files\Networking</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\main.h">
@@ -189,6 +192,9 @@
     </ClInclude>
     <ClInclude Include="..\include\GameState_NetworkPlay.h">
       <Filter>Header Files\GameState</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\UDPConnectionManagerProcess.h">
+      <Filter>Header Files\Networking</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
