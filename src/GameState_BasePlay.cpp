@@ -617,7 +617,7 @@ void GameState_BasePlay::loadGameObjList()
 {
 	GameObj* pObj;
 
-	m_game.m_gameObjects.resize(12);
+	m_game.m_gameObjects.resize(16);
 	unsigned counter = 0;
 	// ================
 	// create the ship
@@ -631,6 +631,22 @@ void GameState_BasePlay::loadGameObjList()
 		-0.5f, -0.5f, 0xFFFF0000, 
 		 0.5f,  0.0f, 0xFFFFFFFF, 
 		-0.5f,  0.5f, 0xFFFF0000);
+
+	pObj->pMesh = AEGfxTriEnd();
+	AE_ASSERT_MESG(pObj->pMesh, "fail to create object!!");
+
+	// ================
+	// create the networked ship
+	// ================
+
+	pObj		= &m_game.m_gameObjects[counter++];
+	pObj->type	= TYPE_NET_SHIP;
+
+	AEGfxTriStart();
+	AEGfxTriAdd(
+		-0.5f, -0.5f, 0xFF00FF00, 
+		 0.5f,  0.0f, 0xFFFFFFFF, 
+		-0.5f,  0.5f, 0xFF00FF00);
 
 	pObj->pMesh = AEGfxTriEnd();
 	AE_ASSERT_MESG(pObj->pMesh, "fail to create object!!");

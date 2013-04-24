@@ -29,7 +29,7 @@ void GameState_NetworkPlay::init()
 		pos.x = pri.m_x;
 		pos.y = pri.m_y;
 
-		m_game.gameObjInstCreate(TYPE_SHIP, SHIP_SIZE, &pos, 0, pri.m_rotation, true);
+		m_game.gameObjInstCreate(TYPE_NET_SHIP, SHIP_SIZE, &pos, 0, pri.m_rotation, true);
 	}
 }
 

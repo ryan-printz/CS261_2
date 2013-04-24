@@ -51,6 +51,7 @@ enum
 {
 	// list of game object types
 	TYPE_SHIP = 0, 
+	TYPE_NET_SHIP,
 	TYPE_BULLET, 
 	TYPE_BOMB, 
 	TYPE_MISSILE, 

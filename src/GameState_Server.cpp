@@ -9,7 +9,8 @@
 // TODO: Server State.
 // TODO: Game Replication Info
 
-GameState_Server::GameState_Server()
+GameState_Server::GameState_Server(TCPConnection * master, ServerInfo & info)
+	: m_info(info), m_master(master)
 {}
 
 GameState_Server::~GameState_Server()
@@ -20,6 +21,7 @@ void GameState_Server::update()
 	// update the server using only the info from the clients.
 
 	// TODO: update with network info
+
 }
 
 void GameState_Server::draw()

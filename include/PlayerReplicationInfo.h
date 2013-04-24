@@ -5,6 +5,10 @@
 class PlayerReplicationInfo
 {
 public:
+	// net id is assigned by the server to each client.
+	// the client keeps track of their own id, and it is
+	// used on the server to associate a player to their PRI.
+	int m_netid;
 	char m_name[12];
 	short m_score;
 	char m_lives;

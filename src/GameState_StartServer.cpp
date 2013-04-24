@@ -1,4 +1,5 @@
 #include "GameState_StartServer.h"
+#include "GameState_Server.h"
 #include "TCPConnectionManagerProcess.h"
 #include "ISocket.h"
 #include "TCPSocket.h"
@@ -190,6 +191,8 @@ StartGameServer::StartGameServer(TCPSocket * socket, ServerInfo & info, NetAddre
 	m_masterServer->send(serverInfo);
 
 	std::cout << "sending info to master server..." << std::endl;
+
+	parent->nextState(new GameState_Server(m_masterServer, m_info));
 }
 
 ////////////////////////////
