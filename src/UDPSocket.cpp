@@ -34,7 +34,7 @@ bool UDPSocket::initialize(NetAddress address)
 {
 	m_address = address;
 	//Probably not what should happen?
-	m_socket = socket(address.sin_family, SOCK_STREAM, IPPROTO_UDP);
+	m_socket = socket(address.sin_family, SOCK_DGRAM, IPPROTO_UDP);
 
 	return m_isInitialized = (m_socket != INVALID_SOCKET);
 }
@@ -107,6 +107,8 @@ UDPSocket UDPSocket::acceptUDP()
 
 int UDPSocket::send(const char * buffer, unsigned size, bool write)
 {
+	int i = WSAGetLastError();
+	printf("%i\n",i);
 	return send(buffer, size, m_address);
 }
 
@@ -116,7 +118,8 @@ int UDPSocket::send(const char * buffer, unsigned size, const NetAddress &to)
 
 	memcpy(packet, m_header, sizeof(UDPHeader));
 	memcpy(packet + sizeof(UDPHeader), buffer, std::min(size, MAX_PACKET_SIZE - sizeof(UDPHeader)));
-
+	int i = WSAGetLastError();
+	printf("%i\n",i);
 	return ::sendto(m_socket, buffer, std::min(size+sizeof(UDPHeader), MAX_PACKET_SIZE), 0, (SOCKADDR*)&to, sizeof(NetAddress)) - sizeof(UDPHeader);
 }
 

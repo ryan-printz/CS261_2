@@ -15,6 +15,9 @@ public:
 
 	virtual void update();
 	virtual void draw();
+
+	virtual void onEnd() {};
+
 protected:
 	TCPConnection * m_master;
 	ServerInfo m_info;

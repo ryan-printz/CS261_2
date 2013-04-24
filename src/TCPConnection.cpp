@@ -28,7 +28,7 @@ int TCPConnection::send(Packet & p)
 	char buffer[p.MAX + 4];
 	memcpy(buffer, &p.m_length, 4);
 	memcpy(buffer + 4, p.m_buffer, p.m_length);
-	return m_socket->send(buffer, p.m_length+4);
+	return m_socket->send(buffer, p.m_length+4) - 4;
 }
 
 int TCPConnection::receive(Packet & p)

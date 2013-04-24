@@ -26,10 +26,11 @@ UDPConnection::UDPConnection()
 	m_flowTimer = 0.f;
 }
 
-UDPConnection::UDPConnection(ISocket * connection, NetAddress & remote)
+UDPConnection::UDPConnection(ISocket * connection, NetAddress & address)
 {
+	m_connection = (UDPSocket*)connection;
 	m_socket = connection;
-	m_remote = remote;
+	m_remote = address;
 }
 
 UDPConnection::~UDPConnection()
@@ -47,17 +48,17 @@ bool UDPConnection::accept(ISocket * listener)
 	UDPSocket accepted = uSocket->acceptUDP();
 
 	m_socket = listener->accept(m_remote);
-
+	m_connection = (UDPSocket*)m_socket;
 	return m_socket != nullptr;
 }
 
 bool UDPConnection::connect(const char* ip, uint port)
 {
-	if(!m_connection.initialize(NetAddress(ip, port)))
+	if(!m_connection->initialize(NetAddress(ip, port)))
 		return false;
-	if(!m_connection.connect())
+	if(!m_connection->connect())
 		return false;
-	m_connection.setBlocking(false);
+	m_connection->setBlocking(false);
 
 	return true;
 }
@@ -75,6 +76,8 @@ bool UDPConnection::disconnect()
 
 int UDPConnection::send(Packet & p)
 {
+	int i = WSAGetLastError();
+	printf("%i\n",i);
 	return noFlowSend(p.m_buffer, p.m_length, UDPHeader::Flags::UDP_HIGH);
 }
 
@@ -88,7 +91,7 @@ int UDPConnection::receive(ubyte * buffer, uint len, int drop)
 	ubyte packet[UDPSocket::MAX_PACKET_SIZE];
 	uint headerSize = sizeof(UDPHeader);
 
-	int received = m_connection.receive(packet, UDPSocket::MAX_PACKET_SIZE);
+	int received = m_socket->receive(packet, UDPSocket::MAX_PACKET_SIZE);
 
 	// no packet was received
 	// or the packet was not from this UDPcol.
@@ -101,7 +104,7 @@ int UDPConnection::receive(ubyte * buffer, uint len, int drop)
 
 	// pull out the header.
 	// adjust the received size appropriately.
-	UDPHeader header = m_connection.getUDPHeader();
+	UDPHeader header = m_connection->getUDPHeader();
 
 	std::cout << "Received Packet Header: Sequence number " << header.m_sequence.m_sequenceNumber
 	<< ", Ack " << header.m_ack.m_sequenceNumber
@@ -352,11 +355,12 @@ int UDPConnection::noFlowSend(ubyte * buffer, uint len, ubyte flags)
 	header.m_acks	  = makeAck();
 	header.m_flags	  = flags;
 
-	m_connection.setUDPHeader(&header);
+	m_connection->setUDPHeader(&header);
 
 	int sent = 0;
-
-	if((sent = m_connection.send(buffer, len)) != len)
+	int i = WSAGetLastError();
+	printf("%i\n",i);
+	if((sent = m_connection->send(buffer, len)) != len)
 		return -1;
 
 	std::cout << "Sent Packet Header: Sequence number " << header.m_sequence.m_sequenceNumber

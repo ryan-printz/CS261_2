@@ -185,7 +185,7 @@ protected:
 
 private:
 	// the other receiving endpoint.
-	UDPSocket m_connection;
+	UDPSocket* m_connection;
 
 	// connection properties
 	bool m_connected;

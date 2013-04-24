@@ -192,7 +192,8 @@ StartGameServer::StartGameServer(TCPSocket * socket, ServerInfo & info, NetAddre
 
 	std::cout << "sending info to master server..." << std::endl;
 
-	parent->nextState(new GameState_Server(m_masterServer, m_info));
+	this->nextGameState(new GameState_Server((TCPConnection*)m_masterServer, m_info));
+	//parent->nextState(new GameState_Server((TCPConnection*)m_masterServer, m_info));
 }
 
 ////////////////////////////
