@@ -31,10 +31,10 @@ public:
 
 	virtual bool listen(const NetAddress local, char backlog = 10);
 
-	virtual int send(const char * buffer, unsigned size);
+	virtual int send(const char * buffer, unsigned size, bool write = true);
 	virtual int send(const char * buffer, unsigned size, const NetAddress & to);
 
-	virtual int receive(char * buffer, unsigned size);
+	virtual int receive(char * buffer, unsigned size, bool write = true);
 	virtual int receive(char * buffer, unsigned size, NetAddress & from);
 
 	void setUDPHeader(UDPHeader * header);

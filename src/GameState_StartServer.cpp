@@ -188,6 +188,8 @@ StartGameServer::StartGameServer(TCPSocket * socket, ServerInfo & info, NetAddre
 	serverInfo.m_length = sizeof(ServerInfoNetMessage);
 
 	m_masterServer->send(serverInfo);
+
+	std::cout << "sending info to master server..." << std::endl;
 }
 
 ////////////////////////////

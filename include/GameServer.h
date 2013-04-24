@@ -6,7 +6,8 @@
 #include <list>
 
 class UDPConnection;
-class UDPConnectionManagerProcess;
+class UDPConnectionManagerProcessThread;
+class PlayerReplicationInfo;
 
 // TODO: this needs to implement and inherit from IServer
 // possibly needs common functionality implemented in a BaseServer class.
@@ -15,7 +16,8 @@ class UDPConnectionManagerProcess;
 class GameServer : public IServer
 {
 public:
-	GameServer();
+	GameServer() {}
+	GameServer(UDPConnectionManagerProcessThread * gsThread);
 	virtual ~GameServer();
 
 	virtual void update();
@@ -23,6 +25,7 @@ public:
 protected:
 	ServerInfo m_info;
 
+	//std::list<PlayerReplicationInfo> m_players;
 	std::list<UDPConnection*> m_newConnections;
-	UDPConnectionManagerProcess * m_gsThread;
+	UDPConnectionManagerProcessThread * m_gsThread;
 };

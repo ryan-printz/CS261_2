@@ -68,15 +68,19 @@ ISocket * TCPSocket::accept(NetAddress & remote)
 	return newSocket;
 }
 
-int TCPSocket::send(const char * buffer, unsigned size)
+int TCPSocket::send(const char * buffer, unsigned size, bool write)
 {
-	FILE* myFile;
-	myFile = fopen ("log.txt", "a");
-	fwrite("Sending: ", 1, 9, myFile);
-	fwrite(buffer, 1, size, myFile);
-	fwrite("\n", 1, 1, myFile);
-	fclose(myFile);
-	return ::send(m_socket, buffer, size, 0);
+	int sent = ::send(m_socket, buffer, size, 0);
+	if(write)
+	{
+		FILE* myFile;
+		myFile = fopen ("log.txt", "a");
+		fwrite("Sending: ", 1, 9, myFile);
+		fwrite(buffer, 1, size, myFile);
+		fwrite("\n", 1, 1, myFile);
+		fclose(myFile);
+	}	
+	return sent;//::send(m_socket, buffer, size, 0);
 }
 
 int TCPSocket::send(const char * buffer, unsigned size, const NetAddress &)
@@ -84,10 +88,10 @@ int TCPSocket::send(const char * buffer, unsigned size, const NetAddress &)
 	return send(buffer, size);
 }
 
-int TCPSocket::receive(char * buffer, unsigned size)
+int TCPSocket::receive(char * buffer, unsigned size, bool write)
 {
 	int rcvd = ::recv(m_socket, buffer, size, 0);
-	if(rcvd > 0)
+	if(rcvd > 0 && write)
 	{
 		int j = 5;
 		FILE* myFile;

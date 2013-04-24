@@ -106,6 +106,7 @@
     <ClCompile Include="..\src\TCPConnection.cpp" />
     <ClCompile Include="..\src\TCPSocket.cpp" />
     <ClCompile Include="..\src\UDPConnection.cpp" />
+    <ClCompile Include="..\src\UDPConnectionManagerProcess.cpp" />
     <ClCompile Include="..\src\UDPSocket.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
@@ -141,6 +142,7 @@
     <ClInclude Include="..\include\TCPSocket.h" />
     <ClInclude Include="..\include\Types.h" />
     <ClInclude Include="..\include\UDPConnection.h" />
+    <ClInclude Include="..\include\UDPConnectionManagerProcess.h" />
     <ClInclude Include="..\include\UDPHeader.h" />
     <ClInclude Include="..\include\UDPSocket.h" />
   </ItemGroup>

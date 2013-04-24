@@ -7,6 +7,7 @@
 
 // TODO: possibly needs to be extracted into a common interface/base class implementation "IReplicationInfo"
 
+
 class GameReplicationInfo
 {
 public:

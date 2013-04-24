@@ -105,7 +105,7 @@ UDPSocket UDPSocket::acceptUDP()
 	return accepted;
 }
 
-int UDPSocket::send(const char * buffer, unsigned size)
+int UDPSocket::send(const char * buffer, unsigned size, bool write)
 {
 	return send(buffer, size, m_address);
 }
@@ -120,7 +120,7 @@ int UDPSocket::send(const char * buffer, unsigned size, const NetAddress &to)
 	return ::sendto(m_socket, buffer, std::min(size+sizeof(UDPHeader), MAX_PACKET_SIZE), 0, (SOCKADDR*)&to, sizeof(NetAddress)) - sizeof(UDPHeader);
 }
 
-int UDPSocket::receive(char * buffer, unsigned size)
+int UDPSocket::receive(char * buffer, unsigned size, bool write)
 {
 	//return ::recv(m_socket, buffer, size, 0);
 	std::list<Packet>::iterator packet;

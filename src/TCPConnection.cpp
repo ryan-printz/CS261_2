@@ -25,14 +25,16 @@ bool TCPConnection::accept(ISocket * listener)
 
 int TCPConnection::send(Packet & p)
 {
-	m_socket->send((const char*)&p.m_length, 4);
-	return m_socket->send(p.m_buffer, p.m_length);
+	char buffer[p.MAX + 4];
+	memcpy(buffer, &p.m_length, 4);
+	memcpy(buffer + 4, p.m_buffer, p.m_length);
+	return m_socket->send(buffer, p.m_length+4);
 }
 
 int TCPConnection::receive(Packet & p)
 {
 	int test = -1;
-	m_socket->receive((char*)&test, 4);
+	m_socket->receive((char*)&test, 4, false);
 	if(test < p.MAX)
 		return p.m_length = m_socket->receive(p.m_buffer, test);
 	else
