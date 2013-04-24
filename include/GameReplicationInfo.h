@@ -7,9 +7,9 @@
 
 // TODO: possibly needs to be extracted into a common interface/base class implementation "IReplicationInfo"
 
-#include "PlayerReplicationInfo"
-
 class GameReplicationInfo
 {
 public:
+	bool m_inProgress;
+	char m_PRICount;
 };

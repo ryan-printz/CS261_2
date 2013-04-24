@@ -12,6 +12,7 @@
 #include "GameState_Menu.h"
 #include "GameState_NetworkMenu.h"
 #include "GameState_Play.h"
+//#include "GameState_NetworkPlay.h"
 
 #include "curl\curl.h"
 #include "json\json.h"
@@ -79,9 +80,24 @@ void GameState_Menu::update(void)
 	
 	m_cursor = (m_cursor < 0) ? 0 : ((m_cursor > 2) ? 2 : m_cursor);
 
+	//GameReplicationInfo game;
+	//PlayerReplicationInfo localPlayer;
+	//std::vector<PlayerReplicationInfo> players;
+
 	if(AEInputCheckTriggered(DIK_SPACE))
 		switch(m_cursor)
 		{
+		//case 0:
+		//	sprintf(localPlayer.m_name, "player");
+		//	localPlayer.m_lives = 3;
+		//	localPlayer.m_x = 100;
+		//	localPlayer.m_y = 100;
+		//	players.push_back(localPlayer);
+		//	players.push_back(localPlayer);
+		//	players.push_back(localPlayer);
+		//	m_gsm->nextState(new GameState_NetworkPlay(game, players, nullptr));
+		//	break;
+
 		case 0:
 			m_gsm->nextState(new GameState_Play());
 			break;

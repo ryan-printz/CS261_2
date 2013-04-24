@@ -86,6 +86,9 @@
     <ClCompile Include="..\src\SequenceNumber.cpp">
       <Filter>Source Files\Networking</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\GameState_NetworkPlay.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\main.h">
@@ -168,6 +171,24 @@
     </ClInclude>
     <ClInclude Include="..\include\SequenceNumber.h">
       <Filter>Header Files\Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\BaseNetMessage.h">
+      <Filter>Header Files\BaseNetworking</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\ServerInfoNetMessage.h">
+      <Filter>Header Files\Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\ServerListNetMessage.h">
+      <Filter>Header Files\Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\PlayerReplicationInfoNetMessage.h">
+      <Filter>Header Files\Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\GameReplicationInfoNetMessage.h">
+      <Filter>Header Files\Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\GameState_NetworkPlay.h">
+      <Filter>Header Files\GameState</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

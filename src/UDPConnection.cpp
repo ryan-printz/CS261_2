@@ -75,7 +75,7 @@ bool UDPConnection::disconnect()
 
 int UDPConnection::send(Packet & p)
 {
-	return m_socket->send(p.m_buffer, p.m_length);
+	return noFlowSend(p.m_buffer, p.m_length, UDPHeader::Flags::UDP_HIGH);
 }
 
 int UDPConnection::receive(Packet & p)

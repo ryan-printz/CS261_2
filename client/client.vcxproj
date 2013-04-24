@@ -96,6 +96,7 @@
     <ClCompile Include="..\src\GameState_BasePlay.cpp" />
     <ClCompile Include="..\src\GameState_Menu.cpp" />
     <ClCompile Include="..\src\GameState_NetworkMenu.cpp" />
+    <ClCompile Include="..\src\GameState_NetworkPlay.cpp" />
     <ClCompile Include="..\src\GameState_Play.cpp" />
     <ClCompile Include="..\src\GameState_Result.cpp" />
     <ClCompile Include="..\src\BaseProcessThread.cpp" />
@@ -111,14 +112,17 @@
   <ItemGroup>
     <ClInclude Include="..\include\Asteroids.h" />
     <ClInclude Include="..\include\BaseConnection.h" />
+    <ClInclude Include="..\include\BaseNetMessage.h" />
     <ClInclude Include="..\include\BaseProcess.h" />
     <ClInclude Include="..\include\BaseProcessThread.h" />
     <ClInclude Include="..\include\BaseSocket.h" />
     <ClInclude Include="..\include\GameReplicationInfo.h" />
+    <ClInclude Include="..\include\GameReplicationInfoNetMessage.h" />
     <ClInclude Include="..\include\GameStateMgr.h" />
     <ClInclude Include="..\include\GameState_BasePlay.h" />
     <ClInclude Include="..\include\GameState_Menu.h" />
     <ClInclude Include="..\include\GameState_NetworkMenu.h" />
+    <ClInclude Include="..\include\GameState_NetworkPlay.h" />
     <ClInclude Include="..\include\GameState_Play.h" />
     <ClInclude Include="..\include\GameState_Result.h" />
     <ClInclude Include="..\include\IConnection.h" />
@@ -128,7 +132,10 @@
     <ClInclude Include="..\include\ISocket.h" />
     <ClInclude Include="..\include\main.h" />
     <ClInclude Include="..\include\PlayerReplicationInfo.h" />
+    <ClInclude Include="..\include\PlayerReplicationInfoNetMessage.h" />
     <ClInclude Include="..\include\SequenceNumber.h" />
+    <ClInclude Include="..\include\ServerInfoNetMessage.h" />
+    <ClInclude Include="..\include\ServerListNetMessage.h" />
     <ClInclude Include="..\include\TCPConnection.h" />
     <ClInclude Include="..\include\TCPConnectionManagerProcess.h" />
     <ClInclude Include="..\include\TCPSocket.h" />

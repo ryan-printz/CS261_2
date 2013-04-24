@@ -4,10 +4,14 @@
 #include "GameState_Play.h"
 #include "ServerInfo.h"
 #include "TCPSocket.h"
+#include "UDPSocket.h"
 #include "TCPConnection.h"
+#include "UDPConnection.h"
 #include "BaseNetMessage.h"
 #include "ServerInfoNetMessage.h"
 #include "ServerListNetMessage.h"
+#include "GameReplicationInfoNetMessage.h"
+#include "PlayerReplicationInfoNetMessage.h"
 
 #include <vector>
 #include <fstream>
@@ -16,11 +20,12 @@
 // ---------------------------------------------------------------------------
 struct ListGamesState : IGameState::State
 {
-	ListGamesState(std::vector<ServerInfo> & games, IGameState * parent);
+	ListGamesState(std::vector<ServerInfo> & games, TCPConnection * master, IGameState * parent);
 	void update();
 	void draw();
 
 	int m_cursor;
+	TCPConnection * m_master;
 	std::vector<ServerInfo> m_games;
 };
 
@@ -46,15 +51,67 @@ struct SearchingState : IGameState::State
 
 struct ConnectingState : IGameState::State
 {
-	ConnectingState(IGameState * parent) : State(parent) {};
+	ConnectingState(ServerInfo & server, IGameState * parent);
+
 	void update();
 	void draw();
+
+	UDPConnection * m_game;
+	GameReplicationInfo m_GRI;
+	std::vector<PlayerReplicationInfo> m_PRIs;
 };
+
+struct AutoJoinState : IGameState::State
+{
+	AutoJoinState(TCPConnection * master, IGameState * parent);
+	~AutoJoinState();
+
+	void update();
+	void draw() {};
+
+	TCPConnection * m_master;
+};
+
+//////////////
+
+AutoJoinState::AutoJoinState(TCPConnection * master, IGameState * parent)
+	: State(parent), m_master(master)
+{
+	Packet autoJoinRequest;
+
+	new (autoJoinRequest.m_buffer) BaseNetMessage(AUTO_JOIN);
+	autoJoinRequest.m_length = sizeof(BaseNetMessage);
+
+	m_master->send(autoJoinRequest);
+}
+
+void AutoJoinState::update()
+{
+	Packet received;
+
+	m_master->update(0.016);
+
+	if( m_master->pop_receivePacket(received) )
+	{
+		BaseNetMessage * msg = reinterpret_cast<BaseNetMessage*>(received.m_buffer);
+
+		switch( msg->type() )
+		{
+		case AUTO_JOIN_RES:
+			ServerInfo serverInfo = msg->as<ServerInfoNetMessage>()->info();
+			m_parent->nextState(new ConnectingState(serverInfo, m_parent));
+			break;
+		};
+	}
+
+	if( !m_master->connected() )
+		m_parent->nextState(new TimedOutState(m_parent));
+}
 
 /////////////
 
-ListGamesState::ListGamesState(std::vector<ServerInfo> & games, IGameState * parent) 
-	: State(parent), m_cursor(0) 
+ListGamesState::ListGamesState(std::vector<ServerInfo> & games, TCPConnection * master, IGameState * parent) 
+	: State(parent), m_master(master), m_cursor(0) 
 {
 	m_games.swap(games);
 }
@@ -68,19 +125,18 @@ void ListGamesState::update()
 	if(AEInputCheckTriggered(DIK_DOWN))
 		m_cursor++;
 	
-	m_cursor = (m_cursor < 0) ? 0 : ((m_cursor >= m_games.size()) ? m_games.size() + 1 : m_cursor);
+	m_cursor = (m_cursor < 0) ? 0 : ((m_cursor > m_games.size() + 1) ? m_games.size() + 1 : m_cursor);
 
 	if(AEInputCheckTriggered(DIK_SPACE))
 		if( m_cursor == m_games.size() )
-		{
-			// do the auto join.
-			// send a message to the master server
-		}
+			m_parent->nextState(new AutoJoinState(m_master, m_parent));
+
 		else if(m_cursor > m_games.size() )
 			popGameState();
+
 		else if( m_cursor < m_games.size() )
 			// move to the connecting state until the server accepts your connection attempt.
-			m_parent->nextState(new ConnectingState(m_parent));
+			m_parent->nextState(new ConnectingState(m_games[m_cursor], m_parent));
 }
 
 void ListGamesState::draw()
@@ -94,7 +150,7 @@ void ListGamesState::draw()
 	AEGfxPrint(40, y+=20, 0xFFFFFFFF, "Back");
 
 	if (gAEFrameCounter & 0x0008)
-		AEGfxPrint(10, 60 + 30 * m_cursor, 0xFFFFFFFF, ">>");
+		AEGfxPrint(10, 70 + 20 * m_cursor, 0xFFFFFFFF, ">>");
 }
 
 ///////////////////
@@ -175,10 +231,6 @@ void SearchingState::update()
 		case SERVER_INFO:
 			m_servers.push_back(msg->as<ServerInfoNetMessage>()->info());
 			break;
-
-		case AUTO_JOIN_RES:
-			// connect to that server.
-			break;
 		};
 	}
 
@@ -188,7 +240,7 @@ void SearchingState::update()
 
 	// if the request was successful, go to the listgamesstate;
 	else if( m_servers.size() == m_serverCount )
-		m_parent->nextState(new ListGamesState(m_servers, m_parent));
+		m_parent->nextState(new ListGamesState(m_servers, m_master, m_parent));
 }
 
 void SearchingState::draw()
@@ -203,14 +255,56 @@ void SearchingState::draw()
 
 ///////////////////////////////////
 
+ConnectingState::ConnectingState(ServerInfo & server, IGameState * parent)
+	: State(parent)
+{
+	std::cout << "connecting to server: " << server.name << " (" << server.ip << ":" << server.port << ")" << std::endl;
+
+	NetAddress gameServerAddress(server.ip, server.port);
+
+	auto socket = new UDPSocket();
+
+	socket->initialize(gameServerAddress);
+	socket->connect(gameServerAddress);
+	socket->setBlocking(false);
+
+	m_game = new UDPConnection(socket, gameServerAddress);
+
+	Packet playerInfo;
+	PlayerReplicationInfo pri;
+
+	new (playerInfo.m_buffer) PlayerReplicationInfoNetMessage(pri);
+	playerInfo.m_length = sizeof(PlayerReplicationInfoNetMessage);
+
+	m_game->send(playerInfo);
+}
+
 void ConnectingState::update()
 {
-	// attempt to connect to the game server from the network lobby.
+	Packet received;
 
-	if( false )
+	m_game->update(0.016);
+
+	if( m_game->pop_receivePacket(received) )
+	{
+		BaseNetMessage * msg = reinterpret_cast<BaseNetMessage*>(received.m_buffer);
+
+		switch( msg->type() )
+		{
+		case GAME_REPLICATION_INFO:
+			m_GRI = msg->as<GameReplicationInfoNetMessage>()->gameInfo();
+			break;
+
+		case PLAYER_REPLICATION_INFO:
+			m_PRIs.emplace_back( msg->as<PlayerReplicationInfoNetMessage>()->playerInfo() );
+			break;
+		};
+	}
+
+	if( !m_game->connected() )
 		m_parent->nextState(new TimedOutState(m_parent));
 
-	else if( true ) 
+	else if( m_GRI.m_inProgress && m_GRI.m_PRICount == m_PRIs.size() ) 
 		nextGameState(new GameState_Play());
 }
 

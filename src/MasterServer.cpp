@@ -40,7 +40,7 @@ void MasterServer::update()
 				m_servers.push_back(std::make_pair(info, *connected));
 				connected = m_newConnections.erase(connected);
 
-				printf("%s\t\t%i/%i - %s:%i", info.name, info.currentPlayers, info.maxPlayers, info.ip, info.port);
+				printf("%s\t\t%i/%i - %s:%i\n", info.name, info.currentPlayers, info.maxPlayers, info.ip, info.port);
 			}
 			else if( msg->type() == SERVER_LIST_REQ )
 			{

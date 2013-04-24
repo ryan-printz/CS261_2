@@ -32,6 +32,7 @@ bool UDPSocket::cleanup()
 
 bool UDPSocket::initialize(NetAddress address)
 {
+	m_address = address;
 	//Probably not what should happen?
 	m_socket = socket(address.sin_family, SOCK_STREAM, IPPROTO_UDP);
 

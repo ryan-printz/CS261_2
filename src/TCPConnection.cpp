@@ -33,7 +33,7 @@ int TCPConnection::receive(Packet & p)
 {
 	int test = -1;
 	m_socket->receive((char*)&test, 4);
-	if(test)
+	if(test < p.MAX)
 		return p.m_length = m_socket->receive(p.m_buffer, test);
 	else
 		return test;

@@ -9,6 +9,8 @@ enum MessageType
 	SERVER_LIST_REQ,
 	AUTO_JOIN,
 	AUTO_JOIN_RES,
+	PLAYER_REPLICATION_INFO,
+	GAME_REPLICATION_INFO
 };
 
 struct BaseNetMessage
