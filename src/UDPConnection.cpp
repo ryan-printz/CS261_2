@@ -199,7 +199,9 @@ void UDPConnection::update(float dt)
 	// get a little bit closer to timing out.
 	m_idleTimer += dt;
 
+	Packet p;
 
+	m_connection->receive(p.m_buffer, p.MAX);
 
 	if( m_keepAliveInterval && !((int)m_idleTimer % m_keepAliveInterval) )
 	{
@@ -377,8 +379,6 @@ int UDPConnection::noFlowSend(ubyte * buffer, uint len, ubyte flags)
 	m_connection->setUDPHeader(&header);
 
 	int sent = 0;
-	int i = WSAGetLastError();
-	printf("%i\n",i);
 	if((sent = m_connection->send(buffer, len)) != len)
 		return -1;
 

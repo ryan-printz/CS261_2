@@ -127,8 +127,6 @@ int UDPSocket::send(const char * buffer, unsigned size, const NetAddress &to)
 
 	memcpy(packet, m_header, sizeof(UDPHeader));
 	memcpy(packet + sizeof(UDPHeader), buffer, std::min(size, MAX_PACKET_SIZE - sizeof(UDPHeader)));
-	int i = WSAGetLastError();
-	printf("%i\n",i);
 	return ::sendto(m_socket, packet, std::min(size+sizeof(UDPHeader), MAX_PACKET_SIZE), 0, (SOCKADDR*)&to, sizeof(NetAddress)) - sizeof(UDPHeader);
 }
 
@@ -154,7 +152,7 @@ int UDPSocket::receive(char * buffer, unsigned size, bool write)
 	memcpy(&m_lastUDPHeader, packet->packet, sizeof(UDPHeader));
 	memcpy(buffer, packet->packet + sizeof(UDPHeader), len);
 
-	m_received.erase(packet);
+	//m_received.erase(packet);
 
 	return size;
 }
@@ -180,7 +178,7 @@ void UDPSocket::receiveSort()
 
 	if( p.packetSize == SOCKET_ERROR && m_error == WSAEWOULDBLOCK )
 		return;
-	if( p.packetSize > 0 )
+	if( p.packetSize > 0 && p.packetSize != SOCKET_ERROR)
 	{
 		FILE* myFile;
 		myFile = fopen ("log.txt", "a");
@@ -216,7 +214,8 @@ void UDPSocket::receiveSort()
 		m_disconnected.emplace_back(p.from);
 		return;
 	}
-		
+	memmove(p.packet, p.packet + sizeof(UDPHeader), sizeof(UDPHeader));
+	p.packetSize -= sizeof(UDPHeader);
 	// else it's just a packet.
 	m_received.emplace_back(p);
 }

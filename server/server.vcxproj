@@ -133,7 +133,8 @@
       </Command>
     </CustomBuildStep>
     <PostBuildEvent>
-      <Command>copy /Y "$(TargetDir)$(ProjectName).exe"  "P:\server\$(Configuration)\"</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
