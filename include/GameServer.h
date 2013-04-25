@@ -25,7 +25,6 @@ public:
 protected:
 	ServerInfo m_info;
 
-	//std::list<PlayerReplicationInfo> m_players;
 	std::list<UDPConnection*> m_newConnections;
 	UDPConnectionManagerProcessThread * m_gsThread;
 };

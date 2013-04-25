@@ -39,6 +39,5 @@ void GameServer::update()
 		}
 	}
 
-
 	m_gsThread->unlock();
 }

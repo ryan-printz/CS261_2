@@ -13,6 +13,7 @@ public:
 	GameState_Server(TCPConnection * master, ServerInfo & info, GameServer* gameServer);
 	virtual ~GameState_Server();
 
+	virtual void init();
 	virtual void update();
 	virtual void draw();
 

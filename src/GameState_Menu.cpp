@@ -12,7 +12,12 @@
 #include "GameState_Menu.h"
 #include "GameState_NetworkMenu.h"
 #include "GameState_Play.h"
-//#include "GameState_NetworkPlay.h"
+
+#define TESTING
+
+#ifdef TESTING
+#include "GameState_NetworkPlay.h"
+#endif
 
 #include "curl\curl.h"
 #include "json\json.h"
@@ -80,27 +85,31 @@ void GameState_Menu::update(void)
 	
 	m_cursor = (m_cursor < 0) ? 0 : ((m_cursor > 2) ? 2 : m_cursor);
 
-	//GameReplicationInfo game;
-	//PlayerReplicationInfo localPlayer;
-	//std::vector<PlayerReplicationInfo> players;
+#ifdef TESTING
+	GameReplicationInfo game;
+	PlayerReplicationInfo localPlayer;
+	std::vector<PlayerReplicationInfo> players;
+#endif
 
 	if(AEInputCheckTriggered(DIK_SPACE))
 		switch(m_cursor)
 		{
-		//case 0:
-		//	sprintf(localPlayer.m_name, "player");
-		//	localPlayer.m_lives = 3;
-		//	localPlayer.m_x = 100;
-		//	localPlayer.m_y = 100;
-		//	players.push_back(localPlayer);
-		//	players.push_back(localPlayer);
-		//	players.push_back(localPlayer);
-		//	m_gsm->nextState(new GameState_NetworkPlay(game, players, nullptr));
-		//	break;
-
+#ifdef TESTING
+		case 0:
+			sprintf(localPlayer.m_name, "player");
+			localPlayer.m_lives = 3;
+			localPlayer.m_x = 100;
+			localPlayer.m_y = 100;
+			players.push_back(localPlayer);
+			players.push_back(localPlayer);
+			players.push_back(localPlayer);
+			m_gsm->nextState(new GameState_NetworkPlay(game, players, nullptr));
+			break;
+#else
 		case 0:
 			m_gsm->nextState(new GameState_Play());
 			break;
+#endif
 
 		case 1:
 			m_gsm->nextState(new GameState_NetworkMenu());

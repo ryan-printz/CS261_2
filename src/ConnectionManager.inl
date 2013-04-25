@@ -42,7 +42,7 @@ void ConnectionManager<ConnectionType>::setListener(ISocket * listener)
 template <typename ConnectionType>
 void ConnectionManager<ConnectionType>::update(float dt)
 {
-	if( m_timerAccept += dt >= m_updateFrequencyReceive )
+	if( (m_timerAccept += dt) >= m_updateFrequencyReceive )
 	{
 		accept();
 		m_timerAccept -= m_updateFrequencyReceive;
@@ -60,7 +60,7 @@ void ConnectionManager<ConnectionType>::accept()
 	{
 		m_acceptCallback( static_cast<ConnectionType*>(back()) );
 		
-		auto newConnection(new ConnectionType());
+		auto newConnection = new ConnectionType();
 
 		newConnection->setReceiveRate(m_updateFrequencyReceive);
 		newConnection->setSendRate(m_updateFrequencySend);

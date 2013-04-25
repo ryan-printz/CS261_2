@@ -13,4 +13,5 @@ class GameReplicationInfo
 public:
 	bool m_inProgress;
 	char m_PRICount;
+	char m_wave;
 };

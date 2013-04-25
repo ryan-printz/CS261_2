@@ -16,6 +16,34 @@ GameState_Server::GameState_Server(TCPConnection * master, ServerInfo & info, Ga
 GameState_Server::~GameState_Server()
 {}
 
+void GameState_Server::init()
+{
+	// reset the number of current asteroid and the total allowed
+	m_game.m_asteroids = 0;
+	m_game.m_maxAsteroids = AST_NUM_MIN;
+
+	// get the time the asteroid is created
+	m_game.m_asteroidTimer = AEGetTime();
+	
+	// generate the initial asteroid
+	for (u32 i = 0; i < m_game.m_maxAsteroids; i++)
+		m_game.astCreate(0);
+
+	// reset
+	m_GRI.m_inProgress = true;
+	m_GRI.m_wave = 0;
+
+	for( auto pri = m_PRIs.begin(); pri != m_PRIs.end(); ++pri )
+	{
+		// reset the score and the number of ship
+		pri->m_score = 0;
+		pri->m_lives = SHIP_INITIAL_NUM;
+	}
+
+	// reset the delay to restart after game over.
+	m_game.m_gameTimer = 2.0f;
+}
+
 void GameState_Server::update()
 {
 	m_gameServer->update();
@@ -42,6 +70,21 @@ void GameState_Server::draw()
 		AEGfxSetTransform	(&pInst->transform);
 		AEGfxTriDraw		(pInst->pObject->pMesh);
 	}
+
+	// draw the hud
+	sprintf(strBuffer, "Level: %d", m_GRI.m_wave);
+	AEGfxPrint(10, 30, 0xFFFFFFFF, strBuffer);
+
+	sprintf(strBuffer, "%s (%s:%i) %i/%i", m_info.name, m_info.ip, m_info.port, m_info.currentPlayers, m_info.maxPlayers);
+	AEGfxPrint(150, 10, 0xFFFFFFFF, strBuffer);
+
+	int y = 10;
+	for(auto pri = m_PRIs.begin(); pri != m_PRIs.end(); ++pri)
+	{
+		sprintf(strBuffer, "%i %i %s %i", pri->m_lives, pri->m_netid, pri->m_name, pri->m_score);
+		AEGfxPrint(600, y += 20, 0xFFCCCCCC, strBuffer);
+	}
+
 
 	// draw debug info
 
