@@ -12,6 +12,7 @@
 #include "ServerListNetMessage.h"
 #include "GameReplicationInfoNetMessage.h"
 #include "PlayerReplicationInfoNetMessage.h"
+#include "ClientInfoNetMessage.h"
 
 #include <vector>
 #include <fstream>
@@ -56,6 +57,7 @@ struct ConnectingState : IGameState::State
 	void update();
 	void draw();
 
+	int m_netID;
 	UDPConnection * m_game;
 	GameReplicationInfo m_GRI;
 	std::vector<PlayerReplicationInfo> m_PRIs;
@@ -274,6 +276,8 @@ ConnectingState::ConnectingState(ServerInfo & server, IGameState * parent)
 	Packet playerInfo;
 	PlayerReplicationInfo pri;
 
+	sprintf(pri.m_name, "player name");
+
 	new (playerInfo.m_buffer) PlayerReplicationInfoNetMessage(pri);
 	playerInfo.m_length = sizeof(PlayerReplicationInfoNetMessage);
 
@@ -292,6 +296,10 @@ void ConnectingState::update()
 
 		switch( msg->type() )
 		{
+		case CLIENT_INFO:
+			m_netID = msg->as<ClientInfoNetMessage>()->netID();
+			break;
+
 		case GAME_REPLICATION_INFO:
 			m_GRI = msg->as<GameReplicationInfoNetMessage>()->gameInfo();
 			break;

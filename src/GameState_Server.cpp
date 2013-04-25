@@ -10,8 +10,10 @@
 // TODO: Game Replication Info
 
 GameState_Server::GameState_Server(TCPConnection * master, ServerInfo & info, GameServer* gameServer)
-	: m_info(info), m_master(master), m_gameServer(gameServer)
-{}
+	: m_master(master), m_gameServer(gameServer)
+{
+	gameServer->getInfo() = info;
+}
 
 GameState_Server::~GameState_Server()
 {}
@@ -30,10 +32,10 @@ void GameState_Server::init()
 		m_game.astCreate(0);
 
 	// reset
-	m_GRI.m_inProgress = true;
-	m_GRI.m_wave = 0;
+	m_gameServer->getGRI().m_inProgress = true;
+	m_gameServer->getGRI().m_wave = 0;
 
-	for( auto pri = m_PRIs.begin(); pri != m_PRIs.end(); ++pri )
+	for( auto pri = m_gameServer->getPRIs().begin(); pri != m_gameServer->getPRIs().end(); ++pri )
 	{
 		// reset the score and the number of ship
 		pri->m_score = 0;
@@ -72,19 +74,19 @@ void GameState_Server::draw()
 	}
 
 	// draw the hud
-	sprintf(strBuffer, "Level: %d", m_GRI.m_wave);
+	sprintf(strBuffer, "Level: %d", m_gameServer->getGRI().m_wave);
 	AEGfxPrint(10, 30, 0xFFFFFFFF, strBuffer);
 
-	sprintf(strBuffer, "%s (%s:%i) %i/%i", m_info.name, m_info.ip, m_info.port, m_info.currentPlayers, m_info.maxPlayers);
+	ServerInfo & info = m_gameServer->getInfo();
+	sprintf(strBuffer, "%s (%s:%i) %i/%i", info.name, info.ip, info.port, info.currentPlayers, info.maxPlayers);
 	AEGfxPrint(150, 10, 0xFFFFFFFF, strBuffer);
 
 	int y = 10;
-	for(auto pri = m_PRIs.begin(); pri != m_PRIs.end(); ++pri)
+	for(auto pri = m_gameServer->getPRIs().begin(); pri != m_gameServer->getPRIs().end(); ++pri)
 	{
 		sprintf(strBuffer, "%i %i %s %i", pri->m_lives, pri->m_netid, pri->m_name, pri->m_score);
 		AEGfxPrint(600, y += 20, 0xFFCCCCCC, strBuffer);
 	}
-
 
 	// draw debug info
 

@@ -21,8 +21,5 @@ public:
 
 protected:
 	TCPConnection * m_master;
-	ServerInfo m_info;
 	GameServer * m_gameServer;
-	GameReplicationInfo m_GRI;
-	std::vector<PlayerReplicationInfo> m_PRIs;
 };
