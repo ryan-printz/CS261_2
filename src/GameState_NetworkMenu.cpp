@@ -4,9 +4,9 @@
 #include "GameState_Play.h"
 #include "ServerInfo.h"
 #include "TCPSocket.h"
-#include "UDPSocket.h"
+#include "ProtoSocket.h"
 #include "TCPConnection.h"
-#include "UDPConnection.h"
+#include "ProtoConnection.h"
 #include "BaseNetMessage.h"
 #include "ServerInfoNetMessage.h"
 #include "ServerListNetMessage.h"
@@ -58,7 +58,7 @@ struct ConnectingState : IGameState::State
 	void draw();
 
 	int m_netID;
-	UDPConnection * m_game;
+	ProtoConnection * m_game;
 	GameReplicationInfo m_GRI;
 	std::vector<PlayerReplicationInfo> m_PRIs;
 };
@@ -265,13 +265,13 @@ ConnectingState::ConnectingState(ServerInfo & server, IGameState * parent)
 
 	NetAddress gameServerAddress(server.ip, server.port);
 
-	auto socket = new UDPSocket();
+	auto socket = new ProtoSocket();
 
 	socket->initialize(gameServerAddress);
 	socket->connect(gameServerAddress);
 	socket->setBlocking(false);
 
-	m_game = new UDPConnection(socket, gameServerAddress);
+	m_game = new ProtoConnection(socket, gameServerAddress);
 
 	Packet playerInfo;
 	PlayerReplicationInfo pri;

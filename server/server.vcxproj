@@ -22,14 +22,15 @@
     <ClCompile Include="..\src\GameState_Server.cpp" />
     <ClCompile Include="..\src\GameState_StartServer.cpp" />
     <ClCompile Include="..\src\MasterServer.cpp" />
+    <ClCompile Include="..\src\MulticastSocket.cpp" />
     <ClCompile Include="..\src\SequenceNumber.cpp" />
     <ClCompile Include="..\src\ServerInfo.cpp" />
     <ClCompile Include="..\src\TCPConnection.cpp" />
     <ClCompile Include="..\src\TCPConnectionManagerProcess.cpp" />
     <ClCompile Include="..\src\TCPSocket.cpp" />
-    <ClCompile Include="..\src\UDPConnection.cpp" />
-    <ClCompile Include="..\src\UDPConnectionManagerProcess.cpp" />
-    <ClCompile Include="..\src\UDPSocket.cpp" />
+    <ClCompile Include="..\src\ProtoConnection.cpp" />
+    <ClCompile Include="..\src\ProtoConnectionManagerProcess.cpp" />
+    <ClCompile Include="..\src\ProtoSocket.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -52,6 +53,7 @@
     <ClInclude Include="..\include\ISocket.h" />
     <ClInclude Include="..\include\main.h" />
     <ClInclude Include="..\include\MasterServer.h" />
+    <ClInclude Include="..\include\MulticastSocket.h" />
     <ClInclude Include="..\include\SequenceNumber.h" />
     <ClInclude Include="..\include\ServerInfo.h" />
     <ClInclude Include="..\include\ServerInfoNetMessage.h" />
@@ -60,10 +62,10 @@
     <ClInclude Include="..\include\TCPConnectionManagerProcess.h" />
     <ClInclude Include="..\include\TCPSocket.h" />
     <ClInclude Include="..\include\Types.h" />
-    <ClInclude Include="..\include\UDPConnection.h" />
-    <ClInclude Include="..\include\UDPConnectionManagerProcess.h" />
-    <ClInclude Include="..\include\UDPHeader.h" />
-    <ClInclude Include="..\include\UDPSocket.h" />
+    <ClInclude Include="..\include\ProtoConnection.h" />
+    <ClInclude Include="..\include\ProtoConnectionManagerProcess.h" />
+    <ClInclude Include="..\include\ProtoHeader.h" />
+    <ClInclude Include="..\include\ProtoSocket.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\src\ConnectionManager.inl" />

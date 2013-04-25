@@ -19,10 +19,10 @@ public:
 	virtual bool listen(const NetAddress local, char backlog = 10);
 
 	virtual int send(const char * buffer, unsigned size, bool write = true);
-	virtual int send(const char * buffer, unsigned size, const NetAddress & to);
+	virtual int send(const char * buffer, unsigned size, const NetAddress & to, bool write = true);
 
 	virtual int receive(char * buffer, unsigned size, bool write = true);
-	virtual int receive(char * buffer, unsigned size, NetAddress & from);
+	virtual int receive(char * buffer, unsigned size, NetAddress & from, bool write = true);
 
 private:
 	TCPSocket(SOCKET accepted);

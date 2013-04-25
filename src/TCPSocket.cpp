@@ -83,9 +83,9 @@ int TCPSocket::send(const char * buffer, unsigned size, bool write)
 	return sent;//::send(m_socket, buffer, size, 0);
 }
 
-int TCPSocket::send(const char * buffer, unsigned size, const NetAddress &)
+int TCPSocket::send(const char * buffer, unsigned size, const NetAddress &, bool write)
 {
-	return send(buffer, size);
+	return send(buffer, size, write);
 }
 
 int TCPSocket::receive(char * buffer, unsigned size, bool write)
@@ -104,7 +104,7 @@ int TCPSocket::receive(char * buffer, unsigned size, bool write)
 	return rcvd;
 }
 
-int TCPSocket::receive(char * buffer, unsigned size, NetAddress &)
+int TCPSocket::receive(char * buffer, unsigned size, NetAddress &, bool write)
 {
-	return receive(buffer, size);
+	return receive(buffer, size, write);
 }

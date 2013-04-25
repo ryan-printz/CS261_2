@@ -4,12 +4,13 @@
 #include "ISocket.h"
 #include "TCPSocket.h"
 #include "TCPConnection.h"
-#include "UDPConnectionManagerProcess.h"
-#include "UDPSocket.h"
-#include "UDPConnection.h"
+#include "ProtoConnectionManagerProcess.h"
+#include "ProtoSocket.h"
+#include "ProtoConnection.h"
 #include "ConnectionManager.h"
 #include "ServerInfoNetMessage.h"
 #include "MasterServer.h"
+#include "MulticastSocket.h"
 #include <fstream>
 
 struct LookForMasterServerState : public IGameState::State
@@ -21,7 +22,6 @@ public:
 	virtual void draw();
 
 private:
-	NetAddress * m_serverAddress;
 	ServerInfo m_info;
 	char m_masterIp[16];
 	unsigned m_masterServerPort;
@@ -29,12 +29,14 @@ private:
 	TCPSocket * m_socket;
 
 	bool m_firstrun;
+	MulticastSocket * m_multicast;
+	int m_timeout;
 };
 
 struct StartMasterServer : public IGameState::State
 {
 public:
-	StartMasterServer(NetAddress * serverAddress, ServerInfo & info, IGameState * parent);
+	StartMasterServer(NetAddress & serverAddress, ServerInfo & info, IGameState * parent);
 
 	virtual void update();
 	virtual void draw();
@@ -56,13 +58,13 @@ public:
 struct StartGameServer : public IGameState::State
 {
 public:
-	StartGameServer(TCPSocket * socket, ServerInfo & info, NetAddress * MasterServerAddress, IGameState * parent);
+	StartGameServer(const ServerInfo & info, NetAddress & MasterServerAddress, IGameState * parent);
 
 	virtual void update() {};
 	virtual void draw() {};
 
 private:
-	IConnection * m_masterServer;
+	//IConnection * m_masterServer;
 	GameServer * m_gameServer;
 	ServerInfo m_info;
 };
@@ -70,7 +72,7 @@ private:
 /////
 
 LookForMasterServerState::LookForMasterServerState(const char * filename, IGameState * parent)
-	: IGameState::State(parent), m_firstrun(true)
+	: IGameState::State(parent), m_firstrun(true), m_timeout(90)
 {
 	std::ifstream config(filename);
 
@@ -83,44 +85,52 @@ LookForMasterServerState::LookForMasterServerState(const char * filename, IGameS
 
 	config >> m_info;
 
-	printf("master - %s:%i\ngame - %s:%i\n", m_masterIp, m_masterServerPort, m_info.ip, m_info.port);
+	printf("game - %s\n", m_info.name);
 	
-	m_serverAddress = new NetAddress(m_masterIp, m_masterServerPort);
+	NetAddress multicast((unsigned)INADDR_ANY, m_masterServerPort);
+	m_multicast = new MulticastSocket();
+	if( !m_multicast->initialize(multicast) )
+		printf("Multicast failed to initialize: %i\n", WSAGetLastError() );
+
+	m_multicast->setBlocking(false);
+
+	// send out your info to announce.
+	Packet p;
+
+	new (p.m_buffer) ServerInfoNetMessage(m_info);
+	p.m_length = sizeof(ServerInfoNetMessage);
+
+	m_multicast->send(p.m_buffer, p.m_length);
+
+	printf("looking for master server...\n");
 };
 
 void LookForMasterServerState::update()
 {
-	if( m_firstrun )
+	Packet received;
+	NetAddress master;
+	received.m_length = m_multicast->receive(received.m_buffer, received.MAX, master);
+
+	if( received.m_length > 0 )
 	{
-		m_firstrun = false;
-		return;
+		BaseNetMessage * msg = reinterpret_cast<BaseNetMessage*>(received.m_buffer);
+
+		if( msg->type() == SERVER_INFO )
+		{
+			m_parent->nextState(new StartGameServer(msg->as<ServerInfoNetMessage>()->info(),
+													master,
+													m_parent));
+			m_multicast->cleanup();
+		}
 	}
 
-	printf("looking for master server...\n");
-	m_socket = new TCPSocket;
-	m_socket->initialize(*m_serverAddress);
-	
-	IGameState::State * nextState = nullptr;
-
-	// attempting to connect to server
-	if( !m_socket->connect(*m_serverAddress) )
+	else if( --m_timeout <= 0 )
 	{
-		printf("failed to connect to master server.\n");
-
-		m_socket->cleanup();
-		delete m_socket;
-
-		if(0 == std::string(m_info.ip).compare(m_masterIp))	
-			nextState = new StartMasterServer(m_serverAddress, m_info, m_parent);
-		else
-			nextState = new TimeoutState(m_parent);
+		m_parent->nextState(new StartMasterServer(NetAddress(m_masterIp, m_masterServerPort), 
+							m_info, 
+							m_parent));
+		m_multicast->cleanup();
 	}
-	else
-	{
-		nextState = new StartGameServer(m_socket, m_info, m_serverAddress, m_parent);
-	}
-
-	m_parent->nextState( nextState );
 }
 
 void LookForMasterServerState::draw()
@@ -128,16 +138,18 @@ void LookForMasterServerState::draw()
 	AEGfxPrint(10, 20, 0xFFFFFFFF, "looking for master server...");
 }
 
-StartMasterServer::StartMasterServer(NetAddress * serverAddress, ServerInfo & info, IGameState * parent)
+StartMasterServer::StartMasterServer(NetAddress & serverAddress, ServerInfo & info, IGameState * parent)
 	: IGameState::State(parent), m_info(info)
 {
 	std::cout << "start master" << std::endl;
 
 	ISocket * listen = new TCPSocket();
 
-	listen->initialize(*serverAddress);
-	listen->listen(*serverAddress);
+	listen->initialize(serverAddress);
+	listen->listen(serverAddress);
 	listen->setBlocking(false);
+
+
 
 	auto manager = new ConnectionManager<TCPConnection>();
 	manager->setListener(listen);
@@ -182,35 +194,35 @@ void TimeoutState::draw()
 		AEGfxPrint(10, 50, 0xFFFFFFFF, ">>");
 }
 
-StartGameServer::StartGameServer(TCPSocket * socket, ServerInfo & info, NetAddress * masterServerAddress, IGameState * parent)
+StartGameServer::StartGameServer(const ServerInfo & info, NetAddress & masterServerAddress, IGameState * parent)
 	: IGameState::State(parent), m_info(info)
 {
 	Packet serverInfo;
 
-	m_masterServer = new TCPConnection(socket, *masterServerAddress);
+	//m_masterServer = new TCPConnection(socket, *masterServerAddress);
 
 	new (serverInfo.m_buffer) ServerInfoNetMessage(m_info);
 	serverInfo.m_length = sizeof(ServerInfoNetMessage);
 
-	m_masterServer->send(serverInfo);
+	//m_masterServer->send(serverInfo);
 	
 	std::cout << "sending info to master server..." << std::endl;
 
-	ISocket * listen = new UDPSocket();
+	ISocket * listen = new ProtoSocket();
 
 	listen->initialize(NetAddress(info.ip, info.port));
 	listen->setBlocking(false);
 	listen->listen(NetAddress(info.ip, info.port));
 	
 
-	auto manager = new ConnectionManager<UDPConnection>();
+	auto manager = new ConnectionManager<ProtoConnection>();
 	manager->setListener(listen);
 
-	auto gsthread = new UDPConnectionManagerProcessThread(manager);
+	auto gsthread = new ProtoConnectionManagerProcessThread(manager);
 
 	m_gameServer = new GameServer(gsthread);
 
-	this->nextGameState(new GameState_Server((TCPConnection*)m_masterServer, m_info, m_gameServer));
+	//this->nextGameState(new GameState_Server((TCPConnection*)m_masterServer, m_info, m_gameServer));
 	//parent->nextState(new GameState_Server((TCPConnection*)m_masterServer, m_info));
 }
 

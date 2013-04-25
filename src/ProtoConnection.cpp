@@ -1,11 +1,11 @@
-#include "UDPConnection.h"
-#include "UDPSocket.h"
+#include "ProtoConnection.h"
+#include "ProtoSocket.h"
 
 #include <sstream>
 #include <iostream>
 #include <bitset>
 
-UDPConnection::UDPConnection()
+ProtoConnection::ProtoConnection()
 	: m_connected(false), m_useFlowControl(false), m_local(1)
 {
 	m_stats.m_ackedPackets = m_stats.m_lostPackets 
@@ -26,25 +26,25 @@ UDPConnection::UDPConnection()
 	m_flowTimer = 0.f;
 }
 
-UDPConnection::UDPConnection(ISocket * connection, NetAddress & address)
+ProtoConnection::ProtoConnection(ISocket * connection, NetAddress & address)
 {
-	m_connection = (UDPSocket*)connection;
+	m_connection = (ProtoSocket*)connection;
 	m_socket = connection;
 	m_remote = address;
 }
 
-UDPConnection::~UDPConnection()
+ProtoConnection::~ProtoConnection()
 {
 	delete m_socket;
 }
 
-bool UDPConnection::accept(ISocket * listener)
+bool ProtoConnection::accept(ISocket * listener)
 {
-	UDPSocket* uSocket = dynamic_cast<UDPSocket*>(listener);
+	ProtoSocket* uSocket = dynamic_cast<ProtoSocket*>(listener);
 	
 	if(!uSocket)
 		return false;
-	UDPSocket* accepted = new UDPSocket(uSocket->acceptUDP());
+	ProtoSocket* accepted = new ProtoSocket(uSocket->acceptUDP());
 
 	if( !accepted->invalid() )
 	{
@@ -60,11 +60,11 @@ bool UDPConnection::accept(ISocket * listener)
 	return false;
 
 	//m_socket = listener->accept(m_remote);
-	//m_connection = (UDPSocket*)m_socket;
+	//m_connection = (ProtoSocket*)m_socket;
 	//return m_socket != nullptr;
 }
 
-bool UDPConnection::connect(const char* ip, uint port)
+bool ProtoConnection::connect(const char* ip, uint port)
 {
 	if(!m_connection->initialize(NetAddress(ip, port)))
 		return false;
@@ -75,35 +75,35 @@ bool UDPConnection::connect(const char* ip, uint port)
 	return true;
 }
 
-bool UDPConnection::cleanup()
+bool ProtoConnection::cleanup()
 {
 	return false;
 }
 
-bool UDPConnection::disconnect()
+bool ProtoConnection::disconnect()
 {
-	send((ubyte*)&UDPHeader::DISCONNECT_MESSAGE, sizeof(uint));
+	send((ubyte*)&ProtoHeader::DISCONNECT_MESSAGE, sizeof(uint));
 	return false;
 }
 
-int UDPConnection::send(Packet & p)
+int ProtoConnection::send(Packet & p)
 {
 	int i = WSAGetLastError();
 	printf("%i\n",i);
-	return noFlowSend(p.m_buffer, p.m_length, UDPHeader::Flags::UDP_HIGH);
+	return noFlowSend(p.m_buffer, p.m_length, ProtoHeader::Flags::UDP_HIGH);
 }
 
-int UDPConnection::receive(Packet & p)
+int ProtoConnection::receive(Packet & p)
 {
 	return p.m_length = m_socket->receive(p.m_buffer, Packet::MAX);
 }
 
-int UDPConnection::receive(ubyte * buffer, uint len, int drop)
+int ProtoConnection::receive(ubyte * buffer, uint len, int drop)
 {
-	ubyte packet[UDPSocket::MAX_PACKET_SIZE];
-	uint headerSize = sizeof(UDPHeader);
+	ubyte packet[ProtoSocket::MAX_PACKET_SIZE];
+	uint headerSize = sizeof(ProtoHeader);
 
-	int received = m_socket->receive(packet, UDPSocket::MAX_PACKET_SIZE);
+	int received = m_socket->receive(packet, ProtoSocket::MAX_PACKET_SIZE);
 
 	// no packet was received
 	// or the packet was not from this UDPcol.
@@ -116,7 +116,7 @@ int UDPConnection::receive(ubyte * buffer, uint len, int drop)
 
 	// pull out the header.
 	// adjust the received size appropriately.
-	UDPHeader header = m_connection->getUDPHeader();
+	ProtoHeader header = m_connection->getProtoHeader();
 
 	std::cout << "Received Packet Header: Sequence number " << header.m_sequence.m_sequenceNumber
 	<< ", Ack " << header.m_ack.m_sequenceNumber
@@ -131,7 +131,7 @@ int UDPConnection::receive(ubyte * buffer, uint len, int drop)
 		return -1;
 
 	int resentShift = 0;
-	if( header.m_flags & UDPHeader::UDP_RESENT )
+	if( header.m_flags & ProtoHeader::UDP_RESENT )
 	{
 		SequenceNumber * old = reinterpret_cast<SequenceNumber*>(packet);
 		received -= sizeof(SequenceNumber);
@@ -158,27 +158,27 @@ int UDPConnection::receive(ubyte * buffer, uint len, int drop)
 		m_remoteHost = header.m_sequence;
 
 	// check out what the packet ack'd
-	useAck(header.m_ack, header.m_acks, header.m_flags & UDPHeader::UDP_RESENT);
+	useAck(header.m_ack, header.m_acks, header.m_flags & ProtoHeader::UDP_RESENT);
 
 	// don't return keep alive packets.
 	// handle disconnect messages.
-	if( received == sizeof(uint) && *(uint*)(packet) == UDPHeader::KEEP_ALIVE_MESSAGE )
+	if( received == sizeof(uint) && *(uint*)(packet) == ProtoHeader::KEEP_ALIVE_MESSAGE )
 		return -1;
 
 	memcpy(buffer, packet + sizeof(uint) + resentShift, received -= sizeof(uint));
 
-	if( header.m_flags & UDPHeader::UDP_HIGH )
-		send((ubyte*)&UDPHeader::KEEP_ALIVE_MESSAGE, sizeof(uint), UDPHeader::UDP_NORMAL | UDPHeader::UDP_HIGH);
+	if( header.m_flags & ProtoHeader::UDP_HIGH )
+		send((ubyte*)&ProtoHeader::KEEP_ALIVE_MESSAGE, sizeof(uint), ProtoHeader::UDP_NORMAL | ProtoHeader::UDP_HIGH);
 
 	return received;
 }
 
-bool UDPConnection::pop_receivePacket(Packet & out)
+bool ProtoConnection::pop_receivePacket(Packet & out)
 {
 	return m_connection->pop_receivePacket(out.m_buffer, &out.m_length);
 }
 
-int UDPConnection::send(ubyte * buffer, uint len, ubyte flags)
+int ProtoConnection::send(ubyte * buffer, uint len, ubyte flags)
 {
 	if( !m_useFlowControl )
 		return noFlowSend(buffer, len, flags);// ^ ProtoHeader::UDP_HIGH );
@@ -194,7 +194,7 @@ int UDPConnection::send(ubyte * buffer, uint len, ubyte flags)
 	return len;
 }
 
-void UDPConnection::update(float dt)
+void ProtoConnection::update(float dt)
 {
 	// get a little bit closer to timing out.
 	m_idleTimer += dt;
@@ -205,7 +205,7 @@ void UDPConnection::update(float dt)
 
 	if( m_keepAliveInterval && !((int)m_idleTimer % m_keepAliveInterval) )
 	{
-		send((ubyte*)&UDPHeader::KEEP_ALIVE_MESSAGE, sizeof(uint));
+		send((ubyte*)&ProtoHeader::KEEP_ALIVE_MESSAGE, sizeof(uint));
 	}
 
 	if( m_timeout && m_idleTimer > m_timeout )
@@ -255,12 +255,12 @@ void UDPConnection::update(float dt)
 	for(auto resend = m_resend.begin(); resend != m_resend.end(); ++resend)
 		if( resend->m_time > 1.5f * m_timeout )
 		{
-			send(resend->m_packet, resend->m_size, UDPHeader::UDP_RESENT);
+			send(resend->m_packet, resend->m_size, ProtoHeader::UDP_RESENT);
 			resend->m_time = 0.0f;
 		}
 }
 
-std::string UDPConnection::info() const
+std::string ProtoConnection::info() const
 {
 	std::stringstream info;
 
@@ -272,7 +272,7 @@ std::string UDPConnection::info() const
 	return info.str();
 }
 
-void UDPConnection::updateStats()
+void ProtoConnection::updateStats()
 {
 	int upBPS = 0;
 	for(auto upPacket = m_sentPackets.begin(); upPacket != m_sentPackets.end(); ++upPacket)
@@ -291,12 +291,12 @@ void UDPConnection::updateStats()
 	m_stats.m_downBandwith = downBPS * 8 / 1000.0f;
 }
 
-void UDPConnection::updateRTT(float time)
+void ProtoConnection::updateRTT(float time)
 {
 	m_stats.m_roundTripTime += (time - m_stats.m_roundTripTime) * 0.1f;
 }
 
-uint UDPConnection::makeAck()
+uint ProtoConnection::makeAck()
 {
 	uint ack = 0;
 	for(auto it = m_receivedPackets.begin(); it != m_receivedPackets.end(); ++it)
@@ -312,7 +312,7 @@ uint UDPConnection::makeAck()
 	return ack;
 }
 
-void UDPConnection::useAck(SequenceNumber ack, uint ackPack, bool resent)
+void ProtoConnection::useAck(SequenceNumber ack, uint ackPack, bool resent)
 {
 	if( m_unackedPackets.empty() )
 		return;
@@ -360,7 +360,7 @@ void UDPConnection::useAck(SequenceNumber ack, uint ackPack, bool resent)
 	}
 }
 
-ubyte UDPConnection::getBitIndex(const SequenceNumber & lhs, const SequenceNumber & rhs)
+ubyte ProtoConnection::getBitIndex(const SequenceNumber & lhs, const SequenceNumber & rhs)
 {
 	if( lhs > rhs )
 		return rhs + (std::numeric_limits<uint>::max() - lhs);
@@ -368,15 +368,15 @@ ubyte UDPConnection::getBitIndex(const SequenceNumber & lhs, const SequenceNumbe
 		return rhs - 1 - lhs;
 }
 
-int UDPConnection::noFlowSend(ubyte * buffer, uint len, ubyte flags)
+int ProtoConnection::noFlowSend(ubyte * buffer, uint len, ubyte flags)
 {
-	UDPHeader header;
+	ProtoHeader header;
 	header.m_sequence = m_local;
 	header.m_ack	  = m_remoteHost;
 	header.m_acks	  = makeAck();
 	header.m_flags	  = flags;
 
-	m_connection->setUDPHeader(&header);
+	m_connection->setProtoHeader(&header);
 
 	int sent = 0;
 	if((sent = m_connection->send(buffer, len)) != len)
@@ -387,7 +387,7 @@ int UDPConnection::noFlowSend(ubyte * buffer, uint len, ubyte flags)
 	//<< ", Acks " << std::bitset<32>((int)header.m_acks) 
 	<< ", Flags " << std::bitset<CHAR_BIT>(header.m_flags) << std::endl;
 	
-	if( flags & UDPHeader::UDP_HIGH )
+	if( flags & ProtoHeader::UDP_HIGH )
 	{
 		ResendPacket repack;
 
@@ -416,7 +416,7 @@ int UDPConnection::noFlowSend(ubyte * buffer, uint len, ubyte flags)
 	return sent;
 }
 
-void UDPConnection::updateFlowControl(float dt)
+void ProtoConnection::updateFlowControl(float dt)
 {
 	m_flowTimer += dt;
 
@@ -489,9 +489,9 @@ std::ostream & operator<<(std::ostream & os, const ConnectionStats & stats)
 
 bool operator==(const FlowPacket &lhs, const FlowPacket &rhs)
 {
-	const ubyte highlownorm = UDPHeader::UDP_HIGH |
-							  UDPHeader::UDP_LOW | 
-							  UDPHeader::UDP_NORMAL;
+	const ubyte highlownorm = ProtoHeader::UDP_HIGH |
+							  ProtoHeader::UDP_LOW | 
+							  ProtoHeader::UDP_NORMAL;
 	ubyte priority = lhs.m_flags & rhs.m_flags;
 	return priority & highlownorm ? true : false;
 }
@@ -506,8 +506,8 @@ bool operator >(const FlowPacket &lhs, const FlowPacket &rhs)
 	// lhs has greater priority iff:
 	// lhs is high priority && rhs is NOT high priority.
 	// lhs is NOT low priority && rhs is low priority.
-	return ((lhs.m_flags & UDPHeader::UDP_HIGH) && !(rhs.m_flags & UDPHeader::UDP_HIGH))
-		|| (!(lhs.m_flags & UDPHeader::UDP_LOW) && (rhs.m_flags & UDPHeader::UDP_LOW));
+	return ((lhs.m_flags & ProtoHeader::UDP_HIGH) && !(rhs.m_flags & ProtoHeader::UDP_HIGH))
+		|| (!(lhs.m_flags & ProtoHeader::UDP_LOW) && (rhs.m_flags & ProtoHeader::UDP_LOW));
 }
 
 bool operator <(const FlowPacket &lhs, const FlowPacket &rhs)

@@ -1,10 +1,10 @@
 #pragma once
 
 #include "BaseSocket.h"
-#include "UDPHeader.h"
+#include "ProtoHeader.h"
 #include <list>
 
-class UDPSocket : public BaseSocket
+class ProtoSocket : public BaseSocket
 {
 public:
 	const static unsigned int MAX_PACKET_SIZE =	1024;
@@ -16,8 +16,8 @@ public:
 		unsigned int	   packetSize;
 	};
 
-	UDPSocket();
-	virtual ~UDPSocket();
+	ProtoSocket();
+	virtual ~ProtoSocket();
 
 	// virtual functions inherited from ISocket;
 	virtual bool cleanup();
@@ -32,20 +32,20 @@ public:
 	virtual bool listen(const NetAddress local, char backlog = 10);
 
 	virtual int send(const char * buffer, unsigned size, bool write = true);
-	virtual int send(const char * buffer, unsigned size, const NetAddress & to);
+	virtual int send(const char * buffer, unsigned size, const NetAddress & to, bool write = true);
 
 	virtual int receive(char * buffer, unsigned size, bool write = true);
-	virtual int receive(char * buffer, unsigned size, NetAddress & from);
+	virtual int receive(char * buffer, unsigned size, NetAddress & from, bool write = true);
 
 	bool pop_receivePacket(char* buffer, int* size);
 
-	void setUDPHeader(UDPHeader * header);
-	UDPHeader getUDPHeader();
+	void setProtoHeader(ProtoHeader * header);
+	ProtoHeader getProtoHeader();
 
-	UDPSocket acceptUDP(void);
+	ProtoSocket acceptUDP(void);
 
 private:
-	UDPSocket(SOCKET accepted);
+	ProtoSocket(SOCKET accepted);
 
 	void receiveSort();
 
@@ -55,6 +55,6 @@ private:
 
 	unsigned int m_packetSize;
 	NetAddress	m_address;
-	UDPHeader * m_header;
-	UDPHeader m_lastUDPHeader;
+	ProtoHeader * m_header;
+	ProtoHeader m_lastProtoHeader;
 };

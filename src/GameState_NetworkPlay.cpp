@@ -1,7 +1,7 @@
 #include "GameState_NetworkPlay.h"
 #include "GameState_Result.h"
 
-GameState_NetworkPlay::GameState_NetworkPlay(GameReplicationInfo &gri, std::vector<PlayerReplicationInfo> &pris, UDPConnection * gameServer)
+GameState_NetworkPlay::GameState_NetworkPlay(GameReplicationInfo &gri, std::vector<PlayerReplicationInfo> &pris, ProtoConnection * gameServer)
 	: m_GRI(gri), m_gameServer(gameServer)
 {
 	m_PRIs.swap(pris);

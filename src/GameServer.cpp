@@ -2,18 +2,18 @@
 #include "BaseNetMessage.h"
 #include "ServerInfoNetMessage.h"
 #include "ServerListNetMessage.h"
-#include "UDPConnection.h"
-#include "UDPConnectionManagerProcess.h"
+#include "ProtoConnection.h"
+#include "ProtoConnectionManagerProcess.h"
 #include "PlayerReplicationInfoNetMessage.h"
 #include "GameReplicationInfoNetMessage.h"
 #include "ClientInfoNetMessage.h"
 
 #include <algorithm>
 
-GameServer::GameServer(UDPConnectionManagerProcessThread * gsthread)
+GameServer::GameServer(ProtoConnectionManagerProcessThread * gsthread)
 	: m_gsThread(gsthread), m_nextNetID(1337)
 {
-	m_gsThread->m_manager->setAcceptCallback([this](UDPConnection * accepted)
+	m_gsThread->m_manager->setAcceptCallback([this](ProtoConnection * accepted)
 	{
 		m_newConnections.push_back(accepted);
 	});

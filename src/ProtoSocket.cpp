@@ -1,22 +1,22 @@
-#include "UDPSocket.h"
+#include "ProtoSocket.h"
 
-std::list<NetAddress>				UDPSocket::m_connectionAttempts;
-std::list<NetAddress>				UDPSocket::m_disconnected;
-std::list<UDPSocket::Packet>		UDPSocket::m_received;
+std::list<NetAddress>				ProtoSocket::m_connectionAttempts;
+std::list<NetAddress>				ProtoSocket::m_disconnected;
+std::list<ProtoSocket::Packet>		ProtoSocket::m_received;
 
-UDPSocket::UDPSocket()
+ProtoSocket::ProtoSocket()
 {}
 
-UDPSocket::UDPSocket(SOCKET accepted)
+ProtoSocket::ProtoSocket(SOCKET accepted)
 {
 	m_isConnected = m_isInitialized = true;
 	m_socket = accepted;
 }
 
-UDPSocket::~UDPSocket()
+ProtoSocket::~ProtoSocket()
 {}
 
-bool UDPSocket::cleanup()
+bool ProtoSocket::cleanup()
 {
 	if( m_isInitialized && shutdown(m_socket, SD_BOTH) )
 	{
@@ -30,7 +30,7 @@ bool UDPSocket::cleanup()
 	return true;
 }
 
-bool UDPSocket::initialize(NetAddress address)
+bool ProtoSocket::initialize(NetAddress address)
 {
 	m_address = address;
 	//Probably not what should happen?
@@ -39,21 +39,21 @@ bool UDPSocket::initialize(NetAddress address)
 	::bind(m_socket, (SOCKADDR*)&m_address, sizeof(m_address));
 	return m_isInitialized = (m_socket != INVALID_SOCKET);
 }
-bool UDPSocket::connect()
+bool ProtoSocket::connect()
 {
 	return connect(m_address);
 }
-bool UDPSocket::connect(const NetAddress & to)
+bool ProtoSocket::connect(const NetAddress & to)
 {
 
-	ubyte buffer[sizeof(UDPHeader) + sizeof(uint)];
+	ubyte buffer[sizeof(ProtoHeader) + sizeof(uint)];
 
-	UDPHeader temp;
+	ProtoHeader temp;
 	
-	memcpy(buffer, &temp, sizeof(UDPHeader));
-	memcpy(buffer + sizeof(UDPHeader), (ubyte*)&UDPHeader::CONNECTION_MESSAGE, sizeof(uint));
+	memcpy(buffer, &temp, sizeof(ProtoHeader));
+	memcpy(buffer + sizeof(ProtoHeader), (ubyte*)&ProtoHeader::CONNECTION_MESSAGE, sizeof(uint));
 
-	bool test = ((sizeof(uint) + sizeof(UDPHeader)) == ::sendto(m_socket, (const char*)buffer, sizeof(uint) + sizeof(UDPHeader), 0, (SOCKADDR*)&to, sizeof(NetAddress)));
+	bool test = ((sizeof(uint) + sizeof(ProtoHeader)) == ::sendto(m_socket, (const char*)buffer, sizeof(uint) + sizeof(ProtoHeader), 0, (SOCKADDR*)&to, sizeof(NetAddress)));
 	return m_isConnected = test;
 
 	/*if( !m_isInitialized || ::connect(m_socket, (SOCKADDR*)&to, sizeof(to)) )
@@ -62,7 +62,7 @@ bool UDPSocket::connect(const NetAddress & to)
 	return m_isConnected = true;*/
 }
 
-bool UDPSocket::listen(const NetAddress local, char backlog) 
+bool ProtoSocket::listen(const NetAddress local, char backlog) 
 {
 	do 
 	{ receiveSort(); }
@@ -74,7 +74,7 @@ bool UDPSocket::listen(const NetAddress local, char backlog)
 	return true;
 }
 
-ISocket * UDPSocket::accept(NetAddress & remote) 
+ISocket * ProtoSocket::accept(NetAddress & remote) 
 {
 	SOCKET accepted = INVALID_SOCKET;
 	ISocket * newSocket = nullptr;
@@ -82,14 +82,14 @@ ISocket * UDPSocket::accept(NetAddress & remote)
 
 	accepted = ::accept(m_socket, (SOCKADDR*)&remote, &addrlen);
 	if(accepted != INVALID_SOCKET)
-		newSocket = new UDPSocket(accepted);
+		newSocket = new ProtoSocket(accepted);
 
 	return newSocket;
 }
 
-UDPSocket UDPSocket::acceptUDP()
+ProtoSocket ProtoSocket::acceptUDP()
 {
-	UDPSocket accepted;
+	ProtoSocket accepted;
 
 	receiveSort();
 
@@ -106,7 +106,7 @@ UDPSocket UDPSocket::acceptUDP()
 	return accepted;
 }
 
-int UDPSocket::send(const char * buffer, unsigned size, bool write)
+int ProtoSocket::send(const char * buffer, unsigned size, bool write)
 {
 	int i = send(buffer, size, m_address);
 	if(write)
@@ -121,16 +121,16 @@ int UDPSocket::send(const char * buffer, unsigned size, bool write)
 	return i;
 }
 
-int UDPSocket::send(const char * buffer, unsigned size, const NetAddress &to)
+int ProtoSocket::send(const char * buffer, unsigned size, const NetAddress &to, bool write)
 {
 	ubyte packet[MAX_PACKET_SIZE];
 
-	memcpy(packet, m_header, sizeof(UDPHeader));
-	memcpy(packet + sizeof(UDPHeader), buffer, std::min(size, MAX_PACKET_SIZE - sizeof(UDPHeader)));
-	return ::sendto(m_socket, packet, std::min(size+sizeof(UDPHeader), MAX_PACKET_SIZE), 0, (SOCKADDR*)&to, sizeof(NetAddress)) - sizeof(UDPHeader);
+	memcpy(packet, m_header, sizeof(ProtoHeader));
+	memcpy(packet + sizeof(ProtoHeader), buffer, std::min(size, MAX_PACKET_SIZE - sizeof(ProtoHeader)));
+	return ::sendto(m_socket, packet, std::min(size+sizeof(ProtoHeader), MAX_PACKET_SIZE), 0, (SOCKADDR*)&to, sizeof(NetAddress)) - sizeof(ProtoHeader);
 }
 
-int UDPSocket::receive(char * buffer, unsigned size, bool write)
+int ProtoSocket::receive(char * buffer, unsigned size, bool write)
 {
 	//return ::recv(m_socket, buffer, size, 0);
 	std::list<Packet>::iterator packet;
@@ -148,16 +148,16 @@ int UDPSocket::receive(char * buffer, unsigned size, bool write)
 	if( packet == m_received.end() )
 		return -1;
 
-	uint len = std::min(size, packet->packetSize - sizeof(UDPHeader));
-	memcpy(&m_lastUDPHeader, packet->packet, sizeof(UDPHeader));
-	memcpy(buffer, packet->packet + sizeof(UDPHeader), len);
+	uint len = std::min(size, packet->packetSize - sizeof(ProtoHeader));
+	memcpy(&m_lastProtoHeader, packet->packet, sizeof(ProtoHeader));
+	memcpy(buffer, packet->packet + sizeof(ProtoHeader), len);
 
 	//m_received.erase(packet);
 
 	return size;
 }
 
-int UDPSocket::receive(char * buffer, unsigned size, NetAddress &from)
+int ProtoSocket::receive(char * buffer, unsigned size, NetAddress &from, bool write)
 {
 	int rcvd = receive(buffer, size);
 	if(rcvd > 0)
@@ -165,7 +165,7 @@ int UDPSocket::receive(char * buffer, unsigned size, NetAddress &from)
 	return rcvd;
 }
 
-void UDPSocket::receiveSort()
+void ProtoSocket::receiveSort()
 {
 	Packet p;
 	int addrSize = sizeof(SOCKADDR);
@@ -195,12 +195,12 @@ void UDPSocket::receiveSort()
 	}
 
 	// not from a proto send
-	else if( p.packetSize < sizeof(UDPHeader) || !reinterpret_cast<UDPHeader*>(p.packet)->valid() )
+	else if( p.packetSize < sizeof(ProtoHeader) || !reinterpret_cast<ProtoHeader*>(p.packet)->valid() )
 		return;
 
 	// connection attempt
-	else if ( p.packetSize - sizeof(UDPHeader) == sizeof(uint) 
-			&& UDPHeader::CONNECTION_MESSAGE == *((uint*)(p.packet + sizeof(UDPHeader))) )
+	else if ( p.packetSize - sizeof(ProtoHeader) == sizeof(uint) 
+			&& ProtoHeader::CONNECTION_MESSAGE == *((uint*)(p.packet + sizeof(ProtoHeader))) )
 	{
 		printf("Connection attempt!\n");
 		m_connectionAttempts.emplace_back(p.from);
@@ -208,29 +208,29 @@ void UDPSocket::receiveSort()
 	}
 
 	// disconnection
-	else if ( p.packetSize - sizeof(UDPHeader) == sizeof(uint) 
-			&& UDPHeader::DISCONNECT_MESSAGE == *((uint*)(p.packet + sizeof(UDPHeader))) )
+	else if ( p.packetSize - sizeof(ProtoHeader) == sizeof(uint) 
+			&& ProtoHeader::DISCONNECT_MESSAGE == *((uint*)(p.packet + sizeof(ProtoHeader))) )
 	{
 		m_disconnected.emplace_back(p.from);
 		return;
 	}
-	memmove(p.packet, p.packet + sizeof(UDPHeader), sizeof(UDPHeader));
-	p.packetSize -= sizeof(UDPHeader);
+	memmove(p.packet, p.packet + sizeof(ProtoHeader), sizeof(ProtoHeader));
+	p.packetSize -= sizeof(ProtoHeader);
 	// else it's just a packet.
 	m_received.emplace_back(p);
 }
 
-void UDPSocket::setUDPHeader(UDPHeader * header)
+void ProtoSocket::setProtoHeader(ProtoHeader * header)
 {
 	m_header = header;
 }
 
-UDPHeader UDPSocket::getUDPHeader()
+ProtoHeader ProtoSocket::getProtoHeader()
 {
-	return m_lastUDPHeader;
+	return m_lastProtoHeader;
 }
 
-bool UDPSocket::pop_receivePacket(char* buffer, int* size)
+bool ProtoSocket::pop_receivePacket(char* buffer, int* size)
 {
 	if( m_received.empty() )
 		return false;

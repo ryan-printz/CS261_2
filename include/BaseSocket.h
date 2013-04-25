@@ -20,10 +20,10 @@ public:
 	virtual ISocket * accept(NetAddress & remote) = 0;
 
 	virtual int send(const char * buffer, unsigned size, bool write = true) = 0;
-	virtual int send(const char * buffer, unsigned size, const NetAddress & to) = 0;
+	virtual int send(const char * buffer, unsigned size, const NetAddress & to, bool write = true) = 0;
 
 	virtual int receive(char * buffer, unsigned size, bool write = true) = 0;
-	virtual int receive(char * buffer, unsigned size, NetAddress & from) = 0;
+	virtual int receive(char * buffer, unsigned size, NetAddress & from, bool write = true) = 0;
 
 	// virtual functions implemented from ISocket;
 	virtual bool invalid() const;

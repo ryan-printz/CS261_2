@@ -33,6 +33,13 @@ NetAddress::NetAddress()
 	sin_family = AF_INET;
 }
 
+NetAddress::NetAddress(unsigned ip, unsigned port)
+{
+	sin_family = AF_INET;
+	sin_port = htons(port);
+	sin_addr.s_addr = ip;
+}
+
 NetAddress::NetAddress(unsigned port)
 {
 	sin_family = AF_INET;
@@ -73,23 +80,6 @@ BaseSocket::BaseSocket()
 	m_isConnected(false), 
 	m_socket(INVALID_SOCKET)
 {}
-
-//bool Socket::initializeUDP(const char * ipAddress, uint port, uint family)
-//{
-//	m_address.sin_family = family;
-//	m_address.sin_port = htons(port);
-//	m_address.sin_addr.s_addr = inet_addr(ipAddress);
-//
-//	m_socket = socket(family, SOCK_DGRAM, IPPROTO_UDP);
-//
-//	if( m_socket == INVALID_SOCKET )
-//	{
-//		m_error = WSAGetLastError();
-//		return false;
-//	}
-//
-//	return true;
-//}
 
 void BaseSocket::setBlocking(bool blocking)
 {

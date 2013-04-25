@@ -8,8 +8,8 @@
 #include <list>
 #include <vector>
 
-class UDPConnection;
-class UDPConnectionManagerProcessThread;
+class ProtoConnection;
+class ProtoConnectionManagerProcessThread;
 class PlayerReplicationInfo;
 
 // TODO: this needs to implement and inherit from IServer
@@ -21,7 +21,7 @@ class GameServer : public IServer
 {
 public:
 	GameServer() {}
-	GameServer(UDPConnectionManagerProcessThread * gsThread);
+	GameServer(ProtoConnectionManagerProcessThread * gsThread);
 	virtual ~GameServer();
 	virtual void update();
 
@@ -33,8 +33,8 @@ protected:
 	int m_nextNetID;
 	ServerInfo m_info;
 
-	std::list<UDPConnection*> m_newConnections;
-	UDPConnectionManagerProcessThread * m_gsThread;
+	std::list<ProtoConnection*> m_newConnections;
+	ProtoConnectionManagerProcessThread * m_gsThread;
 
 	GameReplicationInfo m_GRI;
 	PRIVector m_PRIs;

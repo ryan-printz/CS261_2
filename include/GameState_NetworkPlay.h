@@ -3,14 +3,14 @@
 #include "GameState_BasePlay.h"
 #include "GameReplicationInfo.h"
 #include "PlayerReplicationInfo.h"
-#include "UDPConnection.h"
+#include "ProtoConnection.h"
 
 // ---------------------------------------------------------------------------
 
 class GameState_NetworkPlay : public GameState_BasePlay
 {
 public:
-	GameState_NetworkPlay(GameReplicationInfo &gri, std::vector<PlayerReplicationInfo> &pris, UDPConnection * gameServer);
+	GameState_NetworkPlay(GameReplicationInfo &gri, std::vector<PlayerReplicationInfo> &pris, ProtoConnection * gameServer);
 	virtual ~GameState_NetworkPlay();
 
 	virtual void onEnd();
@@ -20,5 +20,5 @@ public:
 private:
 	GameReplicationInfo m_GRI;
 	std::vector<PlayerReplicationInfo> m_PRIs;
-	UDPConnection * m_gameServer;
+	ProtoConnection * m_gameServer;
 };

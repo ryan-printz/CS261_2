@@ -3,7 +3,7 @@
 #include "SequenceNumber.h"
 #include "Types.h"
 
-struct UDPHeader
+struct ProtoHeader
 {
 	enum Flags
 	{
@@ -16,7 +16,7 @@ struct UDPHeader
 
 	// a constant identifier for the protocol.
 	// packets that don't have this are ignored.
-	UDPHeader() : m_protocol(0xb4639620) {}
+	ProtoHeader() : m_protocol(0xb4639620) {}
 	const uint		m_protocol;
 
 	SequenceNumber	m_sequence;

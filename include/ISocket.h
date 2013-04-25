@@ -7,6 +7,7 @@ class NetAddress : public sockaddr_in
 public:
 	NetAddress();
 	NetAddress(unsigned port);
+	NetAddress(unsigned ip, unsigned port);
 	NetAddress(const char * ip, unsigned port);
 
 	static char * localIP();
@@ -37,10 +38,10 @@ public:
 	virtual unsigned lastError() const = 0;
 
 	virtual int send(const char * buffer, unsigned size, bool write = true) = 0;
-	virtual int send(const char * buffer, unsigned size, const NetAddress & to) = 0;
+	virtual int send(const char * buffer, unsigned size, const NetAddress & to, bool write = true) = 0;
 
 	virtual int receive(char * buffer, unsigned size, bool write = true) = 0;
-	virtual int receive(char * buffer, unsigned size, NetAddress & from) = 0;
+	virtual int receive(char * buffer, unsigned size, NetAddress & from, bool write = true) = 0;
 };
 
 bool initSockets(bool printInfo = false);

@@ -78,16 +78,19 @@
     <ClCompile Include="..\src\GameState_BasePlay.cpp">
       <Filter>Source Files\GameState</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\UDPConnectionManagerProcess.cpp">
-      <Filter>Source Files\Networking</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\UDPSocket.cpp">
-      <Filter>Source Files\Networking</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\UDPConnection.cpp">
-      <Filter>Source Files\Networking</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\SequenceNumber.cpp">
+      <Filter>Source Files\Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\MulticastSocket.cpp">
+      <Filter>Header Files\Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ProtoConnection.cpp">
+      <Filter>Source Files\Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ProtoConnectionManagerProcess.cpp">
+      <Filter>Source Files\Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ProtoSocket.cpp">
       <Filter>Source Files\Networking</Filter>
     </ClCompile>
   </ItemGroup>
@@ -167,22 +170,25 @@
     <ClInclude Include="..\include\GameServer.h">
       <Filter>Header Files\Networking</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\UDPConnection.h">
-      <Filter>Header Files\Networking</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\UDPHeader.h">
-      <Filter>Header Files\Networking</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\UDPSocket.h">
-      <Filter>Header Files\Networking</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\UDPConnectionManagerProcess.h">
-      <Filter>Header Files\Networking</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\SequenceNumber.h">
       <Filter>Header Files\Networking</Filter>
     </ClInclude>
     <ClInclude Include="..\include\Types.h">
+      <Filter>Header Files\Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MulticastSocket.h">
+      <Filter>Header Files\Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\ProtoSocket.h">
+      <Filter>Header Files\Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\ProtoHeader.h">
+      <Filter>Header Files\Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\ProtoConnectionManagerProcess.h">
+      <Filter>Header Files\Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\ProtoConnection.h">
       <Filter>Header Files\Networking</Filter>
     </ClInclude>
   </ItemGroup>

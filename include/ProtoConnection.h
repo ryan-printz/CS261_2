@@ -3,7 +3,7 @@
 #include "BaseConnection.h"
 #include "BaseSocket.h"
 #include "SequenceNumber.h"
-#include "UDPSocket.h"
+#include "ProtoSocket.h"
 #include <unordered_map>
 #include <list>
 
@@ -105,7 +105,7 @@ public:
 
 struct FlowPacket
 {
-	ubyte	m_buffer[UDPSocket::MAX_PACKET_SIZE];
+	ubyte	m_buffer[ProtoSocket::MAX_PACKET_SIZE];
 	ubyte	m_flags;
 	uint	m_size;
 };
@@ -150,12 +150,12 @@ struct ConnectionStats
 
 std::ostream & operator<<(std::ostream & os, const ConnectionStats & stats);
 
-class UDPConnection : public BaseConnection
+class ProtoConnection : public BaseConnection
 {
 public:
-	UDPConnection();
-	UDPConnection(ISocket * connection, NetAddress & address);
-	virtual ~UDPConnection();
+	ProtoConnection();
+	ProtoConnection(ISocket * connection, NetAddress & address);
+	virtual ~ProtoConnection();
 
 	virtual bool accept(ISocket * listener);
 	bool connect(const char * ip, uint port);
@@ -168,7 +168,7 @@ public:
 	virtual bool pop_receivePacket(Packet & out);
 
 	int receive(ubyte * buffer, uint len, int drop = 0);
-	int send(ubyte * buffer, uint len, ubyte flags = UDPHeader::UDP_HIGH);
+	int send(ubyte * buffer, uint len, ubyte flags = ProtoHeader::UDP_HIGH);
 
 	virtual void update(float dt);
 
@@ -188,7 +188,7 @@ protected:
 
 private:
 	// the other receiving endpoint.
-	UDPSocket* m_connection;
+	ProtoSocket* m_connection;
 
 	// connection properties
 	bool m_connected;

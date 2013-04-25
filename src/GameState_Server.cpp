@@ -86,9 +86,8 @@ void GameState_Server::draw()
 	{
 		sprintf(strBuffer, "%i %i %s %i", pri->m_lives, pri->m_netid, pri->m_name, pri->m_score);
 		AEGfxPrint(600, y += 20, 0xFFCCCCCC, strBuffer);
+
+		// visually represent update area
+		AEGfxSphere(pri->m_x, pri->m_y, 0, 30);
 	}
-
-	// draw debug info
-
-	// TODO: debug info
 }
