@@ -164,6 +164,9 @@ public:
 
 	virtual int send(Packet & p);
 	virtual int receive(Packet & p);
+
+	virtual bool pop_receivePacket(Packet & out);
+
 	int receive(ubyte * buffer, uint len, int drop = 0);
 	int send(ubyte * buffer, uint len, ubyte flags = UDPHeader::UDP_HIGH);
 

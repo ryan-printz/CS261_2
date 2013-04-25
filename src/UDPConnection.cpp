@@ -44,7 +44,6 @@ bool UDPConnection::accept(ISocket * listener)
 	
 	if(!uSocket)
 		return false;
-	//this->m_
 	UDPSocket* accepted = new UDPSocket(uSocket->acceptUDP());
 
 	if( !accepted->invalid() )
@@ -52,9 +51,13 @@ bool UDPConnection::accept(ISocket * listener)
 		m_connection = accepted;
 		m_socket = accepted;
 		m_server = true;
+		m_connected = true;
+		return true;
 	}
+	else
+		delete accepted;
 
-	return !accepted->invalid();
+	return false;
 
 	//m_socket = listener->accept(m_remote);
 	//m_connection = (UDPSocket*)m_socket;
@@ -170,6 +173,11 @@ int UDPConnection::receive(ubyte * buffer, uint len, int drop)
 	return received;
 }
 
+bool UDPConnection::pop_receivePacket(Packet & out)
+{
+	return m_connection->pop_receivePacket(out.m_buffer, &out.m_length);
+}
+
 int UDPConnection::send(ubyte * buffer, uint len, ubyte flags)
 {
 	if( !m_useFlowControl )
@@ -190,6 +198,8 @@ void UDPConnection::update(float dt)
 {
 	// get a little bit closer to timing out.
 	m_idleTimer += dt;
+
+
 
 	if( m_keepAliveInterval && !((int)m_idleTimer % m_keepAliveInterval) )
 	{

@@ -129,7 +129,7 @@ int UDPSocket::send(const char * buffer, unsigned size, const NetAddress &to)
 	memcpy(packet + sizeof(UDPHeader), buffer, std::min(size, MAX_PACKET_SIZE - sizeof(UDPHeader)));
 	int i = WSAGetLastError();
 	printf("%i\n",i);
-	return ::sendto(m_socket, buffer, std::min(size+sizeof(UDPHeader), MAX_PACKET_SIZE), 0, (SOCKADDR*)&to, sizeof(NetAddress)) - sizeof(UDPHeader);
+	return ::sendto(m_socket, packet, std::min(size+sizeof(UDPHeader), MAX_PACKET_SIZE), 0, (SOCKADDR*)&to, sizeof(NetAddress)) - sizeof(UDPHeader);
 }
 
 int UDPSocket::receive(char * buffer, unsigned size, bool write)
@@ -155,15 +155,7 @@ int UDPSocket::receive(char * buffer, unsigned size, bool write)
 	memcpy(buffer, packet->packet + sizeof(UDPHeader), len);
 
 	m_received.erase(packet);
-	if(write)
-	{
-		FILE* myFile;
-		myFile = fopen ("log.txt", "a");
-		fwrite("Received UDP: ", 1, 14, myFile);
-		fwrite(buffer, 1, len, myFile);
-		fwrite("\n", 1, 1, myFile);
-		fclose(myFile);
-	}	
+
 	return size;
 }
 
@@ -184,11 +176,21 @@ void UDPSocket::receiveSort()
 
 	m_error = WSAGetLastError();
 	// nothing to receive
+
+
 	if( p.packetSize == SOCKET_ERROR && m_error == WSAEWOULDBLOCK )
 		return;
-	
+	if( p.packetSize > 0 )
+	{
+		FILE* myFile;
+		myFile = fopen ("log.txt", "a");
+		fwrite("Received UDP: ", 1, 14, myFile);
+		fwrite(p.packet, 1, p.packetSize, myFile);
+		fwrite("\n", 1, 1, myFile);
+		fclose(myFile);
+	}
 	// client disconnected.
-	else if( p.packetSize == 0 )
+	if( p.packetSize == 0 )
 	{
 		m_disconnected.emplace_back( p.from );
 		return;
@@ -202,6 +204,7 @@ void UDPSocket::receiveSort()
 	else if ( p.packetSize - sizeof(UDPHeader) == sizeof(uint) 
 			&& UDPHeader::CONNECTION_MESSAGE == *((uint*)(p.packet + sizeof(UDPHeader))) )
 	{
+		printf("Connection attempt!\n");
 		m_connectionAttempts.emplace_back(p.from);
 		return;
 	}
@@ -226,4 +229,17 @@ void UDPSocket::setUDPHeader(UDPHeader * header)
 UDPHeader UDPSocket::getUDPHeader()
 {
 	return m_lastUDPHeader;
+}
+
+bool UDPSocket::pop_receivePacket(char* buffer, int* size)
+{
+	if( m_received.empty() )
+		return false;
+
+	Packet out = m_received.front();
+	m_received.pop_front();
+
+	memcpy(buffer, out.packet, out.packetSize);
+	*size = out.packetSize;
+	return true;
 }

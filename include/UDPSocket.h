@@ -37,6 +37,8 @@ public:
 	virtual int receive(char * buffer, unsigned size, bool write = true);
 	virtual int receive(char * buffer, unsigned size, NetAddress & from);
 
+	bool pop_receivePacket(char* buffer, int* size);
+
 	void setUDPHeader(UDPHeader * header);
 	UDPHeader getUDPHeader();
 
