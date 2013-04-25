@@ -54,7 +54,7 @@ bool UDPSocket::connect(const NetAddress & to)
 	memcpy(buffer + sizeof(UDPHeader), (ubyte*)&UDPHeader::CONNECTION_MESSAGE, sizeof(uint));
 
 	bool test = ((sizeof(uint) + sizeof(UDPHeader)) == ::sendto(m_socket, (const char*)buffer, sizeof(uint) + sizeof(UDPHeader), 0, (SOCKADDR*)&to, sizeof(NetAddress)));
-	return test;
+	return m_isConnected = test;
 
 	/*if( !m_isInitialized || ::connect(m_socket, (SOCKADDR*)&to, sizeof(to)) )
 		return false;
@@ -178,9 +178,11 @@ int UDPSocket::receive(char * buffer, unsigned size, NetAddress &from)
 void UDPSocket::receiveSort()
 {
 	Packet p;
-	int addrSize;
-	p.packetSize = ::recvfrom(m_socket, p.packet, m_packetSize, 0, (SOCKADDR*)&p.from, &addrSize);
+	int addrSize = sizeof(SOCKADDR);
 
+	p.packetSize = ::recvfrom(m_socket, p.packet, sizeof(p.packet), 0, (SOCKADDR*)&p.from, &addrSize);
+
+	m_error = WSAGetLastError();
 	// nothing to receive
 	if( p.packetSize == SOCKET_ERROR && m_error == WSAEWOULDBLOCK )
 		return;

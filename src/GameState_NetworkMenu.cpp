@@ -278,8 +278,6 @@ ConnectingState::ConnectingState(ServerInfo & server, IGameState * parent)
 	playerInfo.m_length = sizeof(PlayerReplicationInfoNetMessage);
 
 	m_game->send(playerInfo);
-	int i = WSAGetLastError();
-	printf("%i\n",i);
 }
 
 void ConnectingState::update()

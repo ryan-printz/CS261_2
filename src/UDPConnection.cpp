@@ -44,12 +44,21 @@ bool UDPConnection::accept(ISocket * listener)
 	
 	if(!uSocket)
 		return false;
+	//this->m_
+	UDPSocket* accepted = new UDPSocket(uSocket->acceptUDP());
 
-	UDPSocket accepted = uSocket->acceptUDP();
+	if( !accepted->invalid() )
+	{
+		m_connection = accepted;
+		m_socket = accepted;
+		m_server = true;
+	}
 
-	m_socket = listener->accept(m_remote);
-	m_connection = (UDPSocket*)m_socket;
-	return m_socket != nullptr;
+	return !accepted->invalid();
+
+	//m_socket = listener->accept(m_remote);
+	//m_connection = (UDPSocket*)m_socket;
+	//return m_socket != nullptr;
 }
 
 bool UDPConnection::connect(const char* ip, uint port)
