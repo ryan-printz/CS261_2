@@ -65,7 +65,7 @@ void GameState_Server::update()
 
 		gObj->velCurr.x = float(rand() % 100) / 100.f * 20.f - 10.f;
 		gObj->velCurr.y = float(rand() % 100) / 100.f * 20.f - 10.f;
-		gObj->scale = 15.f;
+		gObj->scale = 10.f;
 		m_Asteroids.emplace(std::make_pair<short, GameObjInst*>(m_gameServer->getNextNetID(), gObj ));
 	}
 
@@ -87,6 +87,13 @@ void GameState_Server::update()
 	}
 	objects.clear();
 
+	auto ninjaInfos = m_gameServer->getNinjaMsgs();
+	for(auto ninjaInfo = ninjaInfos.begin(); ninjaInfo != ninjaInfos.end(); ++ninjaInfo)
+	{
+		destroyObject(ninjaInfo->netID());
+	}
+
+	bool sent = false;
 	auto test = m_Asteroids.begin();
 	for(; test != m_Asteroids.end(); ++test)
 	{
@@ -109,11 +116,17 @@ void GameState_Server::update()
 
 
 				(*connect)->send(playerInfo);
-
+				sent = true;
 			}
-			updateTimer = .5f;
+			
 		}
 	}
+	if(sent)
+		updateTimer = .5f;
+	
+
+	updateMatrix();
+	
 }
 
 void GameState_Server::unload()
@@ -128,6 +141,7 @@ void GameState_Server::unload()
 
 void GameState_Server::draw()
 {	
+	//GameState_BasePlay::draw();
 	// draw the game like normal.
 	s8 strBuffer[1024];
 
@@ -162,4 +176,20 @@ void GameState_Server::draw()
 		// visually represent update area
 		AEGfxSphere(pri->m_x, pri->m_y, 99, 30);
 	}
+}
+
+void GameState_Server::destroyObject(short netID)
+{
+	auto finder = m_Asteroids.find(netID);
+	if(finder != m_Asteroids.end())
+	{
+		//KILL
+		finder->second->flag |= ~FLAG_ACTIVE;
+		m_Asteroids.erase(finder);
+		return;
+	}
+
+
+	m_netObjects.destroyObject(netID);
+
 }

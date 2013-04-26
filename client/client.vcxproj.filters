@@ -208,5 +208,8 @@
     <ClInclude Include="..\include\NetObjectManager.h">
       <Filter>Header Files\Networking</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\NinjaInfoCardMessage.h">
+      <Filter>Header Files\Networking</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

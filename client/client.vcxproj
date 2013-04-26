@@ -136,6 +136,7 @@
     <ClInclude Include="..\include\ISocket.h" />
     <ClInclude Include="..\include\main.h" />
     <ClInclude Include="..\include\NetObjectManager.h" />
+    <ClInclude Include="..\include\NinjaInfoCardMessage.h" />
     <ClInclude Include="..\include\PlayerReplicationInfo.h" />
     <ClInclude Include="..\include\PlayerReplicationInfoNetMessage.h" />
     <ClInclude Include="..\include\SequenceNumber.h" />

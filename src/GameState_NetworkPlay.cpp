@@ -8,6 +8,7 @@
 #include "ClientInfoNetMessage.h"
 #include "ObjectNetMessage.h"
 #include "NetObjectManager.h"
+#include "GameState_Menu.h"
 
 GameState_NetworkPlay::GameState_NetworkPlay(GameReplicationInfo &gri, std::vector<PlayerReplicationInfo> &pris, ProtoConnection * gameServer, int netID)
 	: m_GRI(gri), m_gameServer(gameServer), m_netID(netID), m_netObjects(&m_game), m_send(.5f), m_lastRecv(10.f)
@@ -20,7 +21,7 @@ GameState_NetworkPlay::~GameState_NetworkPlay()
 
 void GameState_NetworkPlay::onEnd()
 {
-	m_gsm->nextState(new GameState_Result());
+	m_gsm->nextState(new GameState_Menu());
 }
 
 void GameState_NetworkPlay::init()

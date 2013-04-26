@@ -17,6 +17,7 @@ public:
 	NetInstContainer::const_iterator begin() const;
 	NetInstContainer::iterator end();
 	NetInstContainer::const_iterator end() const;
+	void destroyObject(short netID);
 
 	void push(short netId, unsigned type, unsigned flag, float x, float y, float r, float velx, float vely);
 	void update(short netId, unsigned type, unsigned flag, float x, float y, float r, float velx, float vely);

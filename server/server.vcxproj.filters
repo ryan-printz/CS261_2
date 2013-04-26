@@ -206,6 +206,9 @@
     <ClInclude Include="..\include\ObjectNetMessage.h">
       <Filter>Header Files\Networking</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\NinjaInfoCardMessage.h">
+      <Filter>Header Files\Networking</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\src\ConnectionManager.inl">

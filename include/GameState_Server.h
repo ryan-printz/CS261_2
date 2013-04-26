@@ -20,7 +20,7 @@ public:
 	virtual void update();
 	virtual void draw();
 	virtual void unload();
-
+	void destroyObject(short netID);
 	virtual void onEnd() {};
 
 protected:

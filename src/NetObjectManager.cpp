@@ -69,3 +69,14 @@ void NetObjectManager::update(short netId, unsigned type, unsigned flag, float x
 	inst->second->velCurr.x = velx;
 	inst->second->velCurr.y = vely;
 }
+
+void NetObjectManager::destroyObject(short netID)
+{
+	auto finder = find(netID);
+	if(finder != end())
+	{
+		//KILL
+		finder->second->flag |= ~FLAG_ACTIVE;
+		erase(finder);
+	}
+}

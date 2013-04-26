@@ -5,6 +5,7 @@
 #include "GameReplicationInfo.h"
 #include "PlayerReplicationInfo.h"
 #include "ObjectNetMessage.h"
+#include "NinjaInfoCardMessage.h"
 
 #include <list>
 #include <vector>
@@ -18,6 +19,7 @@ class PlayerReplicationInfo;
 // needs to use UDP sockets/connections to connect to players.
 typedef std::vector<PlayerReplicationInfo> PRIVector;
 typedef std::list<ObjectNetMessage> ObjectMsgList;
+typedef std::list<NinjaInfoCardMessage> NinjaMsgList;
 
 class GameServer : public IServer
 {
@@ -34,6 +36,7 @@ public:
 
 	std::list<ProtoConnection*> & getNewConnections();
 	ObjectMsgList & getObjectMsgs();
+	NinjaMsgList & getNinjaMsgs();
 	
 protected:
 	void addNewPlayer(ProtoConnection * connected, PlayerReplicationInfo & pri);
@@ -48,4 +51,5 @@ protected:
 	GameReplicationInfo m_GRI;
 	PRIVector m_PRIs;
 	ObjectMsgList m_objectMsgs;
+	NinjaMsgList m_ninjaMsgs;
 };
