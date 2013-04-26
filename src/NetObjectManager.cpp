@@ -55,8 +55,8 @@ void NetObjectManager::update(short netId, unsigned type, unsigned flag, char x,
 		return;
 	}
 
-	inst->second.flag = flag;
-	inst->second.posCurr.x = x;
-	inst->second.posCurr.y = y;
-	inst->second.dirCurr = r;
+	inst->second->flag = flag;
+	inst->second->posCurr.x = x;
+	inst->second->posCurr.y = y;
+	inst->second->dirCurr = r;
 }

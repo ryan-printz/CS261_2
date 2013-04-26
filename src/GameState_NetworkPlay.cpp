@@ -6,6 +6,7 @@
 #include "GameReplicationInfoNetMessage.h"
 #include "PlayerReplicationInfoNetMessage.h"
 #include "ClientInfoNetMessage.h"
+#include "NetObjectManager.h"
 
 GameState_NetworkPlay::GameState_NetworkPlay(GameReplicationInfo &gri, std::vector<PlayerReplicationInfo> &pris, ProtoConnection * gameServer, int netID)
 	: m_GRI(gri), m_gameServer(gameServer), m_netID(netID)

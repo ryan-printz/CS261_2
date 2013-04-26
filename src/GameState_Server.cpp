@@ -13,7 +13,7 @@
 // TODO: Game Replication Info
 
 GameState_Server::GameState_Server(MulticastSocket * master, ServerInfo & info, GameServer* gameServer)
-	: m_master(master), m_gameServer(gameServer)
+	: m_master(master), m_gameServer(gameServer), m_netObjects(&m_game)
 {
 	gameServer->getInfo() = info;
 }
@@ -66,8 +66,12 @@ void GameState_Server::update()
 	}
 	
 	// update the server using only the info from the clients.
-
-	// TODO: update with network info
+	auto objects = m_gameServer->getObjectMsgs();
+	for(auto object = objects.begin(); object != objects.end(); ++object)
+	{
+		m_netObjects.push(object->netId, object->type, object->flags, object->x, object->y, object->z);
+	}
+	objects.clear();
 }
 
 void GameState_Server::unload()

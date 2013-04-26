@@ -57,6 +57,7 @@
     <ClInclude Include="..\include\MasterServer.h" />
     <ClInclude Include="..\include\MulticastSocket.h" />
     <ClInclude Include="..\include\NetObjectManager.h" />
+    <ClInclude Include="..\include\ObjectNetMessage.h" />
     <ClInclude Include="..\include\SequenceNumber.h" />
     <ClInclude Include="..\include\ServerInfo.h" />
     <ClInclude Include="..\include\ServerInfoNetMessage.h" />

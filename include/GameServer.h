@@ -4,6 +4,7 @@
 #include "ServerInfo.h"
 #include "GameReplicationInfo.h"
 #include "PlayerReplicationInfo.h"
+#include "ObjectNetMessage.h"
 
 #include <list>
 #include <vector>
@@ -16,6 +17,7 @@ class PlayerReplicationInfo;
 // possibly needs common functionality implemented in a BaseServer class.
 // needs to use UDP sockets/connections to connect to players.
 typedef std::vector<PlayerReplicationInfo> PRIVector;
+typedef std::list<ObjectNetMessage> ObjectMsgList;
 
 class GameServer : public IServer
 {
@@ -30,6 +32,7 @@ public:
 	ServerInfo & getInfo();
 
 	std::list<ProtoConnection*> & getNewConnections();
+	ObjectMsgList & getObjectMsgs();
 
 protected:
 	void addNewPlayer(ProtoConnection * connected, PlayerReplicationInfo & pri);
@@ -43,4 +46,5 @@ protected:
 
 	GameReplicationInfo m_GRI;
 	PRIVector m_PRIs;
+	ObjectMsgList m_objectMsgs;
 };

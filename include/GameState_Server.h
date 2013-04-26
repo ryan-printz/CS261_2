@@ -7,6 +7,7 @@
 #include "GameReplicationInfo.h"
 #include "PlayerReplicationInfo.h"
 #include "MulticastSocket.h"
+#include "NetObjectManager.h"
 
 class GameState_Server : public GameState_BasePlay
 {
@@ -22,6 +23,7 @@ public:
 	virtual void onEnd() {};
 
 protected:
+	NetObjectManager m_netObjects;
 	MulticastSocket * m_master;
 	GameServer * m_gameServer;
 };

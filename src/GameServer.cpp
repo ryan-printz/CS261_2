@@ -100,6 +100,11 @@ void GameServer::addNewPlayer(ProtoConnection * connected, PlayerReplicationInfo
 	}
 }
 
+ObjectMsgList & GameServer::getObjectMsgs()
+{
+	return m_objectMsgs;
+}
+
 void GameServer::update()
 {
 	m_gsThread->lock();
@@ -122,6 +127,9 @@ void GameServer::update()
 			// new players update the player count
 			m_info.currentPlayers = m_PRIs.size();
 		}
+
+		else if( msg->type() == OBJECT )
+			m_objectMsgs.push_back(*msg->as<ObjectNetMessage>());
 	}
 
 	m_gsThread->unlock();

@@ -5,7 +5,7 @@
 
 class Asteroids;
 
-typedef std::unordered_map<short, GameObjInst> NetInstContainer;
+typedef std::unordered_map<short, GameObjInst*> NetInstContainer;
 
 class NetObjectManager : protected NetInstContainer
 {
