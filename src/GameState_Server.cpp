@@ -76,7 +76,7 @@ void GameState_Server::update()
 		new (serverInfo.m_buffer) ServerInfoNetMessage(m_gameServer->getInfo());
 		serverInfo.m_length = sizeof(ServerInfoNetMessage);
 
-		m_master->send(serverInfo.m_buffer, serverInfo.m_length);
+		//m_master->send(serverInfo.m_buffer, serverInfo.m_length);
 	}
 
 	if( !(timer % 15) )
@@ -190,7 +190,7 @@ void GameState_Server::destroyObject(short netID)
 	if(finder != m_Asteroids.end())
 	{
 		//KILL
-		finder->second->flag |= ~FLAG_ACTIVE;
+		finder->second->flag = NULL;
 		m_Asteroids.erase(finder);
 		return;
 	}
