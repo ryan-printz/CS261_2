@@ -4,14 +4,13 @@
 #include "ClientInfo.h"
 #include "ISocket.h"
 
-#include <vector>
 #include <list>
 
 class TCPConnection;
 class TCPConnectionManagerProcessThread;
 
-typedef std::vector<std::pair<ServerInfo, NetAddress> > ServerVector;
-typedef std::vector<std::pair<ClientInfo, TCPConnection*> > ClientVector;
+typedef std::list<std::pair<ServerInfo, NetAddress> > ServerVector;
+typedef std::list<std::pair<ClientInfo, TCPConnection*> > ClientVector;
 
 class MasterServer
 {
@@ -21,6 +20,7 @@ public:
 
 	virtual void update();
 
+	void removeServer(const NetAddress & address);
 	void pushServer(const ServerInfo & server, const NetAddress & address);
 
 	const ServerVector & servers() const;

@@ -181,6 +181,11 @@ void StartMasterServer::update()
 			// take note of the server.
 			m_master->pushServer(msg->as<ServerInfoNetMessage>()->info(), from);
 		}
+
+		else if( msg->type() == DISCONNECT )
+		{
+			m_master->removeServer(from);
+		}
 	}
 }
 
@@ -192,8 +197,8 @@ void StartMasterServer::draw()
 
 	const ServerVector & servers = m_master->servers();
 
-	for(int i = 0; i < servers.size(); ++i)
-		AEGfxPrint(40, y+=20, 0xFFFFFFFF, (s8*)servers[i].first.info().c_str());
+	for(auto server = servers.begin(); server != servers.end(); ++server)
+		AEGfxPrint(40, y+=20, 0xFFFFFFFF, (s8*)server->first.info().c_str());
 }
 
 TimeoutState::TimeoutState(IGameState * parent)

@@ -1,6 +1,8 @@
 ﻿#include "main.h"
 #include "GameState_Server.h"
 
+#include "BaseNetMessage.h"
+
 // TODO: refactor this, GameState_NetPlay, and GameState_Play to use a common base class.
 // TODO: refactor game objects
 // TODO: Server-side debugging/controls. It would be nice to add gui to this, but we may not have access to the window.
@@ -56,7 +58,12 @@ void GameState_Server::update()
 
 void GameState_Server::unload()
 {
-	m_master->send(nullptr, 0);
+	Packet disconnect;
+
+	new (disconnect.m_buffer) BaseNetMessage(DISCONNECT);
+	disconnect.m_length = sizeof(BaseNetMessage);
+
+	m_master->send(disconnect.m_buffer, disconnect.m_length);
 }
 
 void GameState_Server::draw()

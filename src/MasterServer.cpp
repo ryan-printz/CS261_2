@@ -51,6 +51,16 @@ void MasterServer::pushServer(const ServerInfo & info, const NetAddress & addres
 	m_servers.emplace_back(std::make_pair(info, address));
 }
 
+void MasterServer::removeServer(const NetAddress & address)
+{
+	m_servers.remove_if([address](const std::pair<ServerInfo, NetAddress> & pair)
+	{
+		return address.sin_addr.S_un.S_addr == pair.second.sin_addr.S_un.S_addr 
+			&& address.sin_port == pair.second.sin_port
+			&& address.sin_family == address.sin_family;
+	});
+}
+
 void MasterServer::update()
 {
 	m_cmthread->lock();
