@@ -52,7 +52,6 @@ void GameState_Server::update()
 {
 	m_gameServer->update();
 	// update the server using only the info from the clients.
-
 	// TODO: update with network info
 }
 
@@ -93,13 +92,13 @@ void GameState_Server::draw()
 	AEGfxPrint(150, 10, 0xFFFFFFFF, strBuffer);
 
 	int y = 10;
-	auto pris = m_gameServer->getPris();
+	auto pris = m_gameServer->getPRIs();
 	for(auto pri = pris.begin(); pri != pris.end(); ++pri)
 	{
 		sprintf(strBuffer, "%i %i %s %i", pri->m_lives, pri->m_netid, pri->m_name, pri->m_score);
 		AEGfxPrint(600, y += 20, 0xFFCCCCCC, strBuffer);
 
 		// visually represent update area
-		AEGfxSphere(pri->m_x, pri->m_y, 0, 30);
+		AEGfxSphere(pri->m_x, pri->m_y, 99, 30);
 	}
 }

@@ -185,6 +185,7 @@ bool ProtoConnection::pop_receivePacket(Packet & out)
 		return false;
 
 	out = m_received.front();
+	m_received.pop_front();
 
 	return true;
 }
@@ -269,7 +270,7 @@ void ProtoConnection::update(float dt)
 	for(auto resend = m_resend.begin(); resend != m_resend.end(); ++resend)
 		if( resend->m_time > 1.5f * m_timeout )
 		{
-			send(resend->m_packet, resend->m_size, ProtoHeader::UDP_RESENT);
+			//send(resend->m_packet, resend->m_size, ProtoHeader::UDP_RESENT);
 			resend->m_time = 0.0f;
 		}
 }

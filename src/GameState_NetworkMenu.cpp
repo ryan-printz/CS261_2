@@ -2,6 +2,7 @@
 #include "main.h"
 #include "GameState_NetworkMenu.h"
 #include "GameState_Play.h"
+#include "GameState_NetworkPlay.h"
 #include "ServerInfo.h"
 #include "TCPSocket.h"
 #include "ProtoSocket.h"
@@ -314,7 +315,7 @@ void ConnectingState::update()
 		m_parent->nextState(new TimedOutState(m_parent));
 
 	else if( m_GRI.m_inProgress && m_GRI.m_PRICount == m_PRIs.size() ) 
-		nextGameState(new GameState_Play());
+		nextGameState(new GameState_NetworkPlay(m_GRI, m_PRIs, m_game));
 }
 
 void ConnectingState::draw()

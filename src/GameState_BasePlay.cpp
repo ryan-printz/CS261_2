@@ -628,9 +628,9 @@ void GameState_BasePlay::loadGameObjList()
 
 	AEGfxTriStart();
 	AEGfxTriAdd(
-		-0.5f, -0.5f, 0xFFFF0000, 
+		-0.5f, -0.5f, 0xFF00FF00, 
 		 0.5f,  0.0f, 0xFFFFFFFF, 
-		-0.5f,  0.5f, 0xFFFF0000);
+		-0.5f,  0.5f, 0xFF00FF00);
 
 	pObj->pMesh = AEGfxTriEnd();
 	AE_ASSERT_MESG(pObj->pMesh, "fail to create object!!");
@@ -644,10 +644,9 @@ void GameState_BasePlay::loadGameObjList()
 
 	AEGfxTriStart();
 	AEGfxTriAdd(
-		-0.5f, -0.5f, 0xFF00FF00, 
+		-0.5f, -0.5f, 0xFFFF0000, 
 		 0.5f,  0.0f, 0xFFFFFFFF, 
-		-0.5f,  0.5f, 0xFF00FF00);
-
+		-0.5f,  0.5f, 0xFFFF0000);
 	pObj->pMesh = AEGfxTriEnd();
 	AE_ASSERT_MESG(pObj->pMesh, "fail to create object!!");
 
