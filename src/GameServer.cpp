@@ -145,8 +145,16 @@ void GameServer::update()
 		(*connected)->m_lastRecv -= 1;
 		if((*connected)->m_lastRecv <= 0)
 		{
+			Packet ninjaInfo;
+			new (ninjaInfo.m_buffer) NinjaInfoCardMessage((*connected)->m_netID);
+			ninjaInfo.m_length = sizeof(NinjaInfoCardMessage);
+
 			//printf("Kill this connection\n");
 			connected = m_newConnections.erase(connected);
+
+			for( auto client = m_newConnections.begin(); client != m_newConnections.end(); ++client)
+				if( client != connected )
+					(*client)->send(ninjaInfo);
 			continue;
 		}
 
@@ -166,6 +174,7 @@ void GameServer::update()
 			auto pri = msg->as<PlayerReplicationInfoNetMessage>()->playerInfo();
 			if( !updatePlayerReplicationInfo(pri) )
 			{
+				(*connected)->m_netID = m_nextNetID - 1;
 				i = WSAGetLastError();
 				addNewPlayer(*connected, pri);
 			}
