@@ -23,6 +23,7 @@
     <ClCompile Include="..\src\GameState_StartServer.cpp" />
     <ClCompile Include="..\src\MasterServer.cpp" />
     <ClCompile Include="..\src\MulticastSocket.cpp" />
+    <ClCompile Include="..\src\NetObjectManager.cpp" />
     <ClCompile Include="..\src\SequenceNumber.cpp" />
     <ClCompile Include="..\src\ServerInfo.cpp" />
     <ClCompile Include="..\src\TCPConnection.cpp" />
@@ -55,6 +56,7 @@
     <ClInclude Include="..\include\main.h" />
     <ClInclude Include="..\include\MasterServer.h" />
     <ClInclude Include="..\include\MulticastSocket.h" />
+    <ClInclude Include="..\include\NetObjectManager.h" />
     <ClInclude Include="..\include\SequenceNumber.h" />
     <ClInclude Include="..\include\ServerInfo.h" />
     <ClInclude Include="..\include\ServerInfoNetMessage.h" />

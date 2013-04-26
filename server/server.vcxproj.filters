@@ -96,6 +96,9 @@
     <ClCompile Include="..\src\MulticastSocket.cpp">
       <Filter>Source Files\Networking</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\NetObjectManager.cpp">
+      <Filter>Source Files\Networking</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\GameObject.h">
@@ -195,6 +198,9 @@
       <Filter>Header Files\Networking</Filter>
     </ClInclude>
     <ClInclude Include="..\include\UDPSocket.h">
+      <Filter>Header Files\Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\NetObjectManager.h">
       <Filter>Header Files\Networking</Filter>
     </ClInclude>
   </ItemGroup>
