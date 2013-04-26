@@ -24,6 +24,8 @@ public:
 	void push(ObjectNetMessage& obj);
 
 private:
+	PlayerReplicationInfo & getMyPri();
+
 	GameReplicationInfo m_GRI;
 	NetObjectManager m_netObjects;
 	std::vector<PlayerReplicationInfo> m_PRIs;

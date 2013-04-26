@@ -10,6 +10,8 @@
 #include "NetObjectManager.h"
 #include "GameState_Menu.h"
 
+#include <algorithm>
+
 GameState_NetworkPlay::GameState_NetworkPlay(GameReplicationInfo &gri, std::vector<PlayerReplicationInfo> &pris, ProtoConnection * gameServer, int netID)
 	: m_GRI(gri), m_gameServer(gameServer), m_netID(netID), m_netObjects(&m_game), m_send(.5f), m_lastRecv(10.f)
 {
@@ -50,6 +52,10 @@ void GameState_NetworkPlay::unload()
 	disconnect.m_length = sizeof(BaseNetMessage);
 
 	m_gameServer->send(disconnect.m_buffer, disconnect.m_length);
+
+	m_gameServer->cleanup();
+	delete m_gameServer;
+	m_gameServer = nullptr;
 }
 
 void GameState_NetworkPlay::update()
@@ -81,7 +87,10 @@ void GameState_NetworkPlay::update()
 
 			case OBJECT:
 				push(*msg->as<ObjectNetMessage>());
-				//m_netObjects.push(//updatePRI( msg->as<PlayerReplicationInfoNetMessage>()->playerInfo() );
+				break;
+
+			case NINJA_INFO:
+				m_netObjects.destroyObject(net->as<NinjaInfoCardMessage>()->m_netID);
 				break;
 			};
 		}
@@ -91,38 +100,48 @@ void GameState_NetworkPlay::update()
 	updatePhysics();
 	updateObjects();
 
+	// collide the player with stuff.
 	for( NetInstContainer::iterator netObject = m_netObjects.begin(); netObject != m_netObjects.end(); ++netObject )
 	{
-		if( netObject->first == this->m_netID )
-			continue;
+		if( netObject->second->pObject->type == TYPE_ASTEROID )
+		{
+			if( playerCollide(m_game.m_localShip, netObject->second) )
+			{
+				Packet ohnoesidieded;
 
+				auto & myPRI = getMyPri();
+
+				myPRI.m_lives--;
+				m_game.m_lives--;
+				
+				new (ohnoesidieded.m_buffer) PlayerReplicationInfoNetMessage(myPRI);
+				ohnoesidieded.m_length = sizeof(PlayerReplicationInfoNetMessage);
+
+				m_gameServer->send(ohnoesidieded);
+
+				break;			
+			}
+		}
+	}
+
+	// collide net objects with net objects.
+	for( NetInstContainer::iterator netObject = m_netObjects.begin(); netObject != m_netObjects.end(); ++netObject )
+	{
 		if ( netObject->second->pObject->type == TYPE_ASTEROID)
 		{
-			for (u32 j = 0; j < GAME_OBJ_INST_NUM_MAX; j++)
+			NetInstContainer::iterator otherNetObject = netObject;
+			for ( ++otherNetObject; otherNetObject != m_netObjects.end(); ++otherNetObject )
 			{
-				asteroidCollide(netObject->second, &m_game.m_gameObjInsts[j]);
+				asteroidCollide(netObject->second, otherNetObject->second);
 			}
 		}
 
-		else if ( netObject->second->pObject->type == TYPE_SHIP)
+		else if ( netObject->second->pObject->type == TYPE_SHIP || netObject->second->pObject->type == TYPE_NET_SHIP )
 		{
-			for (u32 j = 0; j < GAME_OBJ_INST_NUM_MAX; j++)
+			NetInstContainer::iterator otherNetObject = netObject;
+			for ( ++otherNetObject; otherNetObject != m_netObjects.end(); ++otherNetObject )
 			{
-				if( playerCollide(netObject->second, &m_game.m_gameObjInsts[j]) )
-				{
-					// reduce the ship counter
-					m_game.m_lives--;
-				
-					// if counter is less than 0, game over
-					if (m_game.m_lives < 0)
-					{
-						m_game.m_gameTimer = 2.0;
-						m_game.gameObjInstDestroy(m_game.m_localShip);
-						m_game.m_localShip = 0;
-					}
-
-					break;
-				}
+				playerCollide(netObject->second, otherNetObject->second);
 			}
 		}
 		netObject->second;
@@ -155,11 +174,18 @@ void GameState_NetworkPlay::update()
 	if(m_lastRecv <= 0 && m_gameServer)
 	{
 		printf("Kill this connection.\n");
-		m_gameServer->disconnect();
-		delete m_gameServer;
-		m_gameServer = nullptr;
+
 		onEnd();
 	}
+}
+
+PlayerReplicationInfo & GameState_NetworkPlay::getMyPri()
+{
+	int netID = m_netID;
+	return * std::find_if(m_PRIs.begin(), m_PRIs.end(), [netID](const PlayerReplicationInfo & pri)
+		{
+			return (pri.m_netid == netID);
+		});
 }
 
 void GameState_NetworkPlay::draw()
