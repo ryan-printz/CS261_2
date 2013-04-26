@@ -1,18 +1,12 @@
 #include "MulticastSocket.h"
 #include <iostream>
-#include <fstream>
 
 MulticastSocket::MulticastSocket()
+	: UDPSocket()
 {}
 
 MulticastSocket::~MulticastSocket()
 {}
-
-bool MulticastSocket::cleanup()
-{
-	::shutdown(m_socket, SD_BOTH);
-	return ::closesocket(m_socket) != SOCKET_ERROR;
-}
 
 bool MulticastSocket::addToMulticastGroup(NetAddress member)
 {
@@ -22,23 +16,25 @@ bool MulticastSocket::addToMulticastGroup(NetAddress member)
 
 bool MulticastSocket::initialize(NetAddress address)
 {
-	m_socket = socket(address.sin_family, SOCK_DGRAM, IPPROTO_UDP);
-
-	if( !(m_isInitialized = (m_socket != INVALID_SOCKET)) )
+	if( !UDPSocket::initialize(address) )
 		return false;
 
-	if( ::bind(m_socket, (SOCKADDR*)&NetAddress((unsigned)INADDR_ANY, address.port()), sizeof(NetAddress)) )
+	NetAddress local(NetAddress::localIP(), address.port());
+	if( ::bind(m_socket, (SOCKADDR*)&local, sizeof(NetAddress)) )
 		return false;
 	int err = WSAGetLastError();
 
+	// set multicast address
 	m_multicast.imr_multiaddr.s_addr = inet_addr(address.ip());
 	
-	m_end.sin_addr = m_multicast.imr_multiaddr;
-	m_end.sin_family = AF_INET;
-	m_end.sin_port = address.sin_port;
+	m_to.sin_addr = m_multicast.imr_multiaddr;
+	m_to.sin_family = AF_INET;
+	m_to.sin_port = address.sin_port;
 
-	m_multicast.imr_multiaddr.s_addr = inet_addr(NetAddress::localIP());
-	::setsockopt(m_socket, IPPROTO_IP, IP_ADD_MEMBERSHIP, (const char*)&m_multicast, sizeof(m_multicast)); 
+	m_multicast.imr_interface.s_addr = inet_addr(NetAddress::localIP());
+	err = ::setsockopt(m_socket, IPPROTO_IP, IP_ADD_MEMBERSHIP, (const char*)&m_multicast, sizeof(m_multicast)); 
+	int x = WSAGetLastError();
+	printf("ret: %d, lasterror = %d, %s\n", err, x, inet_ntoa(m_multicast.imr_interface));
 
 	int ttl = 1;
 	::setsockopt(m_socket, IPPROTO_IP, IP_MULTICAST_TTL, (const char*)&ttl, sizeof(ttl));
@@ -47,45 +43,4 @@ bool MulticastSocket::initialize(NetAddress address)
 	::setsockopt(m_socket, IPPROTO_IP, IP_MULTICAST_LOOP, (const char*)&loopback, sizeof(loopback));
 	err = WSAGetLastError();
 	return m_isInitialized = (m_socket != INVALID_SOCKET);
-}
-
-int MulticastSocket::send(const char * buffer, unsigned size, bool write)
-{
-	int err = WSAGetLastError();
-	int sent = ::sendto(m_socket, buffer, size, 0, (SOCKADDR*)&m_end, sizeof(m_end));
-	err = WSAGetLastError();
-	if(write)
-	{
-		FILE* myFile;
-		myFile = fopen ("log.txt", "a");
-		fwrite("Multicast Send: ", 1, 16, myFile);
-		fwrite(buffer, 1, size, myFile);
-		fwrite("\n", 1, 1, myFile);
-		fclose(myFile);
-	}
-
-	return sent;
-}
-
-int MulticastSocket::receive(char * buffer, unsigned size, NetAddress & from, bool write)
-{
-	int fromSize = sizeof(from);
-	int recvd = ::recvfrom(m_socket, buffer, size, 0, (SOCKADDR*)&from, &fromSize);
-
-	if(write && recvd > 0)
-	{
-		FILE* myFile;
-		myFile = fopen ("log.txt", "a");
-		fwrite("Multicast Receive: ", 1, 19, myFile);
-		fwrite(buffer, 1, size, myFile);
-		fwrite("\n", 1, 1, myFile);
-		fclose(myFile);
-	}	
-
-	return recvd;	
-}
-
-int MulticastSocket::receive(char * buffer, unsigned size, bool write)
-{
-	return receive(buffer, size, m_recvd, write);
 }

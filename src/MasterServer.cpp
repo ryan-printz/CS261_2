@@ -60,7 +60,7 @@ void MasterServer::update()
 		{
 			BaseNetMessage * msg = reinterpret_cast<BaseNetMessage*>(received.m_buffer);
 
-			if( msg->type() == SERVER_INFO )
+/*			if( msg->type() == SERVER_INFO )
 			{
 				ServerInfo info = msg->as<ServerInfoNetMessage>()->info();
 
@@ -69,7 +69,7 @@ void MasterServer::update()
 
 				printf("%s\t\t%i/%i - %s:%i\n", info.name, info.currentPlayers, info.maxPlayers, info.ip, info.port);
 			}
-			else if( msg->type() == SERVER_LIST_REQ )
+			else*/ if( msg->type() == SERVER_LIST_REQ )
 			{
 				Packet servers;
 

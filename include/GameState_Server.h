@@ -6,20 +6,22 @@
 #include "GameServer.h"
 #include "GameReplicationInfo.h"
 #include "PlayerReplicationInfo.h"
+#include "MulticastSocket.h"
 
 class GameState_Server : public GameState_BasePlay
 {
 public:
-	GameState_Server(TCPConnection * master, ServerInfo & info, GameServer* gameServer);
+	GameState_Server(MulticastSocket * mc, ServerInfo & info, GameServer* gameServer);
 	virtual ~GameState_Server();
 
 	virtual void init();
 	virtual void update();
 	virtual void draw();
+	virtual void unload();
 
 	virtual void onEnd() {};
 
 protected:
-	TCPConnection * m_master;
+	MulticastSocket * m_master;
 	GameServer * m_gameServer;
 };

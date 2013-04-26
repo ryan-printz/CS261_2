@@ -81,6 +81,14 @@ BaseSocket::BaseSocket()
 	m_socket(INVALID_SOCKET)
 {}
 
+void BaseSocket::log(const char * file, const char * label, unsigned labelLen, const char * buffer, unsigned bufferLen) const
+{
+	FILE* myFile;
+	myFile = fopen (file, "a");
+	fwrite(label, 1, labelLen, myFile);	 fwrite(buffer, 1, bufferLen, myFile);	 fwrite("\n", 1, 1, myFile);
+	fclose(myFile);
+}
+
 void BaseSocket::setBlocking(bool blocking)
 {
 	// socket is already setup correctly.

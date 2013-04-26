@@ -36,14 +36,17 @@ private:
 struct StartMasterServer : public IGameState::State
 {
 public:
-	StartMasterServer(NetAddress & serverAddress, ServerInfo & info, IGameState * parent);
+	StartMasterServer(MulticastSocket * mc, ServerInfo & info, IGameState * parent);
 
 	virtual void update();
 	virtual void draw();
 
 private:
+	MulticastSocket * m_multicast;
 	MasterServer * m_master;
 	ServerInfo m_info;
+
+	std::vector<std::pair<NetAddress, ServerInfo> > m_servers;
 };
 
 struct TimeoutState : public IGameState::State
@@ -58,13 +61,12 @@ public:
 struct StartGameServer : public IGameState::State
 {
 public:
-	StartGameServer(const ServerInfo & info, NetAddress & MasterServerAddress, IGameState * parent);
+	StartGameServer(MulticastSocket * multicast, const ServerInfo & info, NetAddress & MasterServerAddress, IGameState * parent);
 
 	virtual void update() {};
 	virtual void draw() {};
 
 private:
-	//IConnection * m_masterServer;
 	GameServer * m_gameServer;
 	ServerInfo m_info;
 };
@@ -79,13 +81,12 @@ LookForMasterServerState::LookForMasterServerState(const char * filename, IGameS
 	if( !config.is_open() )
 		printf("Error opening config file. Config file not found.\n");
 
-	config.getline( m_masterIp, sizeof(m_masterIp) );
 	config >> m_masterServerPort;
 	config.ignore();
-
 	config >> m_info;
 
-	printf("game - %s\n", m_info.name);
+	memcpy(m_info.ip, NetAddress::localIP(), 16);
+	printf("Myip = %s \nGame - %s on port %d\nMaster server port - %d\n", m_info.ip, m_info.name, m_info.port, m_masterServerPort);
 	
 	NetAddress multicast("224.0.0.1", m_masterServerPort);
 	m_multicast = new MulticastSocket();
@@ -96,10 +97,9 @@ LookForMasterServerState::LookForMasterServerState(const char * filename, IGameS
 
 	// send out your info to announce.
 	Packet p;
-
 	new (p.m_buffer) ServerInfoNetMessage(m_info);
 	p.m_length = sizeof(ServerInfoNetMessage);
-	int err = WSAGetLastError();
+
 	m_multicast->send(p.m_buffer, p.m_length);
 
 	printf("looking for master server...\n");
@@ -117,39 +117,37 @@ void LookForMasterServerState::update()
 
 		if( msg->type() == SERVER_INFO )
 		{
-			m_parent->nextState(new StartGameServer(msg->as<ServerInfoNetMessage>()->info(),
+			m_parent->nextState(new StartGameServer(m_multicast, 
+													m_info,
 													master,
 													m_parent));
-			m_multicast->cleanup();
 		}
 	}
 
 	else if( --m_timeout <= 0 )
 	{
-		m_parent->nextState(new StartMasterServer(NetAddress(m_masterIp, m_masterServerPort), 
-							m_info, 
-							m_parent));
-		m_multicast->cleanup();
+		m_parent->nextState(new StartMasterServer(m_multicast, m_info, m_parent));
 	}
 }
+
 
 void LookForMasterServerState::draw()
 {
 	AEGfxPrint(10, 20, 0xFFFFFFFF, "looking for master server...");
 }
 
-StartMasterServer::StartMasterServer(NetAddress & serverAddress, ServerInfo & info, IGameState * parent)
-	: IGameState::State(parent), m_info(info)
+StartMasterServer::StartMasterServer(MulticastSocket * mc, ServerInfo & info, IGameState * parent)
+	: IGameState::State(parent), m_info(info), m_multicast(mc)
 {
 	std::cout << "start master" << std::endl;
+	m_info = info;
+
+	NetAddress serverAddress(NetAddress::localIP(), info.port);
 
 	ISocket * listen = new TCPSocket();
-
 	listen->initialize(serverAddress);
 	listen->listen(serverAddress);
 	listen->setBlocking(false);
-
-
 
 	auto manager = new ConnectionManager<TCPConnection>();
 	manager->setListener(listen);
@@ -162,6 +160,30 @@ StartMasterServer::StartMasterServer(NetAddress & serverAddress, ServerInfo & in
 void StartMasterServer::update()
 {
 	m_master->update();
+
+	Packet received;
+	NetAddress from;
+
+	received.m_length = m_multicast->receive(received.m_buffer, received.MAX, from);
+
+	if( received.m_length > 0 )
+	{
+		BaseNetMessage * msg = reinterpret_cast<BaseNetMessage*>(received.m_buffer);
+
+		if( msg->type() == SERVER_INFO )
+		{
+			Packet response;
+
+			new (response.m_buffer) ServerInfoNetMessage(m_info);
+			response.m_length = sizeof(ServerInfoNetMessage);
+
+			// send the response message (a ServerInfo Message);
+			m_multicast->send(response.m_buffer, response.m_length, from);
+
+			// take note of the server.
+			m_servers.emplace_back( std::make_pair(from, msg->as<ServerInfoNetMessage>()->info()) );
+		}
+	}
 }
 
 void StartMasterServer::draw()
@@ -169,8 +191,8 @@ void StartMasterServer::draw()
 	AEGfxPrint(10, 20, 0xFFFFFFFF, "<> ASTEROID SERVERS <>");
 
 	int y = 50;
-	for(int i = 0; i < m_master->serverCount(); ++i)
-		AEGfxPrint(40, y+=20, 0xFFFFFFFF, (s8*)m_master->server(i).info().c_str());
+	for(int i = 0; i < m_servers.size(); ++i)
+		AEGfxPrint(40, y+=20, 0xFFFFFFFF, (s8*)m_servers[i].second.info().c_str());
 }
 
 TimeoutState::TimeoutState(IGameState * parent)
@@ -194,17 +216,13 @@ void TimeoutState::draw()
 		AEGfxPrint(10, 50, 0xFFFFFFFF, ">>");
 }
 
-StartGameServer::StartGameServer(const ServerInfo & info, NetAddress & masterServerAddress, IGameState * parent)
+StartGameServer::StartGameServer(MulticastSocket * multicast, const ServerInfo & info, NetAddress & masterServerAddress, IGameState * parent)
 	: IGameState::State(parent), m_info(info)
 {
 	Packet serverInfo;
 
-	//m_masterServer = new TCPConnection(socket, *masterServerAddress);
-
 	new (serverInfo.m_buffer) ServerInfoNetMessage(m_info);
 	serverInfo.m_length = sizeof(ServerInfoNetMessage);
-
-	//m_masterServer->send(serverInfo);
 	
 	std::cout << "sending info to master server..." << std::endl;
 
@@ -222,8 +240,7 @@ StartGameServer::StartGameServer(const ServerInfo & info, NetAddress & masterSer
 
 	m_gameServer = new GameServer(gsthread);
 
-	//this->nextGameState(new GameState_Server((TCPConnection*)m_masterServer, m_info, m_gameServer));
-	//parent->nextState(new GameState_Server((TCPConnection*)m_masterServer, m_info));
+	nextGameState(new GameState_Server(multicast, m_info, m_gameServer));
 }
 
 ////////////////////////////

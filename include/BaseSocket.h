@@ -36,6 +36,8 @@ public:
 	virtual unsigned lastError() const;
 
 protected:
+	void log(const char * file, const char * label, unsigned labelLen, const char * buffer, unsigned bufferLen) const;
+
 	bool m_isInitialized;
 	bool m_isBlocking;
 	bool m_isConnected;
