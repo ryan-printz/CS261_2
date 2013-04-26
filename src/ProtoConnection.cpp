@@ -108,7 +108,7 @@ int ProtoConnection::receive(ubyte * buffer, uint len, int drop)
 
 	//Connection message
 	if(received == 0)
-		return;
+		return 0;
 	// no packet was received
 	// or the packet was not from this UDPcol.
 	if( received == -1 )
