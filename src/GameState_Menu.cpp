@@ -98,10 +98,14 @@ void GameState_Menu::update(void)
 		case 0:
 			sprintf(localPlayer.m_name, "player");
 			localPlayer.m_lives = 3;
-			localPlayer.m_x = 100;
-			localPlayer.m_y = 100;
+			localPlayer.m_x = 10;
+			localPlayer.m_y = 10;
 			players.push_back(localPlayer);
+			localPlayer.m_x = 20;
+			localPlayer.m_y = 20;
 			players.push_back(localPlayer);
+			localPlayer.m_x = 0;
+			localPlayer.m_y = 10;
 			players.push_back(localPlayer);
 			m_gsm->nextState(new GameState_NetworkPlay(game, players, nullptr));
 			break;

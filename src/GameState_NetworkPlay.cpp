@@ -1,5 +1,11 @@
 #include "GameState_NetworkPlay.h"
 #include "GameState_Result.h"
+#include "BaseNetMessage.h"
+#include "ServerInfoNetMessage.h"
+#include "ServerListNetMessage.h"
+#include "GameReplicationInfoNetMessage.h"
+#include "PlayerReplicationInfoNetMessage.h"
+#include "ClientInfoNetMessage.h"
 
 GameState_NetworkPlay::GameState_NetworkPlay(GameReplicationInfo &gri, std::vector<PlayerReplicationInfo> &pris, ProtoConnection * gameServer)
 	: m_GRI(gri), m_gameServer(gameServer)
@@ -30,6 +36,33 @@ void GameState_NetworkPlay::init()
 		pos.y = pri.m_y;
 
 		m_game.gameObjInstCreate(TYPE_NET_SHIP, SHIP_SIZE, &pos, 0, pri.m_rotation, true);
+	}
+}
+
+void GameState_NetworkPlay::update()
+{
+	Packet received;
+
+	m_gameServer->update(0.016);
+
+	if( m_gameServer->pop_receivePacket(received) )
+	{
+		BaseNetMessage * msg = reinterpret_cast<BaseNetMessage*>(received.m_buffer);
+
+		switch( msg->type() )
+		{
+		case CLIENT_INFO:
+			//m_netID = msg->as<ClientInfoNetMessage>()->netID();
+			break;
+
+		case GAME_REPLICATION_INFO:
+			m_GRI = msg->as<GameReplicationInfoNetMessage>()->gameInfo();
+			break;
+
+		case PLAYER_REPLICATION_INFO:
+			m_PRIs.emplace_back( msg->as<PlayerReplicationInfoNetMessage>()->playerInfo() );
+			break;
+		};
 	}
 }
 

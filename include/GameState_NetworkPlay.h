@@ -16,6 +16,7 @@ public:
 	virtual void onEnd();
 	virtual void init();
 	virtual void draw();
+	virtual void update();
 
 private:
 	GameReplicationInfo m_GRI;
