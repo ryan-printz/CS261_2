@@ -181,7 +181,12 @@ int ProtoConnection::receive(ubyte * buffer, uint len, int drop)
 
 bool ProtoConnection::pop_receivePacket(Packet & out)
 {
-	return m_connection->pop_receivePacket(out.m_buffer, &out.m_length);
+	if( m_received.empty() )
+		return false;
+
+	out = m_received.front();
+
+	return true;
 }
 
 int ProtoConnection::send(ubyte * buffer, uint len, ubyte flags)
