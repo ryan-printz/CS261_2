@@ -80,7 +80,11 @@ void GameState_Server::update()
 	auto objects = m_gameServer->getObjectMsgs();
 	for(auto object = objects.begin(); object != objects.end(); ++object)
 	{
+<<<<<<< HEAD
 		m_netObjects.update(object->netId, object->type, object->flags, object->x, object->y, object->z, object->velx, object->vely);
+=======
+		m_netObjects.update(object->netId, object->type, object->flags, object->x, object->y, object->z);
+>>>>>>> small chanves
 	}
 	objects.clear();
 }

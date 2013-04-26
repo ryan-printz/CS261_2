@@ -35,6 +35,7 @@ void NetObjectManager::push(short netId, unsigned type, unsigned flag, float x, 
 
 	switch(type)
 	{
+	case TYPE_SHIP:
 	case TYPE_NET_SHIP:
 		type = TYPE_NET_SHIP;
 		scale = SHIP_SIZE;
