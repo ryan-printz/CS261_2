@@ -40,6 +40,16 @@ void GameState_NetworkPlay::init()
 	}
 }
 
+void GameState_NetworkPlay::unload()
+{
+	Packet disconnect;
+
+	new (disconnect.m_buffer) BaseNetMessage(DISCONNECT);
+	disconnect.m_length = sizeof(BaseNetMessage);
+
+	m_gameServer->send(disconnect.m_buffer, disconnect.m_length);
+}
+
 void GameState_NetworkPlay::update()
 {
 	Packet received;

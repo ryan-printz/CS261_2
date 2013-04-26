@@ -129,7 +129,12 @@ void GameServer::update()
 		}
 
 		else if( msg->type() == OBJECT )
+		{
 			m_objectMsgs.push_back(*msg->as<ObjectNetMessage>());
+			for( auto client = m_newConnections.begin(); client != m_newConnections.end(); ++client)
+				if( client != connected )
+					(*client)->send(received);
+		}
 	}
 
 	m_gsThread->unlock();

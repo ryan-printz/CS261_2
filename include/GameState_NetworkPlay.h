@@ -16,6 +16,7 @@ public:
 	virtual void onEnd();
 	virtual void init();
 	virtual void draw();
+	virtual void unload();
 	virtual void update();
 	void updatePRI(PlayerReplicationInfo& pri);
 
