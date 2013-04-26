@@ -8,5 +8,5 @@ struct ClientInfo
 	~ClientInfo() {};
 
 	char name[16];
-	char netID;
+	int netID;
 }; 

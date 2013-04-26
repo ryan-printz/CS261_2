@@ -7,7 +7,10 @@ struct ClientInfoNetMessage : public BaseNetMessage
 {
 	ClientInfoNetMessage(ClientInfo & info)
 		: BaseNetMessage(CLIENT_INFO)
-	{}
+	{
+		strcpy(m_info.name, info.name);
+		m_info.netID = info.netID;
+	}
 
 	int netID() const
 	{
