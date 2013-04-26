@@ -7,6 +7,8 @@
 
 #undef max(a, b)
 
+#include <algorithm>
+
 MasterServer::MasterServer(TCPConnectionManagerProcessThread * cmthread)
 	: m_cmthread(cmthread), m_nextNetID(1337)
 {
@@ -26,15 +28,15 @@ bool MasterServer::getLeastLoadServer(ServerInfo & server)
 	short lowPlayers = std::numeric_limits<short>::max();
 	auto leastLoadServer = m_servers.end();
 
-	for( auto server = m_servers.begin(); server != m_servers.end(); ++server )
+	for( auto serverit = m_servers.begin(); serverit != m_servers.end(); ++serverit )
 	{
-		if( server->first.currentPlayers >= server->first.maxPlayers )
+		if( serverit->first.currentPlayers >= serverit->first.maxPlayers )
 			continue;
 
-		if( server->first.currentPlayers < lowPlayers )
+		if( serverit->first.currentPlayers < lowPlayers )
 		{
-			lowPlayers = server->first.currentPlayers;
-			leastLoadServer = server;
+			lowPlayers = serverit->first.currentPlayers;
+			leastLoadServer = serverit;
 		}
 	}
 
@@ -48,7 +50,17 @@ bool MasterServer::getLeastLoadServer(ServerInfo & server)
 
 void MasterServer::pushServer(const ServerInfo & info, const NetAddress & address)
 {
-	m_servers.emplace_back(std::make_pair(info, address));
+	auto server = std::find_if(m_servers.begin(), m_servers.end(), [address](const std::pair<ServerInfo, NetAddress> & pair)
+		{
+			return address.sin_addr.S_un.S_addr == pair.second.sin_addr.S_un.S_addr 
+				&& address.sin_port == pair.second.sin_port
+				&& address.sin_family == address.sin_family;
+		});
+
+	if ( server == m_servers.end() )
+		m_servers.emplace_back(std::make_pair(info, address));
+	else
+		server->first = info;
 }
 
 void MasterServer::removeServer(const NetAddress & address)

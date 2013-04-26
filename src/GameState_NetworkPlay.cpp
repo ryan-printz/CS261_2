@@ -231,7 +231,7 @@ void GameState_NetworkPlay::updatePRI(PlayerReplicationInfo& pri)
 {
 	for(int i = 0; i < m_PRIs.size(); ++i)
 	{
-		if(m_PRIs[i].m_netid == pri.m_netid)
+		if(m_PRIs[i].m_netid != pri.m_netid)
 		{
 			m_PRIs[i].m_lives = pri.m_lives;
 			m_PRIs[i].m_rotation = pri.m_rotation;
@@ -239,7 +239,6 @@ void GameState_NetworkPlay::updatePRI(PlayerReplicationInfo& pri)
 			m_PRIs[i].m_x = pri.m_x;
 			m_PRIs[i].m_y = pri.m_y;
 			memcpy(m_PRIs[i].m_name, pri.m_name, 12);
-			return;
 		}
 	}
 }
