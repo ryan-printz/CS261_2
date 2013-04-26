@@ -45,8 +45,6 @@ private:
 	MulticastSocket * m_multicast;
 	MasterServer * m_master;
 	ServerInfo m_info;
-
-	std::vector<std::pair<NetAddress, ServerInfo> > m_servers;
 };
 
 struct TimeoutState : public IGameState::State
@@ -181,7 +179,7 @@ void StartMasterServer::update()
 			m_multicast->send(response.m_buffer, response.m_length, from);
 
 			// take note of the server.
-			m_servers.emplace_back( std::make_pair(from, msg->as<ServerInfoNetMessage>()->info()) );
+			m_master->pushServer(msg->as<ServerInfoNetMessage>()->info(), from);
 		}
 	}
 }
@@ -191,8 +189,11 @@ void StartMasterServer::draw()
 	AEGfxPrint(10, 20, 0xFFFFFFFF, "<> ASTEROID SERVERS <>");
 
 	int y = 50;
-	for(int i = 0; i < m_servers.size(); ++i)
-		AEGfxPrint(40, y+=20, 0xFFFFFFFF, (s8*)m_servers[i].second.info().c_str());
+
+	const ServerVector & servers = m_master->servers();
+
+	for(int i = 0; i < servers.size(); ++i)
+		AEGfxPrint(40, y+=20, 0xFFFFFFFF, (s8*)servers[i].first.info().c_str());
 }
 
 TimeoutState::TimeoutState(IGameState * parent)

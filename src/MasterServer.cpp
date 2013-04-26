@@ -46,6 +46,11 @@ bool MasterServer::getLeastLoadServer(ServerInfo & server)
 	return true;
 }
 
+void MasterServer::pushServer(const ServerInfo & info, const NetAddress & address)
+{
+	m_servers.emplace_back(std::make_pair(info, address));
+}
+
 void MasterServer::update()
 {
 	m_cmthread->lock();
@@ -59,17 +64,8 @@ void MasterServer::update()
 		if( (*connected)->pop_receivePacket(received) )
 		{
 			BaseNetMessage * msg = reinterpret_cast<BaseNetMessage*>(received.m_buffer);
-
-/*			if( msg->type() == SERVER_INFO )
-			{
-				ServerInfo info = msg->as<ServerInfoNetMessage>()->info();
-
-				m_servers.push_back(std::make_pair(info, *connected));
-				connected = m_newConnections.erase(connected);
-
-				printf("%s\t\t%i/%i - %s:%i\n", info.name, info.currentPlayers, info.maxPlayers, info.ip, info.port);
-			}
-			else*/ if( msg->type() == SERVER_LIST_REQ )
+			
+			if( msg->type() == SERVER_LIST_REQ )
 			{
 				Packet servers;
 
@@ -134,44 +130,10 @@ void MasterServer::update()
 		}
 	}
 
-	// update server info.
-	for( auto server = m_servers.begin(); server != m_servers.end(); ++server )
-	{
-		Packet received;
-		while( server->second->pop_receivePacket(received) )
-		{
-			// cast to message;
-			BaseNetMessage * msg = reinterpret_cast<BaseNetMessage*>(received.m_buffer);
-
-			switch( msg->type() )
-			{
-			case DISCONNECT:
-				// server disconnected
-				server = m_servers.erase(server);
-				break;
-
-			case SERVER_INFO:
-				// serverinfo changed
-				server->first = msg->as<ServerInfoNetMessage>()->info();
-				break;
-			}
-		}
-	}
-
 	m_cmthread->unlock();
 }
 
-const ServerInfo & MasterServer::server(int index) const
+const ServerVector & MasterServer::servers() const
 {
-	auto server = m_servers.begin();
-
-	while( index-- )
-		server++;
-
-	return server->first;
-}
-
-int MasterServer::serverCount() const
-{
-	return m_servers.size();
+	return m_servers;
 }

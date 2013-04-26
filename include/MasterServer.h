@@ -2,16 +2,18 @@
 
 #include "ServerInfo.h"
 #include "ClientInfo.h"
-//#include "GameServer.h"
+#include "ISocket.h"
 
+#include <vector>
 #include <list>
 
 class TCPConnection;
 class TCPConnectionManagerProcessThread;
 
-// TODO: this needst to inherit from and implement IServer.
+typedef std::vector<std::pair<ServerInfo, NetAddress> > ServerVector;
+typedef std::vector<std::pair<ClientInfo, TCPConnection*> > ClientVector;
 
-class MasterServer /*: public GameServer */
+class MasterServer
 {
 public:
 	MasterServer(TCPConnectionManagerProcessThread * cmthread);
@@ -19,17 +21,16 @@ public:
 
 	virtual void update();
 
-	const ServerInfo & server(int index) const;
-	int serverCount() const;
+	void pushServer(const ServerInfo & server, const NetAddress & address);
+
+	const ServerVector & servers() const;
 
 private:
 	bool getLeastLoadServer(ServerInfo & server);
 
-	std::list<TCPConnection*> m_newConnections;
-	std::list<std::pair<ServerInfo, TCPConnection*> > m_servers;
-	std::list<std::pair<ClientInfo, TCPConnection*> > m_clients;
-
-	char m_nextNetID;
-
 	TCPConnectionManagerProcessThread * m_cmthread;
+	std::list<TCPConnection*> m_newConnections;
+	ServerVector m_servers;
+	ClientVector m_clients;
+	char m_nextNetID;
 };
