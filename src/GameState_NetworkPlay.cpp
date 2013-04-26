@@ -6,6 +6,7 @@
 #include "GameReplicationInfoNetMessage.h"
 #include "PlayerReplicationInfoNetMessage.h"
 #include "ClientInfoNetMessage.h"
+#include "ObjectNetMessage.h"
 #include "NetObjectManager.h"
 
 GameState_NetworkPlay::GameState_NetworkPlay(GameReplicationInfo &gri, std::vector<PlayerReplicationInfo> &pris, ProtoConnection * gameServer, int netID)
@@ -84,17 +85,19 @@ void GameState_NetworkPlay::update()
 	if(m_gameServer)
 	{
 		Packet playerInfo;
-		PlayerReplicationInfo pri;
+		//PlayerReplicationInfo pri;
 	
-		pri.m_x = m_game.m_localShip->posCurr.x;
-		pri.m_y = m_game.m_localShip->posCurr.y;
-		pri.m_lives = m_game.m_lives;
-		pri.m_rotation = m_game.m_localShip->dirCurr;
-		pri.m_netid = m_netID;
-		memcpy(pri.m_name, "player name", 12);
+		//pri.m_x = m_game.m_localShip->posCurr.x;
+		//pri.m_y = m_game.m_localShip->posCurr.y;
+		//pri.m_lives = m_game.m_lives;
+		//pri.m_rotation = m_game.m_localShip->dirCurr;
+		//pri.m_netid = m_netID;
+		//memcpy(pri.m_name, "player name", 12);
 
-		new (playerInfo.m_buffer) PlayerReplicationInfoNetMessage(pri);
-		playerInfo.m_length = sizeof(PlayerReplicationInfoNetMessage);
+		new (playerInfo.m_buffer) ObjectNetMessage(m_netID, TYPE_NET_SHIP, FLAG_ACTIVE, m_game.m_localShip->posCurr.x, m_game.m_localShip->posCurr.y, m_game.m_localShip->dirCurr);
+		playerInfo.m_length = sizeof(ObjectNetMessage);
+		//new (playerInfo.m_buffer) PlayerReplicationInfoNetMessage(pri);
+		//playerInfo.m_length = sizeof(PlayerReplicationInfoNetMessage);
 
 		m_gameServer->send(playerInfo);
 	}
