@@ -27,8 +27,9 @@ bool MulticastSocket::initialize(NetAddress address)
 	if( !(m_isInitialized = (m_socket != INVALID_SOCKET)) )
 		return false;
 
-	if( ::bind(m_socket, (SOCKADDR*)&address, sizeof(address)) )
+	if( ::bind(m_socket, (SOCKADDR*)&NetAddress((unsigned)INADDR_ANY, address.port()), sizeof(NetAddress)) )
 		return false;
+	int err = WSAGetLastError();
 
 	m_multicast.imr_multiaddr.s_addr = inet_addr(address.ip());
 	
@@ -44,14 +45,15 @@ bool MulticastSocket::initialize(NetAddress address)
 
 	int loopback = 0;
 	::setsockopt(m_socket, IPPROTO_IP, IP_MULTICAST_LOOP, (const char*)&loopback, sizeof(loopback));
-
+	err = WSAGetLastError();
 	return m_isInitialized = (m_socket != INVALID_SOCKET);
 }
 
 int MulticastSocket::send(const char * buffer, unsigned size, bool write)
 {
+	int err = WSAGetLastError();
 	int sent = ::sendto(m_socket, buffer, size, 0, (SOCKADDR*)&m_end, sizeof(m_end));
-
+	err = WSAGetLastError();
 	if(write)
 	{
 		FILE* myFile;
@@ -70,7 +72,7 @@ int MulticastSocket::receive(char * buffer, unsigned size, NetAddress & from, bo
 	int fromSize = sizeof(from);
 	int recvd = ::recvfrom(m_socket, buffer, size, 0, (SOCKADDR*)&from, &fromSize);
 
-	if(write)
+	if(write && recvd > 0)
 	{
 		FILE* myFile;
 		myFile = fopen ("log.txt", "a");

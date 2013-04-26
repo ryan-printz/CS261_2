@@ -87,7 +87,7 @@ LookForMasterServerState::LookForMasterServerState(const char * filename, IGameS
 
 	printf("game - %s\n", m_info.name);
 	
-	NetAddress multicast((unsigned)INADDR_ANY, m_masterServerPort);
+	NetAddress multicast("224.0.0.1", m_masterServerPort);
 	m_multicast = new MulticastSocket();
 	if( !m_multicast->initialize(multicast) )
 		printf("Multicast failed to initialize: %i\n", WSAGetLastError() );
@@ -99,7 +99,7 @@ LookForMasterServerState::LookForMasterServerState(const char * filename, IGameS
 
 	new (p.m_buffer) ServerInfoNetMessage(m_info);
 	p.m_length = sizeof(ServerInfoNetMessage);
-
+	int err = WSAGetLastError();
 	m_multicast->send(p.m_buffer, p.m_length);
 
 	printf("looking for master server...\n");

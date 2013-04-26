@@ -68,9 +68,6 @@
     <ClCompile Include="..\include\ConnectionManager.h">
       <Filter>Header Files\Networking</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\UDPSocket.cpp">
-      <Filter>Source Files\Networking</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\GameState_BasePlay.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -80,16 +77,19 @@
     <ClCompile Include="..\src\ServerInfo.cpp">
       <Filter>Source Files\Networking</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\UDPConnection.cpp">
-      <Filter>Source Files\Networking</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\SequenceNumber.cpp">
       <Filter>Source Files\Networking</Filter>
     </ClCompile>
     <ClCompile Include="..\src\GameState_NetworkPlay.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\UDPConnectionManagerProcess.cpp">
+    <ClCompile Include="..\src\ProtoConnectionManagerProcess.cpp">
+      <Filter>Source Files\Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ProtoSocket.cpp">
+      <Filter>Source Files\Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ProtoConnection.cpp">
       <Filter>Source Files\Networking</Filter>
     </ClCompile>
   </ItemGroup>

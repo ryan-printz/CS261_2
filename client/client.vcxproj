@@ -101,13 +101,13 @@
     <ClCompile Include="..\src\GameState_Result.cpp" />
     <ClCompile Include="..\src\BaseProcessThread.cpp" />
     <ClCompile Include="..\src\BaseSocket.cpp" />
+    <ClCompile Include="..\src\ProtoConnection.cpp" />
+    <ClCompile Include="..\src\ProtoConnectionManagerProcess.cpp" />
+    <ClCompile Include="..\src\ProtoSocket.cpp" />
     <ClCompile Include="..\src\SequenceNumber.cpp" />
     <ClCompile Include="..\src\ServerInfo.cpp" />
     <ClCompile Include="..\src\TCPConnection.cpp" />
     <ClCompile Include="..\src\TCPSocket.cpp" />
-    <ClCompile Include="..\src\UDPConnection.cpp" />
-    <ClCompile Include="..\src\UDPConnectionManagerProcess.cpp" />
-    <ClCompile Include="..\src\UDPSocket.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
