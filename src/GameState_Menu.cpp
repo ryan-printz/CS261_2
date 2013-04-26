@@ -107,7 +107,7 @@ void GameState_Menu::update(void)
 			localPlayer.m_x = 0;
 			localPlayer.m_y = 10;
 			players.push_back(localPlayer);
-			m_gsm->nextState(new GameState_NetworkPlay(game, players, nullptr));
+			m_gsm->nextState(new GameState_NetworkPlay(game, players, nullptr, NULL));
 			break;
 #else
 		case 0:

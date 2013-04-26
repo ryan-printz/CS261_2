@@ -7,8 +7,8 @@
 #include "PlayerReplicationInfoNetMessage.h"
 #include "ClientInfoNetMessage.h"
 
-GameState_NetworkPlay::GameState_NetworkPlay(GameReplicationInfo &gri, std::vector<PlayerReplicationInfo> &pris, ProtoConnection * gameServer)
-	: m_GRI(gri), m_gameServer(gameServer)
+GameState_NetworkPlay::GameState_NetworkPlay(GameReplicationInfo &gri, std::vector<PlayerReplicationInfo> &pris, ProtoConnection * gameServer, int netID)
+	: m_GRI(gri), m_gameServer(gameServer), m_netID(netID)
 {
 	m_PRIs.swap(pris);
 }
@@ -43,27 +43,50 @@ void GameState_NetworkPlay::update()
 {
 	Packet received;
 
-	m_gameServer->update(0.016);
-
-	if( m_gameServer->pop_receivePacket(received) )
+	if(m_gameServer)
 	{
-		BaseNetMessage * msg = reinterpret_cast<BaseNetMessage*>(received.m_buffer);
+		m_gameServer->update(0.016);
 
-		switch( msg->type() )
+		if( m_gameServer->pop_receivePacket(received) )
 		{
-		case CLIENT_INFO:
-			//m_netID = msg->as<ClientInfoNetMessage>()->netID();
-			break;
+			BaseNetMessage * msg = reinterpret_cast<BaseNetMessage*>(received.m_buffer);
 
-		case GAME_REPLICATION_INFO:
-			m_GRI = msg->as<GameReplicationInfoNetMessage>()->gameInfo();
-			break;
+			switch( msg->type() )
+			{
+			case CLIENT_INFO:
+				m_netID = msg->as<ClientInfoNetMessage>()->netID();
+				break;
 
-		case PLAYER_REPLICATION_INFO:
-			m_PRIs.emplace_back( msg->as<PlayerReplicationInfoNetMessage>()->playerInfo() );
-			break;
-		};
+			case GAME_REPLICATION_INFO:
+				m_GRI = msg->as<GameReplicationInfoNetMessage>()->gameInfo();
+				break;
+
+			case PLAYER_REPLICATION_INFO:
+				updatePRI( msg->as<PlayerReplicationInfoNetMessage>()->playerInfo() );
+				break;
+			};
+		}
 	}
+
+	GameState_BasePlay::update();
+
+	if(m_gameServer)
+	{
+		Packet playerInfo;
+		PlayerReplicationInfo pri;
+	
+		
+
+		pri.m_x = m_game.m_localShip->posCurr.x;
+		pri.m_y = m_game.m_localShip->posCurr.y;
+		pri.m_lives = m_game.m_lives;
+		pri.m_rotation = m_game.m_localShip->dirCurr;
+		pri.m_netid = m_netID;
+		memcpy(pri.m_name, "player name", 12);
+
+		m_gameServer->send(playerInfo);
+	}
+	
 }
 
 void GameState_NetworkPlay::draw()
@@ -96,4 +119,21 @@ void GameState_NetworkPlay::draw()
 		sprintf(msg, "%s wins!", lastPlayer->m_name);
 		AEGfxPrint(280, 280, 0xFF0000FF, msg);
 	}	
+}
+
+void GameState_NetworkPlay::updatePRI(PlayerReplicationInfo& pri)
+{
+	for(int i = 0; i < m_PRIs.size(); ++i)
+	{
+		if(m_PRIs[i].m_netid == pri.m_netid)
+		{
+			m_PRIs[i].m_lives = pri.m_lives;
+			m_PRIs[i].m_rotation = pri.m_rotation;
+			m_PRIs[i].m_score = pri.m_score;
+			m_PRIs[i].m_x = pri.m_x;
+			m_PRIs[i].m_y = pri.m_y;
+			memcpy(m_PRIs[i].m_name, pri.m_name, 12);
+			return;
+		}
+	}
 }

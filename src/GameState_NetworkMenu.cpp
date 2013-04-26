@@ -315,7 +315,7 @@ void ConnectingState::update()
 		m_parent->nextState(new TimedOutState(m_parent));
 
 	else if( m_GRI.m_inProgress && m_GRI.m_PRICount == m_PRIs.size() ) 
-		nextGameState(new GameState_NetworkPlay(m_GRI, m_PRIs, m_game));
+		nextGameState(new GameState_NetworkPlay(m_GRI, m_PRIs, m_game, m_netID));
 }
 
 void ConnectingState::draw()
