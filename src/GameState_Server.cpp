@@ -13,7 +13,7 @@
 // TODO: Game Replication Info
 
 GameState_Server::GameState_Server(MulticastSocket * master, ServerInfo & info, GameServer* gameServer)
-	: m_master(master), m_gameServer(gameServer), m_netObjects(&m_game)
+	: m_master(master), m_gameServer(gameServer), m_netObjects(&m_game), updateTimer(.5f)
 {
 	gameServer->getInfo() = info;
 }
@@ -52,7 +52,7 @@ void GameState_Server::init()
 void GameState_Server::update()
 {
 	static int timer = 0;
-
+	updateTimer -= gAEFrameTime;
 	m_gameServer->update();
 
 	if ((m_game.m_asteroids < m_game.m_maxAsteroids) && ((AEGetTime() - m_game.m_asteroidTimer) > AST_CREATE_DELAY))
@@ -98,16 +98,20 @@ void GameState_Server::update()
 		test->second->posCurr.y = AEWrap(test->second->posCurr.y, gAEWinMinY - AST_SIZE_MAX, gAEWinMaxY + AST_SIZE_MAX);
 		test->second->posCurr.x += test->second->velCurr.x * gAEFrameTime;
 		test->second->posCurr.y += test->second->velCurr.y * gAEFrameTime;
-		auto connect = m_gameServer->getNewConnections().begin();
-		for(; connect != m_gameServer->getNewConnections().end(); ++connect)
+		if(updateTimer < 0.f)
 		{
-			Packet playerInfo;
-			new (playerInfo.m_buffer) ObjectNetMessage(test->first, TYPE_ASTEROID, FLAG_ACTIVE, test->second->posCurr.x, test->second->posCurr.y, test->second->dirCurr, test->second->velCurr.x, test->second->velCurr.y);
-			playerInfo.m_length = sizeof(ObjectNetMessage);
+			auto connect = m_gameServer->getNewConnections().begin();
+			for(; connect != m_gameServer->getNewConnections().end(); ++connect)
+			{
+				Packet playerInfo;
+				new (playerInfo.m_buffer) ObjectNetMessage(test->first, TYPE_ASTEROID, FLAG_ACTIVE, test->second->posCurr.x, test->second->posCurr.y, test->second->dirCurr, test->second->velCurr.x, test->second->velCurr.y);
+				playerInfo.m_length = sizeof(ObjectNetMessage);
 
 
-			(*connect)->send(playerInfo);
+				(*connect)->send(playerInfo);
 
+			}
+			updateTimer = .5f;
 		}
 	}
 }

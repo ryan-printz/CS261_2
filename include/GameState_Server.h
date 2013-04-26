@@ -28,4 +28,5 @@ protected:
 	NetInstContainer m_Asteroids;
 	MulticastSocket * m_master;
 	GameServer * m_gameServer;
+	float updateTimer;
 };

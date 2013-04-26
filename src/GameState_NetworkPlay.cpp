@@ -10,7 +10,7 @@
 #include "NetObjectManager.h"
 
 GameState_NetworkPlay::GameState_NetworkPlay(GameReplicationInfo &gri, std::vector<PlayerReplicationInfo> &pris, ProtoConnection * gameServer, int netID)
-	: m_GRI(gri), m_gameServer(gameServer), m_netID(netID), m_netObjects(&m_game), m_send(4), m_lastRecv(10.f)
+	: m_GRI(gri), m_gameServer(gameServer), m_netID(netID), m_netObjects(&m_game), m_send(.5f), m_lastRecv(10.f)
 {
 	m_PRIs.swap(pris);
 }
@@ -128,8 +128,8 @@ void GameState_NetworkPlay::update()
 	}
 
 	updateMatrix();
-
-	if(m_gameServer && !m_send)
+	m_send -= gAEFrameTime;
+	if(m_gameServer && m_send < 0)
 	{
 		Packet playerInfo;
 	
@@ -145,10 +145,10 @@ void GameState_NetworkPlay::update()
 
 			m_gameServer->send(playerInfo);
 		}
-		m_send = 10;
+		m_send = .1f;
 	}
 	m_lastRecv -= gAEFrameTime;
-	m_send--;
+	
 
 	//Will only work once the server sends asteroid updates
 	if(m_lastRecv <= 0 && m_gameServer)

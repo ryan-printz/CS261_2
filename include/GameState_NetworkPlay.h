@@ -29,6 +29,6 @@ private:
 	std::vector<PlayerReplicationInfo> m_PRIs;
 	ProtoConnection * m_gameServer;
 	int m_netID;
-	int m_send;
+	float m_send;
 	float m_lastRecv;
 };
