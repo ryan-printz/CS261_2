@@ -110,14 +110,24 @@ ObjectMsgList & GameServer::getObjectMsgs()
 void GameServer::update()
 {
 	m_gsThread->lock();
-	std::cout << "Update!" <<std::endl;
+	//std::cout << "Update!" <<std::endl;
 	// process new connections
-	for( auto connected = m_newConnections.begin(); connected != m_newConnections.end(); ++connected )
+	for( auto connected = m_newConnections.begin(); connected != m_newConnections.end();  )
 	{
+		(*connected)->m_lastRecv--;
+		if((*connected)->m_lastRecv <= 0)
+		{
+			//printf("Kill this connection\n");
+			connected = m_newConnections.erase(connected);
+			continue;
+		}
 		Packet received;
 		if( !(*connected)->pop_receivePacket(received) )
+		{
+			++connected;
 			continue;
-
+		}
+		(*connected)->m_lastRecv = 500;
 		BaseNetMessage * msg = reinterpret_cast<BaseNetMessage*>(received.m_buffer);
 
 		if( msg->type() == PLAYER_REPLICATION_INFO )
@@ -141,7 +151,9 @@ void GameServer::update()
 				if( client != connected )
 					(*client)->send(received);
 		}
+		++connected;
 	}
+
 
 	m_gsThread->unlock();
 }

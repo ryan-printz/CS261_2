@@ -29,8 +29,8 @@ void GameState_BasePlay::init(void)
 	m_game.m_asteroidTimer = AEGetTime();
 	
 	// generate the initial asteroid
-	for (u32 i = 0; i < m_game.m_maxAsteroids; i++)
-		m_game.astCreate(0);
+	//for (u32 i = 0; i < m_game.m_maxAsteroids; i++)
+	//	m_game.astCreate(0);
 
 	// reset the score and the number of ship
 	m_game.m_score = 0;
@@ -144,7 +144,7 @@ void GameState_BasePlay::update(void)
 		m_game.m_asteroidTimer = AEGetTime();
 
 		// create an asteroid
-		m_game.astCreate(0);
+		//m_game.astCreate(0);
 	}
 
 	// ===============

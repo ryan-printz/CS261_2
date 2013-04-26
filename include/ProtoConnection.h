@@ -174,6 +174,7 @@ public:
 
 	virtual std::string info() const;
 	const ConnectionStats& getConnectionStats() const; 
+	int m_lastRecv;
 
 protected:
 	void updateStats();
@@ -185,6 +186,7 @@ protected:
 	int noFlowSend(ubyte * buffer, uint len, ubyte flags);
 
 	void updateFlowControl(float dt);
+	
 protected:
 	// the other receiving endpoint.
 	ProtoSocket* m_connection;
@@ -229,5 +231,6 @@ private:
 	LinkedPriorityQueue m_flowControl;
 
 	std::list<Packet> m_received;
+	
 };
 

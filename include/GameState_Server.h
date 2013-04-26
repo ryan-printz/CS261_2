@@ -8,6 +8,7 @@
 #include "PlayerReplicationInfo.h"
 #include "MulticastSocket.h"
 #include "NetObjectManager.h"
+#include "ProtoConnection.h"
 
 class GameState_Server : public GameState_BasePlay
 {

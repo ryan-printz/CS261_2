@@ -39,6 +39,10 @@ void NetObjectManager::push(short netId, unsigned type, unsigned flag, float x, 
 		type = TYPE_NET_SHIP;
 		scale = SHIP_SIZE;
 		break;
+	case TYPE_ASTEROID:
+		type = TYPE_ASTEROID;
+		scale = 4.f;
+		break;
 	};
 	AEVec2 temp;
 	temp.x = velx;

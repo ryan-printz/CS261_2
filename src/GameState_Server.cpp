@@ -4,6 +4,8 @@
 #include "BaseNetMessage.h"
 #include "ServerInfoNetMessage.h"
 
+
+
 // TODO: refactor this, GameState_NetPlay, and GameState_Play to use a common base class.
 // TODO: refactor game objects
 // TODO: Server-side debugging/controls. It would be nice to add gui to this, but we may not have access to the window.
@@ -31,8 +33,8 @@ void GameState_Server::init()
 	m_game.m_asteroidTimer = AEGetTime();
 	
 	// generate the initial asteroid
-	for (u32 i = 0; i < m_game.m_maxAsteroids; i++)
-		m_game.astCreate(0);
+	//for (u32 i = 0; i < m_game.m_maxAsteroids; i++)
+	//	m_game.astCreate(0);
 
 	// reset
 	m_gameServer->getGRI().m_inProgress = true;
@@ -55,6 +57,15 @@ void GameState_Server::update()
 
 	m_gameServer->update();
 
+	if ((m_game.m_asteroids < m_game.m_maxAsteroids) && ((AEGetTime() - m_game.m_asteroidTimer) > AST_CREATE_DELAY))
+	{
+		// keep track the last time an asteroid is created
+		m_game.m_asteroidTimer = AEGetTime();
+
+		// create an asteroid
+		m_game.astCreate(0);
+	}
+
 	if( ++timer % 10 )
 	{
 		Packet serverInfo;
@@ -69,7 +80,7 @@ void GameState_Server::update()
 	auto objects = m_gameServer->getObjectMsgs();
 	for(auto object = objects.begin(); object != objects.end(); ++object)
 	{
-		m_netObjects.push(object->netId, object->type, object->flags, object->x, object->y, object->z, object->velx, object->vely);
+		m_netObjects.update(object->netId, object->type, object->flags, object->x, object->y, object->z, object->velx, object->vely);
 	}
 	objects.clear();
 }
