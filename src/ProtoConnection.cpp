@@ -104,11 +104,11 @@ int ProtoConnection::receive(ubyte * buffer, uint len, int drop)
 	uint headerSize = sizeof(ProtoHeader);
 
 	int received = m_connection->receive(packet, ProtoSocket::MAX_PACKET_SIZE);
-	memcpy(buffer, packet, received);
+	
 
 	//Connection message
-	if(received == 0)
-		return 0;
+	//if(received == 0)
+	//	return 0;
 	// no packet was received
 	// or the packet was not from this UDPcol.
 	if( received == -1 )
@@ -117,7 +117,7 @@ int ProtoConnection::receive(ubyte * buffer, uint len, int drop)
 	// Whoops, drop the packet.
 	if( drop == -1 )
 		return drop;
-
+	memcpy(buffer, packet, received);
 	// pull out the header.
 	// adjust the received size appropriately.
 	ProtoHeader header = m_connection->getProtoHeader();
@@ -170,6 +170,7 @@ int ProtoConnection::receive(ubyte * buffer, uint len, int drop)
 		return -1;
 
 	//memcpy(buffer, packet + sizeof(uint) + resentShift, received -= sizeof(uint) * resentShift);
+	memcpy(buffer, packet + sizeof(ProtoHeader), received - sizeof(ProtoHeader));
 
 	if( header.m_flags & ProtoHeader::UDP_HIGH )
 		send((ubyte*)&ProtoHeader::KEEP_ALIVE_MESSAGE, sizeof(uint), ProtoHeader::UDP_NORMAL | ProtoHeader::UDP_HIGH);

@@ -149,10 +149,10 @@ int ProtoSocket::receive(char * buffer, unsigned size, bool write)
 		return -1;
 
 	uint len = std::min(size, packet->packetSize);
-	//memcpy(&m_lastProtoHeader, packet->packet, sizeof(ProtoHeader));
+	memcpy(&m_lastProtoHeader, packet->packet, sizeof(ProtoHeader));
 	memcpy(buffer, packet->packet, len);
 
-	//m_received.erase(packet);
+	m_received.erase(packet);
 
 	return len;
 }
@@ -214,8 +214,8 @@ void ProtoSocket::receiveSort()
 		m_disconnected.emplace_back(p.from);
 		return;
 	}
-	memmove(p.packet, p.packet + sizeof(ProtoHeader), sizeof(ProtoHeader));
-	p.packetSize -= sizeof(ProtoHeader);
+	//memmove(p.packet, p.packet + sizeof(ProtoHeader), sizeof(ProtoHeader));
+	//p.packetSize -= sizeof(ProtoHeader);
 	// else it's just a packet.
 	m_received.emplace_back(p);
 }
