@@ -190,7 +190,7 @@ void GameState_Server::destroyObject(short netID)
 	if(finder != m_Asteroids.end())
 	{
 		//KILL
-		finder->second->flag |= ~FLAG_ACTIVE;
+		finder->second->flag = NULL;
 		m_Asteroids.erase(finder);
 		return;
 	}

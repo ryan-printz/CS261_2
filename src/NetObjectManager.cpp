@@ -76,7 +76,7 @@ void NetObjectManager::destroyObject(short netID)
 	if(finder != end())
 	{
 		//KILL
-		finder->second->flag |= ~FLAG_ACTIVE;
+		finder->second->flag = NULL;
 		erase(finder);
 	}
 }

@@ -175,7 +175,7 @@ public:
 	virtual std::string info() const;
 	const ConnectionStats& getConnectionStats() const; 
 	float m_lastRecv;
-
+	short m_netID;
 protected:
 	void updateStats();
 	void updateRTT(float time);
