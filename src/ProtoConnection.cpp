@@ -90,7 +90,7 @@ bool ProtoConnection::disconnect()
 int ProtoConnection::send(Packet & p)
 {
 	int i = WSAGetLastError();
-	printf("%i\n",i);
+	//printf("%i\n",i);
 	return noFlowSend(p.m_buffer, p.m_length, ProtoHeader::Flags::UDP_HIGH);
 }
 
@@ -124,10 +124,10 @@ int ProtoConnection::receive(ubyte * buffer, uint len, int drop)
 	// adjust the received size appropriately.
 	ProtoHeader header = m_connection->getProtoHeader();
 
-	std::cout << "Received Packet Header: Sequence number " << header.m_sequence.m_sequenceNumber
-	<< ", Ack " << header.m_ack.m_sequenceNumber
-	<< ", Acks " << std::bitset<32>((int)header.m_acks) 
-	<< ", Flags " << std::bitset<CHAR_BIT>(header.m_flags) << std::endl;
+	//std::cout << "Received Packet Header: Sequence number " << header.m_sequence.m_sequenceNumber
+	//<< ", Ack " << header.m_ack.m_sequenceNumber
+	//<< ", Acks " << std::bitset<32>((int)header.m_acks) 
+	//<< ", Flags " << std::bitset<CHAR_BIT>(header.m_flags) << std::endl;
 
 	m_idleTimer = 0.0f;
 	++m_stats.m_receivedPackets;
@@ -407,10 +407,10 @@ int ProtoConnection::noFlowSend(ubyte * buffer, uint len, ubyte flags)
 	if((sent = m_connection->send(buffer, len)) != len)
 		return -1;
 
-	std::cout << "Sent Packet Header: Sequence number " << header.m_sequence.m_sequenceNumber
+	//std::cout << "Sent Packet Header: Sequence number " << header.m_sequence.m_sequenceNumber
 	//<< ", Ack " << header.m_ack.m_sequenceNumber
 	//<< ", Acks " << std::bitset<32>((int)header.m_acks) 
-	<< ", Flags " << std::bitset<CHAR_BIT>(header.m_flags) << std::endl;
+	//<< ", Flags " << std::bitset<CHAR_BIT>(header.m_flags) << std::endl;
 	
 	if( flags & ProtoHeader::UDP_HIGH )
 	{
