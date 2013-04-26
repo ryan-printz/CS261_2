@@ -148,13 +148,13 @@ int ProtoSocket::receive(char * buffer, unsigned size, bool write)
 	if( packet == m_received.end() )
 		return -1;
 
-	uint len = std::min(size, packet->packetSize - sizeof(ProtoHeader));
-	memcpy(&m_lastProtoHeader, packet->packet, sizeof(ProtoHeader));
-	memcpy(buffer, packet->packet + sizeof(ProtoHeader), len);
+	uint len = std::min(size, packet->packetSize);
+	//memcpy(&m_lastProtoHeader, packet->packet, sizeof(ProtoHeader));
+	memcpy(buffer, packet->packet, len);
 
 	//m_received.erase(packet);
 
-	return size;
+	return len;
 }
 
 int ProtoSocket::receive(char * buffer, unsigned size, NetAddress &from, bool write)

@@ -185,11 +185,11 @@ protected:
 	int noFlowSend(ubyte * buffer, uint len, ubyte flags);
 
 	void updateFlowControl(float dt);
-
-private:
+protected:
 	// the other receiving endpoint.
 	ProtoSocket* m_connection;
-
+private:
+	
 	// connection properties
 	bool m_connected;
 	bool m_server;
@@ -227,5 +227,7 @@ private:
 
 	ResendOrderedQueue m_resend;
 	LinkedPriorityQueue m_flowControl;
+
+	std::list<Packet> m_received;
 };
 

@@ -103,7 +103,7 @@ int ProtoConnection::receive(ubyte * buffer, uint len, int drop)
 	ubyte packet[ProtoSocket::MAX_PACKET_SIZE];
 	uint headerSize = sizeof(ProtoHeader);
 
-	int received = m_socket->receive(packet, ProtoSocket::MAX_PACKET_SIZE);
+	int received = m_connection->receive(packet, ProtoSocket::MAX_PACKET_SIZE);
 
 	// no packet was received
 	// or the packet was not from this UDPcol.
@@ -201,7 +201,10 @@ void ProtoConnection::update(float dt)
 
 	Packet p;
 
-	m_connection->receive(p.m_buffer, p.MAX);
+	p.m_length = receive(p.m_buffer, p.MAX);
+
+	if(p.m_length > 0)
+		m_received.push_back(p);
 
 	if( m_keepAliveInterval && !((int)m_idleTimer % m_keepAliveInterval) )
 	{
