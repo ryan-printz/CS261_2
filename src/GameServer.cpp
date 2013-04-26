@@ -148,7 +148,14 @@ void GameServer::update()
 			Packet ninjaInfo;
 			new (ninjaInfo.m_buffer) NinjaInfoCardMessage((*connected)->m_netID);
 			ninjaInfo.m_length = sizeof(NinjaInfoCardMessage);
-
+			for(int i = 0; i < m_PRIs.size(); ++i)
+			{
+				if(m_PRIs[i].m_netid == (*connected)->m_netID)
+				{
+					m_PRIs[i] = m_PRIs[m_PRIs.size()-1];
+					m_PRIs.pop_back();
+				}
+			}
 			//printf("Kill this connection\n");
 			connected = m_newConnections.erase(connected);
 
@@ -174,7 +181,7 @@ void GameServer::update()
 			auto pri = msg->as<PlayerReplicationInfoNetMessage>()->playerInfo();
 			if( !updatePlayerReplicationInfo(pri) )
 			{
-				(*connected)->m_netID = m_nextNetID - 1;
+				(*connected)->m_netID = m_nextNetID;
 				i = WSAGetLastError();
 				addNewPlayer(*connected, pri);
 			}
