@@ -9,6 +9,7 @@
 #include "ObjectNetMessage.h"
 #include "NetObjectManager.h"
 #include "GameState_Menu.h"
+#include "NinjaInfoCardMessage.h"
 
 #include <algorithm>
 
@@ -90,7 +91,7 @@ void GameState_NetworkPlay::update()
 				break;
 
 			case NINJA_INFO:
-				m_netObjects.destroyObject(net->as<NinjaInfoCardMessage>()->m_netID);
+				m_netObjects.destroyObject(msg->as<NinjaInfoCardMessage>()->netID());
 				break;
 			};
 		}
