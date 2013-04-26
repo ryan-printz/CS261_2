@@ -4,6 +4,8 @@
 #include "GameReplicationInfo.h"
 #include "PlayerReplicationInfo.h"
 #include "ProtoConnection.h"
+#include "NetObjectManager.h"
+#include "ObjectNetMessage.h"
 
 // ---------------------------------------------------------------------------
 
@@ -19,10 +21,13 @@ public:
 	virtual void unload();
 	virtual void update();
 	void updatePRI(PlayerReplicationInfo& pri);
+	void push(ObjectNetMessage& obj);
 
 private:
 	GameReplicationInfo m_GRI;
+	NetObjectManager m_netObjects;
 	std::vector<PlayerReplicationInfo> m_PRIs;
 	ProtoConnection * m_gameServer;
 	int m_netID;
+	int m_send;
 };

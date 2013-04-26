@@ -92,6 +92,9 @@
     <ClCompile Include="..\src\ProtoConnection.cpp">
       <Filter>Source Files\Networking</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\NetObjectManager.cpp">
+      <Filter>Source Files\Networking</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\main.h">
@@ -200,6 +203,9 @@
       <Filter>Header Files\Networking</Filter>
     </ClInclude>
     <ClInclude Include="..\include\ClientInfoNetMessage.h">
+      <Filter>Header Files\Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\NetObjectManager.h">
       <Filter>Header Files\Networking</Filter>
     </ClInclude>
   </ItemGroup>

@@ -10,7 +10,7 @@
 #include "NetObjectManager.h"
 
 GameState_NetworkPlay::GameState_NetworkPlay(GameReplicationInfo &gri, std::vector<PlayerReplicationInfo> &pris, ProtoConnection * gameServer, int netID)
-	: m_GRI(gri), m_gameServer(gameServer), m_netID(netID)
+	: m_GRI(gri), m_gameServer(gameServer), m_netID(netID), m_netObjects(&m_game), m_send(4)
 {
 	m_PRIs.swap(pris);
 }
@@ -76,13 +76,18 @@ void GameState_NetworkPlay::update()
 			case PLAYER_REPLICATION_INFO:
 				updatePRI( msg->as<PlayerReplicationInfoNetMessage>()->playerInfo() );
 				break;
+
+			case OBJECT:
+				push(*msg->as<ObjectNetMessage>());
+				//m_netObjects.push(//updatePRI( msg->as<PlayerReplicationInfoNetMessage>()->playerInfo() );
+				break;
 			};
 		}
 	}
 
 	GameState_BasePlay::update();
 
-	if(m_gameServer)
+	if(m_gameServer && !m_send)
 	{
 		Packet playerInfo;
 		//PlayerReplicationInfo pri;
@@ -93,15 +98,16 @@ void GameState_NetworkPlay::update()
 		//pri.m_rotation = m_game.m_localShip->dirCurr;
 		//pri.m_netid = m_netID;
 		//memcpy(pri.m_name, "player name", 12);
-
+		//m_game.m_gameObjects[1].type == TYPE_SHIP
 		new (playerInfo.m_buffer) ObjectNetMessage(m_netID, TYPE_NET_SHIP, FLAG_ACTIVE, m_game.m_localShip->posCurr.x, m_game.m_localShip->posCurr.y, m_game.m_localShip->dirCurr);
 		playerInfo.m_length = sizeof(ObjectNetMessage);
 		//new (playerInfo.m_buffer) PlayerReplicationInfoNetMessage(pri);
 		//playerInfo.m_length = sizeof(PlayerReplicationInfoNetMessage);
 
 		m_gameServer->send(playerInfo);
+		m_send = 10;
 	}
-	
+	m_send--;
 }
 
 void GameState_NetworkPlay::draw()
@@ -151,4 +157,23 @@ void GameState_NetworkPlay::updatePRI(PlayerReplicationInfo& pri)
 			return;
 		}
 	}
+}
+
+void GameState_NetworkPlay::push(ObjectNetMessage& obj)
+{
+	m_netObjects.update(obj.netId, obj.type, obj.flags, obj.x, obj.y, obj.z);
+
+	//float scale = 1.0;
+	//AEVec2 pos; pos.x = obj.x; pos.y = obj.y;
+
+	//switch(obj.type)
+	//{/
+	//case TYPE_SHIP:
+	//	obj.type = TYPE_NET_SHIP;
+	//	scale = SHIP_SIZE;
+	//	break;
+	//};
+	//if(m_game.m_gam
+	//auto inst = m_game.gameObjInstCreate(obj.type, scale, &pos, 0, obj.z, true);
+	//emplace(std::make_pair(obj.netId, inst));
 }

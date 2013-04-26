@@ -101,6 +101,7 @@
     <ClCompile Include="..\src\GameState_Result.cpp" />
     <ClCompile Include="..\src\BaseProcessThread.cpp" />
     <ClCompile Include="..\src\BaseSocket.cpp" />
+    <ClCompile Include="..\src\NetObjectManager.cpp" />
     <ClCompile Include="..\src\ProtoConnection.cpp" />
     <ClCompile Include="..\src\ProtoConnectionManagerProcess.cpp" />
     <ClCompile Include="..\src\ProtoSocket.cpp" />
@@ -134,6 +135,7 @@
     <ClInclude Include="..\include\IProcessThread.h" />
     <ClInclude Include="..\include\ISocket.h" />
     <ClInclude Include="..\include\main.h" />
+    <ClInclude Include="..\include\NetObjectManager.h" />
     <ClInclude Include="..\include\PlayerReplicationInfo.h" />
     <ClInclude Include="..\include\PlayerReplicationInfoNetMessage.h" />
     <ClInclude Include="..\include\SequenceNumber.h" />

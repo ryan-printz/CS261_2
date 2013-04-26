@@ -173,8 +173,8 @@ int ProtoConnection::receive(ubyte * buffer, uint len, int drop)
 	//memcpy(buffer, packet + sizeof(uint) + resentShift, received -= sizeof(uint) * resentShift);
 	memcpy(buffer, packet + sizeof(ProtoHeader), received - sizeof(ProtoHeader));
 
-	if( header.m_flags & ProtoHeader::UDP_HIGH )
-		send((ubyte*)&ProtoHeader::KEEP_ALIVE_MESSAGE, sizeof(uint), ProtoHeader::UDP_NORMAL | ProtoHeader::UDP_HIGH);
+	//if( header.m_flags & ProtoHeader::UDP_HIGH )
+	//	send((ubyte*)&ProtoHeader::KEEP_ALIVE_MESSAGE, sizeof(uint), ProtoHeader::UDP_NORMAL | ProtoHeader::UDP_HIGH);
 
 	return received;
 }
@@ -210,7 +210,7 @@ void ProtoConnection::update(float dt)
 {
 	// get a little bit closer to timing out.
 	m_idleTimer += dt;
-
+	
 	Packet p;
 
 	p.m_length = receive(p.m_buffer, p.MAX);

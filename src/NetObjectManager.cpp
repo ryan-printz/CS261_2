@@ -28,7 +28,7 @@ NetInstContainer::const_iterator NetObjectManager::end() const
 	return NetInstContainer::end();
 }
 
-void NetObjectManager::push(short netId, unsigned type, unsigned flag, char x, char y, char r)
+void NetObjectManager::push(short netId, unsigned type, unsigned flag, float x, float y, float r)
 {
 	float scale = 1.0;
 	AEVec2 pos; pos.x = x; pos.y = y;
@@ -45,7 +45,7 @@ void NetObjectManager::push(short netId, unsigned type, unsigned flag, char x, c
 	emplace(std::make_pair(netId, inst));
 }
 
-void NetObjectManager::update(short netId, unsigned type, unsigned flag, char x, char y, char r)
+void NetObjectManager::update(short netId, unsigned type, unsigned flag, float x, float y, float r)
 {
 	auto inst = find(netId);
 

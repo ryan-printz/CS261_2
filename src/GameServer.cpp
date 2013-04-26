@@ -62,19 +62,20 @@ bool GameServer::updatePlayerReplicationInfo(PlayerReplicationInfo & rPRI)
 
 void GameServer::addNewPlayer(ProtoConnection * connected, PlayerReplicationInfo & rPRI)
 {
+	int i = WSAGetLastError();
 	// otherwise, new player. send them all the stuff they need.
 	ClientInfo info;
 	info.netID = m_nextNetID++;
-
+	strcpy(info.name, rPRI.m_name);
 	Packet clientInfo;
-
+	i = WSAGetLastError();
 	new (clientInfo.m_buffer) ClientInfoNetMessage(info);
 	clientInfo.m_length = sizeof(ClientInfoNetMessage);
-
-	std::cout << info.netID << std::endl;
-
+	i = WSAGetLastError();
+	//std::cout << info.netID << std::endl;
+	
 	connected->send(clientInfo);
-
+	i = WSAGetLastError();
 	rPRI.m_lives = 3;
 	rPRI.m_rotation = 0;
 	rPRI.m_score = 0;
@@ -90,13 +91,14 @@ void GameServer::addNewPlayer(ProtoConnection * connected, PlayerReplicationInfo
 	new (gameInfo.m_buffer) GameReplicationInfoNetMessage(m_GRI);
 	gameInfo.m_length = sizeof(GameReplicationInfoNetMessage);
 	connected->send(gameInfo);
-
+	i = WSAGetLastError();
 	Packet playerInfo;
 	for(auto pri = m_PRIs.begin(); pri != m_PRIs.end(); ++pri)
 	{
 		new (playerInfo.m_buffer) PlayerReplicationInfoNetMessage(*pri);
 		playerInfo.m_length = sizeof(PlayerReplicationInfoNetMessage);
 		connected->send(playerInfo);
+		i = WSAGetLastError();
 	}
 }
 
@@ -108,7 +110,7 @@ ObjectMsgList & GameServer::getObjectMsgs()
 void GameServer::update()
 {
 	m_gsThread->lock();
-
+	std::cout << "Update!" <<std::endl;
 	// process new connections
 	for( auto connected = m_newConnections.begin(); connected != m_newConnections.end(); ++connected )
 	{
@@ -120,9 +122,13 @@ void GameServer::update()
 
 		if( msg->type() == PLAYER_REPLICATION_INFO )
 		{
+			int i = WSAGetLastError();
 			auto pri = msg->as<PlayerReplicationInfoNetMessage>()->playerInfo();
 			if( !updatePlayerReplicationInfo(pri) )
+			{
+				i = WSAGetLastError();
 				addNewPlayer(*connected, pri);
+			}
 										
 			// new players update the player count
 			m_info.currentPlayers = m_PRIs.size();

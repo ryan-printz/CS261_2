@@ -18,8 +18,8 @@ public:
 	inline NetInstContainer::iterator end();
 	inline NetInstContainer::const_iterator end() const;
 
-	void push(short netId, unsigned type, unsigned flag, char x, char y, char r);
-	void update(short netId, unsigned type, unsigned flag, char x, char y, char r);
+	void push(short netId, unsigned type, unsigned flag, float x, float y, float r);
+	void update(short netId, unsigned type, unsigned flag, float x, float y, float r);
 
 protected:
 	Asteroids * m_asGame;
