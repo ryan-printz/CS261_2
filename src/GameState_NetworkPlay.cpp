@@ -10,7 +10,7 @@
 #include "NetObjectManager.h"
 
 GameState_NetworkPlay::GameState_NetworkPlay(GameReplicationInfo &gri, std::vector<PlayerReplicationInfo> &pris, ProtoConnection * gameServer, int netID)
-	: m_GRI(gri), m_gameServer(gameServer), m_netID(netID), m_netObjects(&m_game), m_send(4), m_lastRecv(500)
+	: m_GRI(gri), m_gameServer(gameServer), m_netID(netID), m_netObjects(&m_game), m_send(4), m_lastRecv(10.f)
 {
 	m_PRIs.swap(pris);
 }
@@ -61,7 +61,7 @@ void GameState_NetworkPlay::update()
 
 		if( m_gameServer->pop_receivePacket(received) )
 		{
-			m_lastRecv = 500;
+			m_lastRecv = 10.f;
 			BaseNetMessage * msg = reinterpret_cast<BaseNetMessage*>(received.m_buffer);
 
 			switch( msg->type() )
@@ -100,19 +100,28 @@ void GameState_NetworkPlay::update()
 		//pri.m_netid = m_netID;
 		//memcpy(pri.m_name, "player name", 12);
 		//m_game.m_gameObjects[1].type == TYPE_SHIP
-		new (playerInfo.m_buffer) ObjectNetMessage(m_netID, TYPE_NET_SHIP, FLAG_ACTIVE, m_game.m_localShip->posCurr.x, m_game.m_localShip->posCurr.y, m_game.m_localShip->dirCurr, m_game.m_localShip->velCurr.x, m_game.m_localShip->velCurr.y);
-		playerInfo.m_length = sizeof(ObjectNetMessage);
-		//new (playerInfo.m_buffer) PlayerReplicationInfoNetMessage(pri);
-		//playerInfo.m_length = sizeof(PlayerReplicationInfoNetMessage);
+		if(m_game.m_localShip)
+		{
+			new (playerInfo.m_buffer) ObjectNetMessage(m_netID, TYPE_NET_SHIP, FLAG_ACTIVE, m_game.m_localShip->posCurr.x, m_game.m_localShip->posCurr.y, m_game.m_localShip->dirCurr, m_game.m_localShip->velCurr.x, m_game.m_localShip->velCurr.y);
+			playerInfo.m_length = sizeof(ObjectNetMessage);
+			//new (playerInfo.m_buffer) PlayerReplicationInfoNetMessage(pri);
+			//playerInfo.m_length = sizeof(PlayerReplicationInfoNetMessage);
 
-		m_gameServer->send(playerInfo);
+			m_gameServer->send(playerInfo);
+		}
 		m_send = 10;
 	}
-	m_lastRecv--;
+	m_lastRecv -= gAEFrameTime;
 	m_send--;
 	//Will only work once the server sends asteroid updates
 	if(m_lastRecv <= 0 && m_gameServer)
+	{
 		printf("Kill this connection.\n");
+		m_gameServer->disconnect();
+		delete m_gameServer;
+		m_gameServer = nullptr;
+		onEnd();
+	}
 }
 
 void GameState_NetworkPlay::draw()

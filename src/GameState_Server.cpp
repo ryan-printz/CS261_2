@@ -63,7 +63,12 @@ void GameState_Server::update()
 		m_game.m_asteroidTimer = AEGetTime();
 
 		// create an asteroid
-		m_game.astCreate(0);
+		auto gObj = m_game.astCreate(0);
+
+		gObj->velCurr.x = float(rand() % 100) / 100.f * 20.f - 10.f;
+		gObj->velCurr.y = float(rand() % 100) / 100.f * 20.f - 10.f;
+		gObj->scale = 15.f;
+		m_Asteroids.emplace(std::make_pair<short, GameObjInst*>(m_gameServer->getNextNetID(), gObj ));
 	}
 
 	if( ++timer % 10 )
@@ -80,13 +85,33 @@ void GameState_Server::update()
 	auto objects = m_gameServer->getObjectMsgs();
 	for(auto object = objects.begin(); object != objects.end(); ++object)
 	{
-<<<<<<< HEAD
 		m_netObjects.update(object->netId, object->type, object->flags, object->x, object->y, object->z, object->velx, object->vely);
-=======
-		m_netObjects.update(object->netId, object->type, object->flags, object->x, object->y, object->z);
->>>>>>> small chanves
 	}
 	objects.clear();
+
+	auto test = m_Asteroids.begin();
+	for(; test != m_Asteroids.end(); ++test)
+	{
+		AEVec2 u;
+		f32    uLen;
+
+		// warp the asteroid from one end of the screen to the other
+		test->second->posCurr.x = AEWrap(test->second->posCurr.x, gAEWinMinX - AST_SIZE_MAX, gAEWinMaxX + AST_SIZE_MAX);
+		test->second->posCurr.y = AEWrap(test->second->posCurr.y, gAEWinMinY - AST_SIZE_MAX, gAEWinMaxY + AST_SIZE_MAX);
+		test->second->posCurr.x += test->second->velCurr.x * gAEFrameTime;
+		test->second->posCurr.y += test->second->velCurr.y * gAEFrameTime;
+		auto connect = m_gameServer->getNewConnections().begin();
+		for(; connect != m_gameServer->getNewConnections().end(); ++connect)
+		{
+			Packet playerInfo;
+			new (playerInfo.m_buffer) ObjectNetMessage(test->first, TYPE_ASTEROID, FLAG_ACTIVE, test->second->posCurr.x, test->second->posCurr.y, test->second->dirCurr, test->second->velCurr.x, test->second->velCurr.y);
+			playerInfo.m_length = sizeof(ObjectNetMessage);
+
+
+			(*connect)->send(playerInfo);
+
+		}
+	}
 }
 
 void GameState_Server::unload()

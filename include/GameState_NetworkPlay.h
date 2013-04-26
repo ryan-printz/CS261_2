@@ -30,5 +30,5 @@ private:
 	ProtoConnection * m_gameServer;
 	int m_netID;
 	int m_send;
-	int m_lastRecv;
+	float m_lastRecv;
 };

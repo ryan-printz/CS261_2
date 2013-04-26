@@ -24,7 +24,7 @@ ProtoConnection::ProtoConnection()
 	m_penaltyTimer = 4.0f;
 	m_sendRate = 0.01f;
 	m_flowTimer = 0.f;
-	m_lastRecv = 1000;
+	m_lastRecv = 100.f;
 }
 
 ProtoConnection::ProtoConnection(ISocket * connection, NetAddress & address)

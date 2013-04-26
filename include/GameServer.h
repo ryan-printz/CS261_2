@@ -30,10 +30,11 @@ public:
 	PRIVector & getPRIs();
 	GameReplicationInfo & getGRI();
 	ServerInfo & getInfo();
+	int getNextNetID();
 
 	std::list<ProtoConnection*> & getNewConnections();
 	ObjectMsgList & getObjectMsgs();
-
+	
 protected:
 	void addNewPlayer(ProtoConnection * connected, PlayerReplicationInfo & pri);
 	bool updatePlayerReplicationInfo(PlayerReplicationInfo & pri);

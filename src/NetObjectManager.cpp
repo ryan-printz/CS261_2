@@ -42,7 +42,7 @@ void NetObjectManager::push(short netId, unsigned type, unsigned flag, float x, 
 		break;
 	case TYPE_ASTEROID:
 		type = TYPE_ASTEROID;
-		scale = 4.f;
+		scale = 10.f;
 		break;
 	};
 	AEVec2 temp;

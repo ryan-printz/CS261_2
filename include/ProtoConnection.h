@@ -174,7 +174,7 @@ public:
 
 	virtual std::string info() const;
 	const ConnectionStats& getConnectionStats() const; 
-	int m_lastRecv;
+	float m_lastRecv;
 
 protected:
 	void updateStats();

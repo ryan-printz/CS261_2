@@ -25,6 +25,7 @@ public:
 
 protected:
 	NetObjectManager m_netObjects;
+	NetInstContainer m_Asteroids;
 	MulticastSocket * m_master;
 	GameServer * m_gameServer;
 };

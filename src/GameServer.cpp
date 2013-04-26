@@ -114,7 +114,7 @@ void GameServer::update()
 	// process new connections
 	for( auto connected = m_newConnections.begin(); connected != m_newConnections.end();  )
 	{
-		(*connected)->m_lastRecv--;
+		(*connected)->m_lastRecv -= 1;
 		if((*connected)->m_lastRecv <= 0)
 		{
 			//printf("Kill this connection\n");
@@ -156,4 +156,9 @@ void GameServer::update()
 
 
 	m_gsThread->unlock();
+}
+
+int GameServer::getNextNetID()
+{
+	return m_nextNetID++;
 }
