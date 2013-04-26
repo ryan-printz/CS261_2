@@ -67,8 +67,11 @@ void GameServer::addNewPlayer(ProtoConnection * connected, PlayerReplicationInfo
 	info.netID = m_nextNetID++;
 
 	Packet clientInfo;
+
 	new (clientInfo.m_buffer) ClientInfoNetMessage(info);
 	clientInfo.m_length = sizeof(ClientInfoNetMessage);
+
+	std::cout << info.netID << std::endl;
 
 	connected->send(clientInfo);
 

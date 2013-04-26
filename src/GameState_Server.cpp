@@ -62,7 +62,7 @@ void GameState_Server::update()
 		new (serverInfo.m_buffer) ServerInfoNetMessage(m_gameServer->getInfo());
 		serverInfo.m_length = sizeof(ServerInfoNetMessage);
 
-		m_master->send(serverInfo.m_buffer, serverInfo.m_length);
+		//m_master->send(serverInfo.m_buffer, serverInfo.m_length);
 	}
 	
 	// update the server using only the info from the clients.

@@ -75,14 +75,15 @@ void GameState_NetworkPlay::update()
 		Packet playerInfo;
 		PlayerReplicationInfo pri;
 	
-		
-
 		pri.m_x = m_game.m_localShip->posCurr.x;
 		pri.m_y = m_game.m_localShip->posCurr.y;
 		pri.m_lives = m_game.m_lives;
 		pri.m_rotation = m_game.m_localShip->dirCurr;
 		pri.m_netid = m_netID;
 		memcpy(pri.m_name, "player name", 12);
+
+		new (playerInfo.m_buffer) PlayerReplicationInfoNetMessage(pri);
+		playerInfo.m_length = sizeof(PlayerReplicationInfoNetMessage);
 
 		m_gameServer->send(playerInfo);
 	}
