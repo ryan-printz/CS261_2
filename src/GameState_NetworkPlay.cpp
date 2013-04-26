@@ -65,7 +65,7 @@ void GameState_NetworkPlay::update()
 
 	if(m_gameServer)
 	{
-		m_gameServer->update(0.016);
+		m_gameServer->update(0.010);
 
 		if( m_gameServer->pop_receivePacket(received) )
 		{
