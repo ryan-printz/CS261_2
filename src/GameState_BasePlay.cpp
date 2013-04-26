@@ -43,7 +43,7 @@ void GameState_BasePlay::init(void)
 
 // ---------------------------------------------------------------------------
 
-void GameState_BasePlay::update(void)
+void GameState_BasePlay::updateInput()
 {
 	// =================
 	// update the input
@@ -133,7 +133,10 @@ void GameState_BasePlay::update(void)
 			m_game.gameObjInstCreate(TYPE_MISSILE, 1.0f, &pos, &vel, dir, true);
 		}
 	}
+}
 
+void GameState_BasePlay::updateAsteroids()
+{
 	// ==================================
 	// create new asteroids if necessary
 	// ==================================
@@ -144,9 +147,12 @@ void GameState_BasePlay::update(void)
 		m_game.m_asteroidTimer = AEGetTime();
 
 		// create an asteroid
-		//m_game.astCreate(0);
+		m_game.astCreate(0);
 	}
+}
 
+void GameState_BasePlay::updatePhysics()
+{
 	// ===============
 	// update physics
 	// ===============
@@ -162,7 +168,10 @@ void GameState_BasePlay::update(void)
 		// update the position
 		AEVec2ScaleAdd(&pInst->posCurr, &pInst->velCurr, &pInst->posCurr, (f32)(gAEFrameTime));
 	}
+}
 
+void GameState_BasePlay::updateObjects()
+{
 	// ===============
 	// update objects
 	// ===============
@@ -336,8 +345,159 @@ void GameState_BasePlay::update(void)
 			if (pInst->scale < PTCL_SCALE_DAMP)
 				m_game.gameObjInstDestroy(pInst);
 		}
+	}	
+}
+
+bool GameState_BasePlay::bulletCollide(GameObjInst * pSrc, GameObjInst * pDst)
+{
+	// skip no-active and non-asteroid object
+	if (((pDst->flag & FLAG_ACTIVE) == 0) || (pDst->pObject->type != TYPE_ASTEROID))
+		return false;
+
+	if (AETestPointToRect(&pSrc->posCurr, &pDst->posCurr, pDst->scale, pDst->scale) == false)
+		return false;
+				
+	if (pDst->scale < AST_SIZE_MIN)
+	{
+		m_game.sparkCreate(PTCL_EXPLOSION_M, &pDst->posCurr, (u32)(pDst->scale * 10), pSrc->dirCurr - 0.05f * PI, pSrc->dirCurr + 0.05f * PI, pDst->scale);
+		m_game.m_score++;
+
+		if ((m_game.m_score % AST_SPECIAL_RATIO) == 0)
+			m_game.m_specials++;
+		if ((m_game.m_score % AST_SHIP_RATIO) == 0)
+			m_game.m_lives++;
+		if (m_game.m_score == m_game.m_maxAsteroids * 5)
+			m_game.m_maxAsteroids = (m_game.m_maxAsteroids < AST_NUM_MAX) ? (m_game.m_maxAsteroids * 2) : m_game.m_maxAsteroids;
+
+		// destroy the asteroid
+		m_game.gameObjInstDestroy(pDst);
+	}
+	else
+	{
+		m_game.sparkCreate(PTCL_EXPLOSION_S, &pSrc->posCurr, 10, pSrc->dirCurr + 0.9f * PI, pSrc->dirCurr + 1.1f * PI);
+
+		// impart some of the bullet/missile velocity to the asteroid
+		AEVec2Scale(&pSrc->velCurr, &pSrc->velCurr, 0.01f * (1.0f - pDst->scale / AST_SIZE_MAX));
+		AEVec2Add  (&pDst->velCurr, &pDst->velCurr, &pSrc->velCurr);
+
+		// split the asteroid to 4
+		if ((pSrc->pObject->type == TYPE_MISSILE) || ((pDst->life -= 1.0f) < 0.0f))
+			m_game.astCreate(pDst);
 	}
 
+	// destroy the bullet
+	m_game.gameObjInstDestroy(pSrc);
+
+	return true;
+}
+
+bool GameState_BasePlay::bombCollide(GameObjInst * pSrc, float radius, GameObjInst * pDst)
+{
+	if (((pDst->flag & FLAG_ACTIVE) == 0) || (pDst->pObject->type != TYPE_ASTEROID))
+		return false;
+
+	if (AECalcDistPointToRect(&pSrc->posCurr, &pDst->posCurr, pDst->scale, pDst->scale) > radius)
+		return false;
+
+	if (pDst->scale < AST_SIZE_MIN)
+	{
+		f32 dir = atan2f(pDst->posCurr.y - pSrc->posCurr.y, pDst->posCurr.x - pSrc->posCurr.x);
+
+		m_game.gameObjInstDestroy(pDst);
+		m_game.sparkCreate(PTCL_EXPLOSION_M, &pDst->posCurr, 20, dir + 0.4f * PI, dir + 0.45f * PI);
+		m_game.m_score++;
+
+		if ((m_game.m_score % AST_SPECIAL_RATIO) == 0)
+			m_game.m_specials++;
+		if ((m_game.m_score % AST_SHIP_RATIO) == 0)
+			m_game.m_lives++;
+		if (m_game.m_score == m_game.m_maxAsteroids * 5)
+			m_game.m_maxAsteroids = (m_game.m_maxAsteroids < AST_NUM_MAX) ? (m_game.m_maxAsteroids * 2) : m_game.m_maxAsteroids;
+	}
+	else
+	{
+		// split the asteroid to 4
+		m_game.astCreate(pDst);
+	}
+
+	return true;
+}
+
+bool GameState_BasePlay::asteroidCollide(GameObjInst * pSrc, GameObjInst * pDst)
+{
+	f32          d;
+	AEVec2       nrm, u;
+
+	// skip no-active and non-asteroid object
+	if ((pSrc == pDst) || ((pDst->flag & FLAG_ACTIVE) == 0)  || (pDst->pObject->type != TYPE_ASTEROID))
+		return false;
+
+	// check if the object rectangle overlap
+	d = AECalcDistRectToRect(
+		&pSrc->posCurr, pSrc->scale, pSrc->scale, 
+		&pDst->posCurr, pDst->scale, pDst->scale, 
+		&nrm);
+				
+	if (d >= 0.0f)
+		return false;
+				
+	// adjust object position so that they do not overlap
+	AEVec2Scale	(&u, &nrm, d * 0.25f);
+	AEVec2Sub	(&pSrc->posCurr, &pSrc->posCurr, &u);
+	AEVec2Add	(&pDst->posCurr, &pDst->posCurr, &u);
+
+	// calculate new object velocities
+	m_game.resolveCollision(pSrc, pDst, &nrm);
+
+	return true;
+}
+
+bool GameState_BasePlay::playerCollide(GameObjInst * pSrc, GameObjInst * pDst)
+{
+	// skip no-active and non-asteroid object
+	if ((pSrc == pDst) || ((pDst->flag & FLAG_ACTIVE) == 0) || (pDst->pObject->type != TYPE_ASTEROID))
+		return false;
+
+	// check if the object rectangle overlap
+	if (AETestRectToRect(
+		&pSrc->posCurr, pSrc->scale, pSrc->scale, 
+		&pDst->posCurr, pDst->scale, pDst->scale) == false)
+		return false;
+
+	// create the big explosion
+	m_game.sparkCreate(PTCL_EXPLOSION_L, &pSrc->posCurr, 100, 0.0f, 2.0f * PI);
+				
+	// reset the ship position and direction
+	AEVec2Zero(&m_game.m_localShip->posCurr);
+	AEVec2Zero(&m_game.m_localShip->velCurr);
+	m_game.m_localShip->dirCurr = 0.0f;
+
+	m_game.m_specials = SHIP_SPECIAL_NUM;
+
+	// destroy all asteroid near the ship so that you do not die as soon as the ship reappear
+	for (u32 j = 0; j < GAME_OBJ_INST_NUM_MAX; j++)
+	{
+		GameObjInst* pInst = &m_game.m_gameObjInsts[j];
+		AEVec2		 u;
+
+		// skip no-active and non-asteroid object
+		if (((pInst->flag & FLAG_ACTIVE) == 0) || (pInst->pObject->type != TYPE_ASTEROID))
+			continue;
+
+		AEVec2Sub(&u, &pInst->posCurr, &m_game.m_localShip->posCurr);
+
+		if (AEVec2Length(&u) < (m_game.m_localShip->scale * 10.0f))
+		{
+			m_game.sparkCreate(PTCL_EXPLOSION_M, &pInst->posCurr, 10, -PI, PI);
+			m_game.gameObjInstDestroy(pInst);
+		}
+	}
+
+	return true;
+}
+
+void GameState_BasePlay::checkCollision()
+{
 	// ====================
 	// check for collision
 	// ====================
@@ -354,49 +514,11 @@ void GameState_BasePlay::update(void)
 		{
 			for (u32 j = 0; j < GAME_OBJ_INST_NUM_MAX; j++)
 			{
-				GameObjInst* pDst = &m_game.m_gameObjInsts[j];
-
-				// skip no-active and non-asteroid object
-				if (((pDst->flag & FLAG_ACTIVE) == 0) || (pDst->pObject->type != TYPE_ASTEROID))
-					continue;
-
-				if (AETestPointToRect(&pSrc->posCurr, &pDst->posCurr, pDst->scale, pDst->scale) == false)
-					continue;
-				
-				if (pDst->scale < AST_SIZE_MIN)
-				{
-					m_game.sparkCreate(PTCL_EXPLOSION_M, &pDst->posCurr, (u32)(pDst->scale * 10), pSrc->dirCurr - 0.05f * PI, pSrc->dirCurr + 0.05f * PI, pDst->scale);
-					m_game.m_score++;
-
-					if ((m_game.m_score % AST_SPECIAL_RATIO) == 0)
-						m_game.m_specials++;
-					if ((m_game.m_score % AST_SHIP_RATIO) == 0)
-						m_game.m_lives++;
-					if (m_game.m_score == m_game.m_maxAsteroids * 5)
-						m_game.m_maxAsteroids = (m_game.m_maxAsteroids < AST_NUM_MAX) ? (m_game.m_maxAsteroids * 2) : m_game.m_maxAsteroids;
-
-					// destroy the asteroid
-					m_game.gameObjInstDestroy(pDst);
-				}
-				else
-				{
-					m_game.sparkCreate(PTCL_EXPLOSION_S, &pSrc->posCurr, 10, pSrc->dirCurr + 0.9f * PI, pSrc->dirCurr + 1.1f * PI);
-
-					// impart some of the bullet/missile velocity to the asteroid
-					AEVec2Scale(&pSrc->velCurr, &pSrc->velCurr, 0.01f * (1.0f - pDst->scale / AST_SIZE_MAX));
-					AEVec2Add  (&pDst->velCurr, &pDst->velCurr, &pSrc->velCurr);
-
-					// split the asteroid to 4
-					if ((pSrc->pObject->type == TYPE_MISSILE) || ((pDst->life -= 1.0f) < 0.0f))
-						m_game.astCreate(pDst);
-				}
-
-				// destroy the bullet
-				m_game.gameObjInstDestroy(pSrc);
-
-				break;
+				if( bulletCollide(pSrc, &m_game.m_gameObjInsts[j]) )
+					break;
 			}
 		}
+
 		else if (TYPE_BOMB == pSrc->pObject->type)
 		{
 			f32 radius = 1.0f - pSrc->life;
@@ -414,127 +536,44 @@ void GameState_BasePlay::update(void)
 			// check collision
 			for (u32 j = 0; j < GAME_OBJ_INST_NUM_MAX; j++)
 			{
-				GameObjInst* pDst = &m_game.m_gameObjInsts[j];
-
-				if (((pDst->flag & FLAG_ACTIVE) == 0) || (pDst->pObject->type != TYPE_ASTEROID))
-					continue;
-
-				if (AECalcDistPointToRect(&pSrc->posCurr, &pDst->posCurr, pDst->scale, pDst->scale) > radius)
-					continue;
-
-				if (pDst->scale < AST_SIZE_MIN)
-				{
-					f32 dir = atan2f(pDst->posCurr.y - pSrc->posCurr.y, pDst->posCurr.x - pSrc->posCurr.x);
-
-					m_game.gameObjInstDestroy(pDst);
-					m_game.sparkCreate(PTCL_EXPLOSION_M, &pDst->posCurr, 20, dir + 0.4f * PI, dir + 0.45f * PI);
-					m_game.m_score++;
-
-					if ((m_game.m_score % AST_SPECIAL_RATIO) == 0)
-						m_game.m_specials++;
-					if ((m_game.m_score % AST_SHIP_RATIO) == 0)
-						m_game.m_lives++;
-					if (m_game.m_score == m_game.m_maxAsteroids * 5)
-						m_game.m_maxAsteroids = (m_game.m_maxAsteroids < AST_NUM_MAX) ? (m_game.m_maxAsteroids * 2) : m_game.m_maxAsteroids;
-				}
-				else
-				{
-					// split the asteroid to 4
-					m_game.astCreate(pDst);
-				}
+				bombCollide(pSrc, radius, &m_game.m_gameObjInsts[j]);
 			}
 		}
+
 		else if (pSrc->pObject->type == TYPE_ASTEROID)
 		{
 			for (u32 j = 0; j < GAME_OBJ_INST_NUM_MAX; j++)
 			{
-				GameObjInst* pDst = &m_game.m_gameObjInsts[j];
-				f32          d;
-				AEVec2       nrm, u;
-
-				// skip no-active and non-asteroid object
-				if ((pSrc == pDst) || ((pDst->flag & FLAG_ACTIVE) == 0)  || (pDst->pObject->type != TYPE_ASTEROID))
-					continue;
-
-				// check if the object rectangle overlap
-				d = AECalcDistRectToRect(
-					&pSrc->posCurr, pSrc->scale, pSrc->scale, 
-					&pDst->posCurr, pDst->scale, pDst->scale, 
-					&nrm);
-				
-				if (d >= 0.0f)
-					continue;
-				
-				// adjust object position so that they do not overlap
-				AEVec2Scale	(&u, &nrm, d * 0.25f);
-				AEVec2Sub	(&pSrc->posCurr, &pSrc->posCurr, &u);
-				AEVec2Add	(&pDst->posCurr, &pDst->posCurr, &u);
-
-				// calculate new object velocities
-				m_game.resolveCollision(pSrc, pDst, &nrm);
+				asteroidCollide(pSrc, &m_game.m_gameObjInsts[j]);
 			}
 		}
+
 		else if (pSrc->pObject->type == TYPE_SHIP)
 		{
 			for (u32 j = 0; j < GAME_OBJ_INST_NUM_MAX; j++)
 			{
-				GameObjInst* pDst = &m_game.m_gameObjInsts[j];
-
-				// skip no-active and non-asteroid object
-				if ((pSrc == pDst) || ((pDst->flag & FLAG_ACTIVE) == 0) || (pDst->pObject->type != TYPE_ASTEROID))
-					continue;
-
-				// check if the object rectangle overlap
-				if (AETestRectToRect(
-					&pSrc->posCurr, pSrc->scale, pSrc->scale, 
-					&pDst->posCurr, pDst->scale, pDst->scale) == false)
-					continue;
-
-				// create the big explosion
-				m_game.sparkCreate(PTCL_EXPLOSION_L, &pSrc->posCurr, 100, 0.0f, 2.0f * PI);
-				
-				// reset the ship position and direction
-				AEVec2Zero(&m_game.m_localShip->posCurr);
-				AEVec2Zero(&m_game.m_localShip->velCurr);
-				m_game.m_localShip->dirCurr = 0.0f;
-
-				m_game.m_specials = SHIP_SPECIAL_NUM;
-
-				// destroy all asteroid near the ship so that you do not die as soon as the ship reappear
-				for (u32 j = 0; j < GAME_OBJ_INST_NUM_MAX; j++)
+				if( playerCollide(pSrc, &m_game.m_gameObjInsts[j]) )
 				{
-					GameObjInst* pInst = &m_game.m_gameObjInsts[j];
-					AEVec2		 u;
-
-					// skip no-active and non-asteroid object
-					if (((pInst->flag & FLAG_ACTIVE) == 0) || (pInst->pObject->type != TYPE_ASTEROID))
-						continue;
-
-					AEVec2Sub(&u, &pInst->posCurr, &m_game.m_localShip->posCurr);
-
-					if (AEVec2Length(&u) < (m_game.m_localShip->scale * 10.0f))
+					// reduce the ship counter
+					m_game.m_lives--;
+				
+					// if counter is less than 0, game over
+					if (m_game.m_lives < 0)
 					{
-						m_game.sparkCreate(PTCL_EXPLOSION_M, &pInst->posCurr, 10, -PI, PI);
-						m_game.gameObjInstDestroy(pInst);
+						m_game.m_gameTimer = 2.0;
+						m_game.gameObjInstDestroy(m_game.m_localShip);
+						m_game.m_localShip = 0;
 					}
-				}
 
-				// reduce the ship counter
-				m_game.m_lives--;
-				
-				// if counter is less than 0, game over
-				if (m_game.m_lives < 0)
-				{
-					m_game.m_gameTimer = 2.0;
-					m_game.gameObjInstDestroy(m_game.m_localShip);
-					m_game.m_localShip = 0;
+					break;
 				}
-
-				break;
 			}
 		}
 	}
+}
 
+void GameState_BasePlay::updateMatrix()
+{
 	// =====================================
 	// calculate the matrix for all objects
 	// =====================================
@@ -553,7 +592,17 @@ void GameState_BasePlay::update(void)
 		AEMtx33Concat		(&pInst->transform, &m,               &pInst->transform);
 		AEMtx33Trans		(&m,                pInst->posCurr.x, pInst->posCurr.y);
 		AEMtx33Concat		(&pInst->transform, &m,               &pInst->transform);
-	}
+	}	
+}
+
+void GameState_BasePlay::update(void)
+{
+	updateInput();
+	updateAsteroids();
+	updatePhysics();
+	updateObjects();
+	checkCollision();
+	updateMatrix();
 }
 
 // ---------------------------------------------------------------------------

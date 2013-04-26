@@ -213,11 +213,18 @@ void ProtoConnection::update(float dt)
 	m_idleTimer += dt;
 	
 	Packet p;
+	bool doItAgain = false;
 
-	p.m_length = receive(p.m_buffer, p.MAX);
+	do
+	{
+		p.m_length = receive(p.m_buffer, p.MAX);
 
-	if(p.m_length > 0)
-		m_received.push_back(p);
+		if(p.m_length > 0)
+		{
+			m_received.push_back(p);
+			doItAgain = true;
+		}
+	} while ( doItAgain );
 
 	if( m_keepAliveInterval && !((int)m_idleTimer % m_keepAliveInterval) )
 	{

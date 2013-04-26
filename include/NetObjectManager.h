@@ -13,10 +13,10 @@ public:
 	NetObjectManager(Asteroids * asgame);
 	~NetObjectManager();
 
-	inline NetInstContainer::iterator begin();
-	inline NetInstContainer::const_iterator begin() const;
-	inline NetInstContainer::iterator end();
-	inline NetInstContainer::const_iterator end() const;
+	NetInstContainer::iterator begin();
+	NetInstContainer::const_iterator begin() const;
+	NetInstContainer::iterator end();
+	NetInstContainer::const_iterator end() const;
 
 	void push(short netId, unsigned type, unsigned flag, float x, float y, float r, float velx, float vely);
 	void update(short netId, unsigned type, unsigned flag, float x, float y, float r, float velx, float vely);

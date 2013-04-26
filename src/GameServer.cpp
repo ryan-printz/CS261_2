@@ -121,12 +121,14 @@ void GameServer::update()
 			connected = m_newConnections.erase(connected);
 			continue;
 		}
+
 		Packet received;
 		if( !(*connected)->pop_receivePacket(received) )
 		{
 			++connected;
 			continue;
 		}
+
 		(*connected)->m_lastRecv = 500;
 		BaseNetMessage * msg = reinterpret_cast<BaseNetMessage*>(received.m_buffer);
 

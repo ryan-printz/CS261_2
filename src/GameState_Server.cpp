@@ -4,8 +4,6 @@
 #include "BaseNetMessage.h"
 #include "ServerInfoNetMessage.h"
 
-
-
 // TODO: refactor this, GameState_NetPlay, and GameState_Play to use a common base class.
 // TODO: refactor game objects
 // TODO: Server-side debugging/controls. It would be nice to add gui to this, but we may not have access to the window.
@@ -71,7 +69,7 @@ void GameState_Server::update()
 		m_Asteroids.emplace(std::make_pair<short, GameObjInst*>(m_gameServer->getNextNetID(), gObj ));
 	}
 
-	if( ++timer % 10 )
+	if( !(++timer % 10) )
 	{
 		Packet serverInfo;
 	
@@ -155,7 +153,7 @@ void GameState_Server::draw()
 	for(auto pri = pris.begin(); pri != pris.end(); ++pri)
 	{
 		sprintf(strBuffer, "%i %i %s %i", pri->m_lives, pri->m_netid, pri->m_name, pri->m_score);
-		AEGfxPrint(600, y += 20, 0xFFCCCCCC, strBuffer);
+		AEGfxPrint(450, y += 20, 0xFFCCCCCC, strBuffer);
 
 		// visually represent update area
 		AEGfxSphere(pri->m_x, pri->m_y, 99, 30);

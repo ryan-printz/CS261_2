@@ -86,26 +86,62 @@ void GameState_NetworkPlay::update()
 		}
 	}
 
-	GameState_BasePlay::update();
+	updateInput();
+	updatePhysics();
+	updateObjects();
+
+	for( NetInstContainer::iterator netObject = m_netObjects.begin(); netObject != m_netObjects.end(); ++netObject )
+	{
+		if( netObject->first == this->m_netID )
+			continue;
+
+		if ( netObject->second->pObject->type == TYPE_ASTEROID)
+		{
+			for (u32 j = 0; j < GAME_OBJ_INST_NUM_MAX; j++)
+			{
+				asteroidCollide(netObject->second, &m_game.m_gameObjInsts[j]);
+			}
+		}
+
+		else if ( netObject->second->pObject->type == TYPE_SHIP)
+		{
+			for (u32 j = 0; j < GAME_OBJ_INST_NUM_MAX; j++)
+			{
+				if( playerCollide(netObject->second, &m_game.m_gameObjInsts[j]) )
+				{
+					// reduce the ship counter
+					m_game.m_lives--;
+				
+					// if counter is less than 0, game over
+					if (m_game.m_lives < 0)
+					{
+						m_game.m_gameTimer = 2.0;
+						m_game.gameObjInstDestroy(m_game.m_localShip);
+						m_game.m_localShip = 0;
+					}
+
+					break;
+				}
+			}
+		}
+		netObject->second;
+	}
+
+	updateMatrix();
 
 	if(m_gameServer && !m_send)
 	{
 		Packet playerInfo;
-		//PlayerReplicationInfo pri;
 	
-		//pri.m_x = m_game.m_localShip->posCurr.x;
-		//pri.m_y = m_game.m_localShip->posCurr.y;
-		//pri.m_lives = m_game.m_lives;
-		//pri.m_rotation = m_game.m_localShip->dirCurr;
-		//pri.m_netid = m_netID;
-		//memcpy(pri.m_name, "player name", 12);
-		//m_game.m_gameObjects[1].type == TYPE_SHIP
 		if(m_game.m_localShip)
 		{
-			new (playerInfo.m_buffer) ObjectNetMessage(m_netID, TYPE_NET_SHIP, FLAG_ACTIVE, m_game.m_localShip->posCurr.x, m_game.m_localShip->posCurr.y, m_game.m_localShip->dirCurr, m_game.m_localShip->velCurr.x, m_game.m_localShip->velCurr.y);
+			new (playerInfo.m_buffer) ObjectNetMessage(m_netID, TYPE_NET_SHIP, FLAG_ACTIVE, 
+														m_game.m_localShip->posCurr.x, 
+														m_game.m_localShip->posCurr.y, 
+														m_game.m_localShip->dirCurr, 
+														m_game.m_localShip->velCurr.x, 
+														m_game.m_localShip->velCurr.y);
 			playerInfo.m_length = sizeof(ObjectNetMessage);
-			//new (playerInfo.m_buffer) PlayerReplicationInfoNetMessage(pri);
-			//playerInfo.m_length = sizeof(PlayerReplicationInfoNetMessage);
 
 			m_gameServer->send(playerInfo);
 		}
@@ -113,6 +149,7 @@ void GameState_NetworkPlay::update()
 	}
 	m_lastRecv -= gAEFrameTime;
 	m_send--;
+
 	//Will only work once the server sends asteroid updates
 	if(m_lastRecv <= 0 && m_gameServer)
 	{
@@ -176,18 +213,4 @@ void GameState_NetworkPlay::updatePRI(PlayerReplicationInfo& pri)
 void GameState_NetworkPlay::push(ObjectNetMessage& obj)
 {
 	m_netObjects.update(obj.netId, obj.type, obj.flags, obj.x, obj.y, obj.z, obj.velx, obj.vely);
-
-	//float scale = 1.0;
-	//AEVec2 pos; pos.x = obj.x; pos.y = obj.y;
-
-	//switch(obj.type)
-	//{/
-	//case TYPE_SHIP:
-	//	obj.type = TYPE_NET_SHIP;
-	//	scale = SHIP_SIZE;
-	//	break;
-	//};
-	//if(m_game.m_gam
-	//auto inst = m_game.gameObjInstCreate(obj.type, scale, &pos, 0, obj.z, true);
-	//emplace(std::make_pair(obj.netId, inst));
 }

@@ -20,6 +20,18 @@ public:
 
 	void loadGameObjList();
 
+	void updateInput();
+	void updateAsteroids();
+	void updatePhysics();
+	void updateObjects();
+	void checkCollision();
+	void updateMatrix();
+
+	bool playerCollide(GameObjInst * me, GameObjInst * other);	
+	bool bulletCollide(GameObjInst * me, GameObjInst * other);
+	bool bombCollide(GameObjInst * me, float radius, GameObjInst * other);
+	bool asteroidCollide(GameObjInst * me, GameObjInst * other);
+
 protected:
 	Asteroids m_game;
 };
