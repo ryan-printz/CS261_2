@@ -37,6 +37,8 @@ public:
 	std::list<ProtoConnection*> & getNewConnections();
 	ObjectMsgList & getObjectMsgs();
 	NinjaMsgList & getNinjaMsgs();
+
+	void sendGameInfo(int);
 	
 protected:
 	void addNewPlayer(ProtoConnection * connected, PlayerReplicationInfo & pri);

@@ -69,15 +69,21 @@ void GameState_Server::update()
 		m_Asteroids.emplace(std::make_pair<short, GameObjInst*>(m_gameServer->getNextNetID(), gObj ));
 	}
 
-	if( !(++timer % 10) )
+	if( !(++timer % 30) )
 	{
 		Packet serverInfo;
 	
 		new (serverInfo.m_buffer) ServerInfoNetMessage(m_gameServer->getInfo());
 		serverInfo.m_length = sizeof(ServerInfoNetMessage);
 
-		//m_master->send(serverInfo.m_buffer, serverInfo.m_length);
+		m_master->send(serverInfo.m_buffer, serverInfo.m_length);
 	}
+
+	if( !(timer % 15) )
+	{
+		m_gameServer->sendGameInfo(AELogBase2(m_game.m_asteroids));
+	}
+
 	
 	// update the server using only the info from the clients.
 	auto objects = m_gameServer->getObjectMsgs();

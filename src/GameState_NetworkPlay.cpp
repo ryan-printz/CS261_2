@@ -115,9 +115,15 @@ void GameState_NetworkPlay::update()
 				myPRI.m_lives--;
 				m_game.m_lives--;
 				
+				// update the player info (lives).
 				new (ohnoesidieded.m_buffer) PlayerReplicationInfoNetMessage(myPRI);
 				ohnoesidieded.m_length = sizeof(PlayerReplicationInfoNetMessage);
+				m_gameServer->send(ohnoesidieded);
 
+
+				// tell the server that the asteroid died.
+				new (ohnoesidieded.m_buffer) NinjaInfoCardMessage(netObject->first);
+				ohnoesidieded.m_length = sizeof(NinjaInfoCardMessage);
 				m_gameServer->send(ohnoesidieded);
 
 				break;			

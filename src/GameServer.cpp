@@ -102,6 +102,29 @@ void GameServer::addNewPlayer(ProtoConnection * connected, PlayerReplicationInfo
 	}
 }
 
+void GameServer::sendGameInfo(int wave)
+{
+	m_GRI.m_PRICount = m_PRIs.size();
+	m_GRI.m_wave = wave;
+
+	Packet gri;
+	new (gri.m_buffer) GameReplicationInfoNetMessage(m_GRI);
+	gri.m_length = sizeof(GameReplicationInfoNetMessage);
+
+	for( auto connected = m_newConnections.begin(); connected != m_newConnections.end(); ++connected )
+	{
+		(*connected)->send(gri);
+
+		Packet pri;
+		for( auto PRI = m_PRIs.begin(); PRI != m_PRIs.end(); ++PRI )
+		{
+			new (pri.m_buffer) PlayerReplicationInfoNetMessage(*PRI);
+			pri.m_length = sizeof(PlayerReplicationInfoNetMessage);
+			(*connected)->send(pri);
+		}
+	}
+}
+
 ObjectMsgList & GameServer::getObjectMsgs()
 {
 	return m_objectMsgs;
@@ -165,6 +188,7 @@ void GameServer::update()
 				if( client != connected )
 					(*client)->send(received);
 		}
+
 		++connected;
 	}
 

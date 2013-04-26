@@ -5,7 +5,7 @@
 struct NinjaInfoCardMessage : public BaseNetMessage
 {
 public:
-	NinjaInfoCardMessage(int & netID) 
+	NinjaInfoCardMessage(short netID) 
 		: BaseNetMessage(NINJA_INFO), m_netID(netID)
 	{}
 
@@ -15,5 +15,5 @@ public:
 	}
 
 protected:
-	int m_netID;
+	short m_netID;
 };
