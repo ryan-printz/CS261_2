@@ -69,7 +69,7 @@ void GameState_Server::update()
 	auto objects = m_gameServer->getObjectMsgs();
 	for(auto object = objects.begin(); object != objects.end(); ++object)
 	{
-		m_netObjects.push(object->netId, object->type, object->flags, object->x, object->y, object->z);
+		m_netObjects.push(object->netId, object->type, object->flags, object->x, object->y, object->z, object->velx, object->vely);
 	}
 	objects.clear();
 }

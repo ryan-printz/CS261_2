@@ -99,7 +99,7 @@ void GameState_NetworkPlay::update()
 		//pri.m_netid = m_netID;
 		//memcpy(pri.m_name, "player name", 12);
 		//m_game.m_gameObjects[1].type == TYPE_SHIP
-		new (playerInfo.m_buffer) ObjectNetMessage(m_netID, TYPE_NET_SHIP, FLAG_ACTIVE, m_game.m_localShip->posCurr.x, m_game.m_localShip->posCurr.y, m_game.m_localShip->dirCurr);
+		new (playerInfo.m_buffer) ObjectNetMessage(m_netID, TYPE_NET_SHIP, FLAG_ACTIVE, m_game.m_localShip->posCurr.x, m_game.m_localShip->posCurr.y, m_game.m_localShip->dirCurr, m_game.m_localShip->velCurr.x, m_game.m_localShip->velCurr.y);
 		playerInfo.m_length = sizeof(ObjectNetMessage);
 		//new (playerInfo.m_buffer) PlayerReplicationInfoNetMessage(pri);
 		//playerInfo.m_length = sizeof(PlayerReplicationInfoNetMessage);
@@ -161,7 +161,7 @@ void GameState_NetworkPlay::updatePRI(PlayerReplicationInfo& pri)
 
 void GameState_NetworkPlay::push(ObjectNetMessage& obj)
 {
-	m_netObjects.update(obj.netId, obj.type, obj.flags, obj.x, obj.y, obj.z);
+	m_netObjects.update(obj.netId, obj.type, obj.flags, obj.x, obj.y, obj.z, obj.velx, obj.vely);
 
 	//float scale = 1.0;
 	//AEVec2 pos; pos.x = obj.x; pos.y = obj.y;

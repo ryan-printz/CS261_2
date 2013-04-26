@@ -28,30 +28,32 @@ NetInstContainer::const_iterator NetObjectManager::end() const
 	return NetInstContainer::end();
 }
 
-void NetObjectManager::push(short netId, unsigned type, unsigned flag, float x, float y, float r)
+void NetObjectManager::push(short netId, unsigned type, unsigned flag, float x, float y, float r, float velx, float vely)
 {
 	float scale = 1.0;
 	AEVec2 pos; pos.x = x; pos.y = y;
 
 	switch(type)
 	{
-	case TYPE_SHIP:
+	case TYPE_NET_SHIP:
 		type = TYPE_NET_SHIP;
 		scale = SHIP_SIZE;
 		break;
 	};
-
-	auto inst = m_asGame->gameObjInstCreate(type, scale, &pos, 0, r, true);
+	AEVec2 temp;
+	temp.x = velx;
+	temp.y = vely;
+	auto inst = m_asGame->gameObjInstCreate(type, scale, &pos, &temp, r, true);
 	emplace(std::make_pair(netId, inst));
 }
 
-void NetObjectManager::update(short netId, unsigned type, unsigned flag, float x, float y, float r)
+void NetObjectManager::update(short netId, unsigned type, unsigned flag, float x, float y, float r, float velx, float vely)
 {
 	auto inst = find(netId);
 
 	if( inst == end() )
 	{
-		push(netId, type, flag, x, y, r);
+		push(netId, type, flag, x, y, r, velx, vely);
 		return;
 	}
 
@@ -59,4 +61,6 @@ void NetObjectManager::update(short netId, unsigned type, unsigned flag, float x
 	inst->second->posCurr.x = x;
 	inst->second->posCurr.y = y;
 	inst->second->dirCurr = r;
+	inst->second->velCurr.x = velx;
+	inst->second->velCurr.y = vely;
 }
