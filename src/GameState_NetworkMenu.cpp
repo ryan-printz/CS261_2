@@ -19,6 +19,8 @@
 #include <fstream>
 #include <iostream>
 
+#include "json\json.h"
+
 // ---------------------------------------------------------------------------
 struct ListGamesState : IGameState::State
 {
@@ -185,14 +187,14 @@ SearchingState::SearchingState(IGameState * parent)
 	if( !config.is_open() )
 		std::cout << "failed to open config file" << std::endl;
 
-	char ip[16];
-	short port;
+	Json::Value root;
+	Json::Reader reader;
 
-	config.getline(ip, sizeof(ip));
-	config >> port;
-	config.close();
+	bool result = reader.parse(config, root, false);
+	if( !result )
+		std::cout << "error parsing config file" << std::endl;
 
-	NetAddress master(ip, port);
+	NetAddress master(root["master"].asCString(), root["port"].asInt());
 
 	auto socket = new TCPSocket();
 
