@@ -93,7 +93,8 @@ void GameState_Server::draw()
 	AEGfxPrint(150, 10, 0xFFFFFFFF, strBuffer);
 
 	int y = 10;
-	for(auto pri = m_gameServer->getPRIs().begin(); pri != m_gameServer->getPRIs().end(); ++pri)
+	auto pris = m_gameServer->getPris();
+	for(auto pri = pris.begin(); pri != pris.end(); ++pri)
 	{
 		sprintf(strBuffer, "%i %i %s %i", pri->m_lives, pri->m_netid, pri->m_name, pri->m_score);
 		AEGfxPrint(600, y += 20, 0xFFCCCCCC, strBuffer);

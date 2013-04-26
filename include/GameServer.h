@@ -29,6 +29,8 @@ public:
 	GameReplicationInfo & getGRI();
 	ServerInfo & getInfo();
 
+	std::list<ProtoConnection*> & getNewConnections();
+
 protected:
 	int m_nextNetID;
 	ServerInfo m_info;

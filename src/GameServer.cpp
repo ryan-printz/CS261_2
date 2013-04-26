@@ -37,6 +37,11 @@ ServerInfo & GameServer::getInfo()
 	return m_info;
 }
 
+std::list<ProtoConnection*> & GameServer::getNewConnections()
+{
+	return m_newConnections;
+}
+
 void GameServer::update()
 {
 	m_gsThread->lock();
