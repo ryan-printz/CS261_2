@@ -2,6 +2,7 @@
 #include "GameState_Server.h"
 
 #include "BaseNetMessage.h"
+#include "ServerInfoNetMessage.h"
 
 // TODO: refactor this, GameState_NetPlay, and GameState_Play to use a common base class.
 // TODO: refactor game objects
@@ -50,8 +51,22 @@ void GameState_Server::init()
 
 void GameState_Server::update()
 {
+	static int timer = 0;
+
 	m_gameServer->update();
+
+	if( ++timer % 10 )
+	{
+		Packet serverInfo;
+	
+		new (serverInfo.m_buffer) ServerInfoNetMessage(m_gameServer->getInfo());
+		serverInfo.m_length = sizeof(ServerInfoNetMessage);
+
+		m_master->send(serverInfo.m_buffer, serverInfo.m_length);
+	}
+	
 	// update the server using only the info from the clients.
+
 	// TODO: update with network info
 }
 

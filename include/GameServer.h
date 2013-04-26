@@ -32,6 +32,9 @@ public:
 	std::list<ProtoConnection*> & getNewConnections();
 
 protected:
+	void addNewPlayer(ProtoConnection * connected, PlayerReplicationInfo & pri);
+	bool updatePlayerReplicationInfo(PlayerReplicationInfo & pri);
+
 	int m_nextNetID;
 	ServerInfo m_info;
 
